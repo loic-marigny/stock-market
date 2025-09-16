@@ -163,3 +163,13 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 @media (max-width: 840px){
   .grid-cards{ grid-template-columns: 1fr; }
 }
+
+.seg{
+  display:inline-flex; background:#fff; border:1px solid #e2e8f0; border-radius:12px; overflow:hidden;
+}
+.seg button{
+  padding:8px 12px; border:0; background:transparent; cursor:pointer; font-weight:600;
+}
+.seg button.on{
+  background: var(--primary-700); color:#fff;
+}
