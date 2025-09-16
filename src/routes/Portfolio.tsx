@@ -101,7 +101,7 @@ export default function Portfolio(){
             ) : rows.map(r => (
               <tr key={r.symbol}>
                 <td>{r.symbol}</td>
-                <td className="num">{r.qty}</td>
+                <td className="num">{r.qty.toLocaleString(undefined,{maximumFractionDigits:6})}</td>
                 <td className="num">{fmt(r.avg)}</td>
                 <td className="num">{fmt(r.last)}</td>
                 <td className="num">{fmt(r.value)}</td>
