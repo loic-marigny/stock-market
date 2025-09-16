@@ -66,3 +66,25 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.trade-grid{
+  display:grid; grid-template-columns: repeat(4, minmax(0,1fr));
+  gap:12px; margin: 10px 0 14px;
+}
+.field label{ display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px; }
+.input{ padding:10px 12px; border:1px solid #e2e8f0; border-radius:10px; width:100%; }
+.price-tile{
+  background:#fff; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.12);
+  padding:10px 12px; font-weight:700;
+}
+.trade-actions{ display:flex; gap:10px; margin: 8px 0 4px; }
+.btn-sell{
+  background:#b91c1c; color:#fff; border-radius:12px; padding:12px 14px; font-weight:700;
+}
+.trade-msg{
+  margin-top:10px; padding:8px 10px; border-radius:10px; font-size:13px;
+  background:#f1f5f9; border:1px solid #e2e8f0;
+}
+@media (max-width: 840px){
+  .trade-grid{ grid-template-columns: 1fr 1fr; }
+}
