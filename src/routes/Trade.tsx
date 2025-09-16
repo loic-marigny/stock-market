@@ -5,18 +5,21 @@ import provider from "../lib/prices";
 import { computeCash, computePositions, type Order } from "../lib/portfolio";
 
 const TICKERS = ["ASML.AS","SAP.DE","MC.PA","AIR.PA","BMW.DE","BNP.PA"] as const;
+type EntryMode = "qty" | "amount";
 
 export default function Trade(){
   const uid = auth.currentUser!.uid;
 
   // état du formulaire
   const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("ASML.AS");
+  const [mode, setMode] = useState<EntryMode>("qty");
   const [qty, setQty] = useState<number>(1);
+  const [amount, setAmount] = useState<number>(0);
   const [last, setLast] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState<string>("");
 
-  // ordres en temps réel (pour calculer cash/positions)
+  // ordres en temps réel
   const [orders, setOrders] = useState<Order[]>([]);
   useEffect(()=>{
     const qRef = query(collection(db,"users",uid,"orders"), orderBy("ts","asc"));
@@ -28,31 +31,45 @@ export default function Trade(){
   const positions = useMemo(()=> computePositions(orders), [orders]);
   const posQty = positions[symbol]?.qty ?? 0;
 
-  // charger le dernier prix quand symbol change
-  useEffect(()=>{ (async()=>{
-    setLast(await provider.getLastPrice(symbol));
-  })() }, [symbol]);
+  // charger le dernier prix
+  useEffect(()=>{ (async()=> setLast(await provider.getLastPrice(symbol)))() }, [symbol]);
+
+  // helpers
+  const round6 = (x:number) => Math.round(x * 1e6) / 1e6;
+  const previewQty = mode === "qty"
+    ? Math.max(0, qty || 0)
+    : (last ? round6((amount || 0) / last) : 0);
+
+  const validate = (side:"buy"|"sell", px:number) => {
+    const q = mode === "qty" ? qty : round6(amount / px);
+    if (!q || q <= 0) return "Quantité ou montant invalide.";
+    if (side === "sell" && posQty < q - 1e-9) return "Position insuffisante pour cette vente.";
+    if (side === "buy") {
+      const needed = q * px;
+      if (cash + 1e-6 < needed) return "Crédits insuffisants pour cet achat.";
+    }
+    return "";
+  };
 
   const place = async (side: "buy"|"sell")=>{
     setMsg("");
-    if (!qty || qty <= 0) { setMsg("Quantité invalide."); return; }
-
-    // rafraîchir prix pour l’exécution
-    const fillPrice = await provider.getLastPrice(symbol);
-
-    // règles côté client minimalistes
-    if (side === "sell" && posQty < qty) { setMsg("Vous ne possédez pas autant d’actions à vendre."); return; }
-    if (side === "buy" && cash < qty * fillPrice) { setMsg("Crédits insuffisants pour cet achat."); return; }
-
     setLoading(true);
     try{
+      // prix d’exécution rafraîchi
+      const fillPrice = await provider.getLastPrice(symbol);
+      const q = mode === "qty" ? Number(qty) : round6(Number(amount) / fillPrice);
+
+      const err = validate(side, fillPrice);
+      if (err) { setMsg(err); setLoading(false); return; }
+
       const posRef = doc(db,"users",uid,"positions",symbol);
       const ordRef = doc(collection(db,"users",uid,"orders"));
+
       await runTransaction(db, async (tx)=>{
         const snap = await tx.get(posRef);
         const cur = snap.exists() ? (snap.data() as any) : { qty: 0, avgPrice: 0 };
 
-        if (side === "sell" && cur.qty < qty) {
+        if (side === "sell" && cur.qty < q - 1e-9) {
           throw new Error("Position insuffisante.");
         }
 
@@ -60,25 +77,24 @@ export default function Trade(){
         let newAvg = cur.avgPrice;
 
         if (side === "buy") {
-          const totalCost = cur.avgPrice * cur.qty + fillPrice * qty;
-          newQty = cur.qty + qty;
+          const totalCost = cur.avgPrice * cur.qty + fillPrice * q;
+          newQty = cur.qty + q;
           newAvg = newQty ? totalCost / newQty : 0;
         } else {
-          newQty = cur.qty - qty;
+          newQty = cur.qty - q;
           newAvg = newQty ? cur.avgPrice : 0;
         }
 
-        tx.set(ordRef, {
-          symbol,
-          side,
-          qty,
-          fillPrice,
-          ts: serverTimestamp(),
-        });
+        tx.set(ordRef, { symbol, side, qty: q, fillPrice, ts: serverTimestamp() });
         tx.set(posRef, { qty: newQty, avgPrice: newAvg });
       });
+
       setMsg(side === "buy" ? "Achat exécuté." : "Vente exécutée.");
-      setQty(1);
+
+      // reset champs de saisie (selon le mode)
+      if (mode === "qty") setQty(1);
+      else setAmount(0);
+
       setLast(fillPrice);
     }catch(e:any){
       setMsg(e?.message ?? String(e));
@@ -97,7 +113,7 @@ export default function Trade(){
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value as any)}>
             {TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
           </select>
-          <div className="hint">En portefeuille : <strong>{posQty}</strong></div>
+          <div className="hint">En portefeuille : <strong>{fmtQty(posQty)}</strong></div>
         </div>
 
         <div className="field">
@@ -105,11 +121,32 @@ export default function Trade(){
           <div className="price-tile">{last ? last.toFixed(2) : "—"}</div>
         </div>
 
-        <div className="field">
-          <label>Quantité</label>
-          <input className="input" type="number" min={1} value={qty}
-                 onChange={e=>setQty(parseInt(e.target.value || "1"))}/>
+        <div className="field" style={{gridColumn:'1 / -1'}}>
+          <div className="seg">
+            <button type="button" className={mode==='qty'?'on':''} onClick={()=>setMode('qty')}>Entrer par quantité</button>
+            <button type="button" className={mode==='amount'?'on':''} onClick={()=>setMode('amount')}>Entrer par montant</button>
+          </div>
         </div>
+
+        {mode === "qty" ? (
+          <>
+            <div className="field">
+              <label>Quantité (actions)</label>
+              <input className="input" type="number" min={0} step="any"
+                     value={qty} onChange={e=>setQty(Number(e.target.value))}/>
+              <div className="hint">Coût estimé : <strong>{last ? (qty*last).toFixed(2) : "—"}</strong></div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="field">
+              <label>Montant (crédits)</label>
+              <input className="input" type="number" min={0} step="0.01"
+                     value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
+              <div className="hint">Quantité estimée : <strong>{fmtQty(previewQty)}</strong></div>
+            </div>
+          </>
+        )}
 
         <div className="field">
           <label>Crédits dispo</label>
@@ -126,9 +163,15 @@ export default function Trade(){
         </button>
       </div>
 
-      {msg && <div className="trade-msg">{msg}</div>}
+      <div className="hint">
+        {mode==='qty'
+          ? <>Exécution: quantité × dernier prix au moment du clic.</>
+          : <>Exécution: quantité calculée = montant / dernier prix.</>}
+      </div>
 
-      <p className="hint">Les exécutions utilisent le dernier prix du provider <code>mock</code>.</p>
+      {msg && <div className="trade-msg">{msg}</div>}
     </div>
   );
 }
+
+function fmtQty(n:number){ return n.toLocaleString(undefined,{maximumFractionDigits:6}); }
