@@ -3,6 +3,7 @@ export type OHLC = { date: string; close: number };
 
 export interface PriceProvider {
   getDailyHistory(symbol: string): Promise<OHLC[]>; // trié par date croissante
+  getLastPrice(symbol: string): Promise<number>;
 }
 
 // --- MOCK: random walk (même API qu'une vraie source) ---
@@ -34,8 +35,11 @@ export const mockProvider: PriceProvider = {
   async getDailyHistory(symbol: string) {
     const s = SEED[symbol] ?? 1;
     return genSeries(s, 5 * 365, 100 + (s % 5) * 25);
+  },
+  async getLastPrice(symbol: string) {
+    const h = await this.getDailyHistory(symbol);
+    return h.at(-1)?.close ?? 0;
   }
 };
 
-// Export par défaut : aujourd’hui, le mock
 export default mockProvider;

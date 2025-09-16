@@ -138,3 +138,28 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 .price{ margin-left:auto; color:var(--text-muted); }
 .chart-card{ background:#fff; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,.12); height: 360px; padding: 10px; }
 .hint{ color:var(--text-muted); font-size:12px; margin-top:8px; }
+
+.grid-cards{
+  display:grid; grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:12px; margin: 8px 0 14px;
+}
+.kpi-card{
+  background:#fff; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,.12);
+  padding:14px;
+}
+.kpi-k{ font-size:12px; color:var(--text-muted); }
+.kpi-v{ font-size:22px; font-weight:800; }
+
+.table-card{
+  background:#fff; border-radius:16px; box-shadow:0 8px 30px rgba(0,0,0,.12);
+  overflow:auto;
+}
+.table{ width:100%; border-collapse: collapse; min-width: 680px; }
+.table th, .table td{ padding:10px 12px; border-top:1px solid #eef2f7; }
+.table thead th{ text-align:left; font-size:12px; color:var(--text-muted); border-top:0; }
+.table .num{ text-align:right; font-variant-numeric: tabular-nums; }
+.pos{ color:#047857; } /* vert teal-ish */
+.neg{ color:#b91c1c; } /* rouge */
+@media (max-width: 840px){
+  .grid-cards{ grid-template-columns: 1fr; }
+}
