@@ -5,6 +5,7 @@ import { auth } from './firebase'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import Explore from './routes/Explore'
 import Portfolio from './routes/Portfolio'
+import Trade from './routes/Trade'
 import SignIn from './SignIn'
 
 export default function App(){
@@ -22,6 +23,7 @@ export default function App(){
         <nav className="nav">
           <NavLink to="/" end className={({isActive})=> isActive?'active':''}>Explorer</NavLink>
           <NavLink to="/portfolio" className={({isActive})=> isActive?'active':''}>Portefeuille</NavLink>
+          <NavLink to="/trade" className={({isActive})=> isActive?'active':''}>Trader</NavLink>
         </nav>
         <div style={{marginLeft:'auto'}}>
           <button className="btn" onClick={()=>signOut(auth)}>Déconnexion</button>
@@ -31,6 +33,7 @@ export default function App(){
       <Routes>
         <Route path="/" element={<Explore/>} />
         <Route path="/portfolio" element={<Portfolio/>} />
+        <Route path="/trade" element={<Trade/>} />
       </Routes>
     </div>
   )
