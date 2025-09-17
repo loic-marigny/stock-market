@@ -110,5 +110,83 @@ def main():
         json.dump(out, f, indent=2)
     print("[ok] wrote", OUT)
 
+def yahoo_last_from_ticker_hardened(symbol: str):
+    """Version robuste: tente fast_info puis history() quotidien.
+
+    Crée le Ticker en dehors des accès réseau et garantit que history()
+    est essayé même si fast_info échoue.
+    """
+    try:
+        tk = yf.Ticker(symbol, session=SESSION)
+    except Exception as e:
+        print(f"[warn] Ticker init {symbol} failed: {e}")
+        return None, None, None
+
+    # 1) fast_info
+    try:
+        fi = getattr(tk, "fast_info", None)
+        if fi:
+            px = fi.get("last_price") or fi.get("lastPrice")
+            if px:
+                return float(px), None, "fast_info"
+    except Exception as e:
+        print(f"[warn] fast_info {symbol} failed: {e}")
+
+    # 2) daily history
+    try:
+        df = tk.history(period="5d", interval="1d", auto_adjust=True)
+        if not df.empty and "Close" in df:
+            px = float(df["Close"].iloc[-1])
+            ts = to_iso_utc(df.index[-1])
+            return px, ts, "1d"
+    except Exception as e:
+        print(f"[warn] history 1d {symbol} failed: {e}")
+
+    return None, None, None
+
+def main_hardened():
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    had_prev = OUT.exists()
+    prev = load_previous()
+    out = dict(prev)  # ne jamais dégrader
+    changed = False
+
+    for s in TICKERS:
+        px, ts, src = yahoo_last_from_download(s)
+        if px is None:
+            px, ts, src = yahoo_last_from_ticker_hardened(s)
+
+        if px is None:
+            old = prev.get(s) or {}
+            if old.get("last") is not None:
+                print(f"[warn] {s}: no fresh data; keeping previous {old.get('last')} @ {old.get('as_of')}")
+                continue
+            else:
+                print(f"[warn] {s}: no data and no previous; leaving unchanged")
+                continue
+
+        new_entry = {"last": float(px), "as_of": ts, "interval": src}
+        if prev.get(s) != new_entry:
+            changed = True
+        out[s] = new_entry
+
+    if not changed:
+        if had_prev:
+            print("[ok] no changes; preserving previous file")
+            return
+        else:
+            raise SystemExit("no data fetched and no previous file; aborting")
+
+    out["meta"] = {
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "source": "yfinance (Yahoo; download 1m/5m/1d; fast_info; history 1d)",
+        "note": "Never writes nulls; preserves previous values if fresh data unavailable."
+    }
+
+    with open(OUT, "w") as f:
+        json.dump(out, f, indent=2)
+    print("[ok] wrote", OUT)
+
 if __name__ == "__main__":
-    main()
+    # Utilise la version durcie qui ne produit jamais de nulls
+    main_hardened()
