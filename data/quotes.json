@@ -1,0 +1,37 @@
+{
+  "ASML.AS": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "SAP.DE": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "MC.PA": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "AIR.PA": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "BMW.DE": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "BNP.PA": {
+    "last": null,
+    "as_of": null,
+    "interval": null
+  },
+  "meta": {
+    "generated_at": "2025-09-17T10:25:02Z",
+    "source": "yfinance (Yahoo delayed)",
+    "note": "Falls back to 5m or 1d when 1m is unavailable."
+  }
+}
