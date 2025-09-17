@@ -1,5 +1,7 @@
 # scripts/quotes.py
 import json
+import time
+import random
 from pathlib import Path
 from datetime import datetime, timezone
 import requests
@@ -35,38 +37,50 @@ def yahoo_last_from_chart(symbol: str):
 
     Retourne (prix, horodatage_iso_utc, interval) ou (None, None, None).
     """
-    base = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range={rng}&interval={itv}"
+    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    base_tpl = "https://{host}/v8/finance/chart/{sym}?range={rng}&interval={itv}"
     for rng, itv in [("5d","5m"), ("1mo","1d")]:
-        url = base.format(sym=symbol, rng=rng, itv=itv)
-        try:
-            print(f"[chart] {symbol} {rng}/{itv} GET {url}")
-            resp = SESSION.get(url, timeout=20)
-            print(f"[chart] {symbol} {rng}/{itv} status={resp.status_code}")
-            resp.raise_for_status()
-            data = resp.json()
-            results = (data.get("chart") or {}).get("result") or []
-            if not results:
-                print(f"[chart] {symbol} {rng}/{itv} no results")
-                continue
-            res = results[0]
-            ts_arr = res.get("timestamp") or []
-            q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
-            closes = q.get("close") or []
-            print(f"[chart] {symbol} {rng}/{itv} points ts={len(ts_arr)} close={len(closes)}")
-            if not ts_arr or not closes:
-                continue
-            # prendre la dernière clôture non nulle
-            for i in range(len(closes)-1, -1, -1):
-                c = closes[i]
-                if c is None:
-                    continue
-                t = ts_arr[i]
-                dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
-                iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-                print(f"[chart] {symbol} {rng}/{itv} last={c} @ {iso}")
-                return float(c), iso, itv
-        except Exception as e:
-            print(f"[warn] direct chart {symbol} {rng}/{itv} failed: {e}")
+        for host in hosts:
+            url = base_tpl.format(host=host, sym=symbol, rng=rng, itv=itv)
+            for attempt in range(1, 4):
+                try:
+                    print(f"[chart] {symbol} {rng}/{itv} try#{attempt} GET {url}")
+                    resp = SESSION.get(url, timeout=20)
+                    print(f"[chart] {symbol} {rng}/{itv} status={resp.status_code}")
+                    if resp.status_code == 429:
+                        delay = (2 ** (attempt - 1)) + random.uniform(0, 0.5)
+                        print(f"[chart] {symbol} {rng}/{itv} rate-limited; sleep {delay:.2f}s")
+                        time.sleep(delay)
+                        continue
+                    resp.raise_for_status()
+                    data = resp.json()
+                    if (data.get("chart") or {}).get("error"):
+                        err = (data.get("chart") or {}).get("error")
+                        print(f"[chart] {symbol} {rng}/{itv} api-error: {err}")
+                        break
+                    results = (data.get("chart") or {}).get("result") or []
+                    if not results:
+                        print(f"[chart] {symbol} {rng}/{itv} no results")
+                        break
+                    res = results[0]
+                    ts_arr = res.get("timestamp") or []
+                    q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
+                    closes = q.get("close") or []
+                    print(f"[chart] {symbol} {rng}/{itv} points ts={len(ts_arr)} close={len(closes)}")
+                    if not ts_arr or not closes:
+                        break
+                    for i in range(len(closes)-1, -1, -1):
+                        c = closes[i]
+                        if c is None:
+                            continue
+                        t = ts_arr[i]
+                        dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
+                        iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                        print(f"[chart] {symbol} {rng}/{itv} last={c} @ {iso}")
+                        return float(c), iso, itv
+                    break
+                except Exception as e:
+                    print(f"[warn] direct chart {symbol} {rng}/{itv} failed: {e}")
     return None, None, None
 
 def yahoo_last_from_download(symbol: str):
@@ -224,6 +238,8 @@ def main_hardened():
         if prev.get(s) != new_entry:
             changed = True
         out[s] = new_entry
+        # throttle between symbols to avoid bursts (rate-limit mitigation)
+        time.sleep(0.6 + random.uniform(0, 0.4))
 
     if not changed:
         if had_prev:
