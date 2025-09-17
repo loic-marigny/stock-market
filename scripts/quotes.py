@@ -30,6 +30,39 @@ def to_iso_utc(ts) -> str:
     except Exception:
         return None
 
+def yahoo_last_from_chart(symbol: str):
+    """Interroge directement l'API Yahoo Chart v8 (HTTP) en 5m puis 1d.
+
+    Retourne (prix, horodatage_iso_utc, interval) ou (None, None, None).
+    """
+    base = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range={rng}&interval={itv}"
+    for rng, itv in [("5d","5m"), ("1mo","1d")]:
+        url = base.format(sym=symbol, rng=rng, itv=itv)
+        try:
+            resp = SESSION.get(url, timeout=20)
+            resp.raise_for_status()
+            data = resp.json()
+            results = (data.get("chart") or {}).get("result") or []
+            if not results:
+                continue
+            res = results[0]
+            ts_arr = res.get("timestamp") or []
+            q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
+            closes = q.get("close") or []
+            if not ts_arr or not closes:
+                continue
+            # prendre la dernière clôture non nulle
+            for i in range(len(closes)-1, -1, -1):
+                c = closes[i]
+                if c is None:
+                    continue
+                t = ts_arr[i]
+                dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
+                return float(c), dt.strftime("%Y-%m-%dT%H:%M:%SZ"), itv
+        except Exception as e:
+            print(f"[warn] direct chart {symbol} {rng}/{itv} failed: {e}")
+    return None, None, None
+
 def yahoo_last_from_download(symbol: str):
     """Essaie 1m, puis 5m, puis 1d via yf.download (avec session)."""
     for (period, interval) in [("2d","1m"), ("5d","5m"), ("1mo","1d")]:
@@ -152,7 +185,12 @@ def main_hardened():
     changed = False
 
     for s in TICKERS:
-        px, ts, src = yahoo_last_from_download(s)
+        # 1) appel direct à l'API chart (souvent plus fiable en CI)
+        px, ts, src = yahoo_last_from_chart(s)
+        # 2) yfinance.download
+        if px is None:
+            px, ts, src = yahoo_last_from_download(s)
+        # 3) yfinance.Ticker fallbacks
         if px is None:
             px, ts, src = yahoo_last_from_ticker_hardened(s)
 
