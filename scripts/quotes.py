@@ -39,16 +39,20 @@ def yahoo_last_from_chart(symbol: str):
     for rng, itv in [("5d","5m"), ("1mo","1d")]:
         url = base.format(sym=symbol, rng=rng, itv=itv)
         try:
+            print(f"[chart] {symbol} {rng}/{itv} GET {url}")
             resp = SESSION.get(url, timeout=20)
+            print(f"[chart] {symbol} {rng}/{itv} status={resp.status_code}")
             resp.raise_for_status()
             data = resp.json()
             results = (data.get("chart") or {}).get("result") or []
             if not results:
+                print(f"[chart] {symbol} {rng}/{itv} no results")
                 continue
             res = results[0]
             ts_arr = res.get("timestamp") or []
             q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
             closes = q.get("close") or []
+            print(f"[chart] {symbol} {rng}/{itv} points ts={len(ts_arr)} close={len(closes)}")
             if not ts_arr or not closes:
                 continue
             # prendre la dernière clôture non nulle
@@ -58,7 +62,9 @@ def yahoo_last_from_chart(symbol: str):
                     continue
                 t = ts_arr[i]
                 dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
-                return float(c), dt.strftime("%Y-%m-%dT%H:%M:%SZ"), itv
+                iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                print(f"[chart] {symbol} {rng}/{itv} last={c} @ {iso}")
+                return float(c), iso, itv
         except Exception as e:
             print(f"[warn] direct chart {symbol} {rng}/{itv} failed: {e}")
     return None, None, None
@@ -67,6 +73,7 @@ def yahoo_last_from_download(symbol: str):
     """Essaie 1m, puis 5m, puis 1d via yf.download (avec session)."""
     for (period, interval) in [("2d","1m"), ("5d","5m"), ("1mo","1d")]:
         try:
+            print(f"[download] {symbol} {period}/{interval} start")
             df = yf.download(
                 symbol, period=period, interval=interval,
                 auto_adjust=True, progress=False, session=SESSION, threads=False
@@ -74,7 +81,10 @@ def yahoo_last_from_download(symbol: str):
             if not df.empty and "Close" in df:
                 px = float(df["Close"].iloc[-1])
                 ts = to_iso_utc(df.index[-1])
+                print(f"[download] {symbol} {period}/{interval} rows={len(df)} last={px} @ {ts}")
                 return px, ts, interval
+            else:
+                print(f"[download] {symbol} {period}/{interval} empty or no Close")
         except Exception as e:
             print(f"[warn] download {symbol} {period}/{interval} failed: {e}")
     return None, None, None
@@ -150,6 +160,7 @@ def yahoo_last_from_ticker_hardened(symbol: str):
     est essayé même si fast_info échoue.
     """
     try:
+        print(f"[ticker] {symbol} init")
         tk = yf.Ticker(symbol, session=SESSION)
     except Exception as e:
         print(f"[warn] Ticker init {symbol} failed: {e}")
@@ -161,6 +172,7 @@ def yahoo_last_from_ticker_hardened(symbol: str):
         if fi:
             px = fi.get("last_price") or fi.get("lastPrice")
             if px:
+                print(f"[ticker] {symbol} fast_info last={px}")
                 return float(px), None, "fast_info"
     except Exception as e:
         print(f"[warn] fast_info {symbol} failed: {e}")
@@ -171,6 +183,7 @@ def yahoo_last_from_ticker_hardened(symbol: str):
         if not df.empty and "Close" in df:
             px = float(df["Close"].iloc[-1])
             ts = to_iso_utc(df.index[-1])
+            print(f"[ticker] {symbol} history 1d rows={len(df)} last={px} @ {ts}")
             return px, ts, "1d"
     except Exception as e:
         print(f"[warn] history 1d {symbol} failed: {e}")
@@ -181,17 +194,21 @@ def main_hardened():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     had_prev = OUT.exists()
     prev = load_previous()
+    print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
     out = dict(prev)  # ne jamais dégrader
     changed = False
 
     for s in TICKERS:
+        print(f"[main] symbol={s} — try chart")
         # 1) appel direct à l'API chart (souvent plus fiable en CI)
         px, ts, src = yahoo_last_from_chart(s)
         # 2) yfinance.download
         if px is None:
+            print(f"[main] symbol={s} — try download")
             px, ts, src = yahoo_last_from_download(s)
         # 3) yfinance.Ticker fallbacks
         if px is None:
+            print(f"[main] symbol={s} — try ticker")
             px, ts, src = yahoo_last_from_ticker_hardened(s)
 
         if px is None:
