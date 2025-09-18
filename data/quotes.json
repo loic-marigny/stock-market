@@ -1,11 +1,11 @@
 {
   "AAPL": {
-    "last": 237.91,
+    "last": 237.88,
     "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "MSFT": {
-    "last": 508.428,
+    "last": 508.45,
     "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
@@ -15,12 +15,12 @@
     "interval": "finnhub"
   },
   "GOOGL": {
-    "last": 252.059,
+    "last": 252.03,
     "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "NVDA": {
-    "last": 176.32,
+    "last": 176.24,
     "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
@@ -30,7 +30,7 @@
     "interval": "finnhub"
   },
   "meta": {
-    "generated_at": "2025-09-18T20:15:34Z",
+    "generated_at": "2025-09-18T20:32:44Z",
     "source": "finnhub /quote",
     "note": "Official provider only; never writes nulls; preserves previous values if unavailable."
   }
