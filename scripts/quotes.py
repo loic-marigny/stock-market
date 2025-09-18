@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 import requests
 
-TICKERS = ["ASML.AS", "SAP.DE", "MC.PA", "AIR.PA", "BMW.DE", "BNP.PA"]
+TICKERS = ["AAPL", "SAP.DE", "MC.PA", "AIR.PA", "BMW.DE", "BNP.PA"]
 
 DATA_DIR = Path("data")
 OUT = DATA_DIR / "quotes.json"
