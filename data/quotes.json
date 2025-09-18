@@ -30,8 +30,13 @@
     "interval": null
   },
   "meta": {
-    "generated_at": "2025-09-17T12:28:28Z",
-    "source": "yfinance (Yahoo delayed)",
-    "note": "Falls back to 5m or 1d when 1m is unavailable."
+    "generated_at": "2025-09-18T15:04:12Z",
+    "source": "finnhub /quote",
+    "note": "Official provider only; never writes nulls; preserves previous values if unavailable."
+  },
+  "AAPL": {
+    "last": 238.565,
+    "as_of": "2025-09-18T15:03:54Z",
+    "interval": "finnhub"
   }
 }
