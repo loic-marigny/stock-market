@@ -26,9 +26,9 @@ function genSeries(seed = 1, days = 3 * 365, start = 100): OHLC[] {
 }
 function mulberry32(a:number){ return function(){ let t=(a+=0x6D2B79F5); t=Math.imul(t ^ t>>>15, t|1); t^=t+Math.imul(t ^ t>>>7, t|61); return ((t ^ t>>>14)>>>0)/4294967296; } }
 
-// Un “catalogue” minimal pour démarrer
+// Minimal catalogue for US large caps
 const SEED: Record<string, number> = {
-  "ASML.AS": 7, "SAP.DE": 11, "MC.PA": 13, "AIR.PA": 17, "BMW.DE": 19, "BNP.PA": 23,
+  "AAPL": 7, "MSFT": 11, "AMZN": 13, "GOOGL": 17, "NVDA": 19, "TSLA": 23,
 };
 
 export const mockProvider: PriceProvider = {

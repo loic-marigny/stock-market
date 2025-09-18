@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 import requests
 
-TICKERS = ["AAPL", "SAP.DE", "MC.PA", "AIR.PA", "BMW.DE", "BNP.PA"]
+TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "NVDA", "TSLA"]
 
 DATA_DIR = Path("data")
 OUT = DATA_DIR / "quotes.json"
@@ -67,41 +67,6 @@ def finnhub_last(symbol: str, api_key: str):
         return None, None, None
 
 
-def map_symbol_for_finnhub(symbol: str) -> str:
-    """Optionally remap symbols to Finnhub format.
-
-    - If data/finnhub-map.json exists, use its mapping object { src: dest }.
-    - Else if FINNHUB_MAP env is set (e.g., "ASML.AS=ASML.AS,SAP.DE=SAP.DE"), parse it.
-    - Otherwise, return the input symbol unchanged.
-    """
-    # 1) JSON file mapping
-    mapping_path = Path("data") / "finnhub-map.json"
-    if mapping_path.exists():
-        try:
-            obj = json.loads(mapping_path.read_text(encoding="utf-8"))
-            if isinstance(obj, dict) and symbol in obj:
-                return obj[symbol]
-        except Exception:
-            pass
-    # 2) Env var mapping
-    env_map = os.environ.get("FINNHUB_MAP")
-    if env_map:
-        try:
-            for part in env_map.split(","):
-                if not part:
-                    continue
-                if "=" in part:
-                    k, v = part.split("=", 1)
-                elif ":" in part:
-                    k, v = part.split(":", 1)
-                else:
-                    continue
-                if k.strip() == symbol:
-                    return v.strip()
-        except Exception:
-            pass
-    return symbol
-
 
 def load_previous():
     if OUT.exists():
@@ -121,23 +86,22 @@ def main():
     had_prev = OUT.exists()
     prev = load_previous()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
-    out = dict(prev)  # never degrade
+    out: dict = {}
     changed = False
 
     for s in TICKERS:
         if not api_key:
             print(f"[warn] {s}: no API key; cannot update")
             continue
-        fin_sym = map_symbol_for_finnhub(s)
-        if fin_sym != s:
-            print(f"[main] map {s} -> {fin_sym}")
-        print(f"[main] {fin_sym} — try finnhub")
-        px, ts, src = finnhub_last(fin_sym, api_key)
+        print(f"[main] {s} - try finnhub")
+        px, ts, src = finnhub_last(s, api_key)
 
         if px is None:
             old = prev.get(s) or {}
             if old.get("last") is not None:
                 print(f"[warn] {s}: no fresh data; keeping previous {old.get('last')} @ {old.get('as_of')}")
+                new_entry = {"last": float(old.get("last")), "as_of": old.get("as_of"), "interval": old.get("interval")}
+                out[s] = new_entry
                 continue
             else:
                 print(f"[warn] {s}: no data and no previous; leaving unchanged")

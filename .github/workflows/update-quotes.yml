@@ -18,7 +18,7 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests==2.32.3 yfinance==0.2.52 pandas==2.2.2 numpy==1.26.4
+          python -m pip install requests==2.32.3
       - name: Generate quotes.json
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}

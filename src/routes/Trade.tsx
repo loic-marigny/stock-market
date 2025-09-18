@@ -4,14 +4,14 @@ import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTime
 import provider from "../lib/prices";
 import { computeCash, computePositions, type Order } from "../lib/portfolio";
 
-const TICKERS = ["ASML.AS","SAP.DE","MC.PA","AIR.PA","BMW.DE","BNP.PA"] as const;
+const TICKERS = ["AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA"] as const;
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
   const uid = auth.currentUser!.uid;
 
   // état du formulaire
-  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("ASML.AS");
+  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("AAPL");
   const [mode, setMode] = useState<EntryMode>("qty");
   const [qty, setQty] = useState<number>(1);
   const [amount, setAmount] = useState<number>(0);
