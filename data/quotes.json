@@ -1,42 +1,37 @@
 {
-  "ASML.AS": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "AAPL": {
+    "last": 237.635,
+    "as_of": "2025-09-18T16:13:09Z",
+    "interval": "finnhub"
   },
-  "SAP.DE": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "MSFT": {
+    "last": 508.395,
+    "as_of": "2025-09-18T16:13:09Z",
+    "interval": "finnhub"
   },
-  "MC.PA": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "AMZN": {
+    "last": 232.3,
+    "as_of": "2025-09-18T16:13:09Z",
+    "interval": "finnhub"
   },
-  "AIR.PA": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "GOOGL": {
+    "last": 250.04,
+    "as_of": "2025-09-18T16:13:06Z",
+    "interval": "finnhub"
   },
-  "BMW.DE": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "NVDA": {
+    "last": 176.1315,
+    "as_of": "2025-09-18T16:13:09Z",
+    "interval": "finnhub"
   },
-  "BNP.PA": {
-    "last": null,
-    "as_of": null,
-    "interval": null
+  "TSLA": {
+    "last": 421.79,
+    "as_of": "2025-09-18T16:13:10Z",
+    "interval": "finnhub"
   },
   "meta": {
-    "generated_at": "2025-09-18T15:04:12Z",
+    "generated_at": "2025-09-18T16:13:37Z",
     "source": "finnhub /quote",
     "note": "Official provider only; never writes nulls; preserves previous values if unavailable."
-  },
-  "AAPL": {
-    "last": 238.565,
-    "as_of": "2025-09-18T15:03:54Z",
-    "interval": "finnhub"
   }
 }
