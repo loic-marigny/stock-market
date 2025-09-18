@@ -1,36 +1,36 @@
 {
   "AAPL": {
-    "last": 237.79,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 237.91,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "MSFT": {
-    "last": 508.66,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 508.428,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "AMZN": {
-    "last": 231.2341,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 231.23,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "GOOGL": {
-    "last": 251.61,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 252.059,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "NVDA": {
-    "last": 176.5901,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 176.32,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "TSLA": {
-    "last": 418.475,
-    "as_of": "2025-09-18T19:53:31Z",
+    "last": 416.85,
+    "as_of": "2025-09-18T20:00:00Z",
     "interval": "finnhub"
   },
   "meta": {
-    "generated_at": "2025-09-18T19:53:46Z",
+    "generated_at": "2025-09-18T20:15:34Z",
     "source": "finnhub /quote",
     "note": "Official provider only; never writes nulls; preserves previous values if unavailable."
   }
