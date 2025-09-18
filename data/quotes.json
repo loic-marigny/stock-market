@@ -30,7 +30,7 @@
     "interval": null
   },
   "meta": {
-    "generated_at": "2025-09-18T08:41:28Z",
+    "generated_at": "2025-09-18T08:55:04Z",
     "source": "yfinance (Yahoo delayed)",
     "note": "Falls back to 5m or 1d when 1m is unavailable."
   }
