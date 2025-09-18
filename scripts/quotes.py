@@ -41,11 +41,21 @@ def finnhub_last(symbol: str, api_key: str):
         print(f"[finnhub] {symbol} GET {base} symbol={params['symbol']}")
         r = SESSION.get(base, params=params, timeout=15)
         print(f"[finnhub] {symbol} status={r.status_code}")
-        r.raise_for_status()
-        j = r.json()
+        # Try to parse JSON regardless of status for clearer diagnostics
+        j = None
+        try:
+            j = r.json()
+        except Exception:
+            j = None
+        if r.status_code >= 400:
+            print(f"[finnhub] {symbol} error-body={j}")
+            r.raise_for_status()
+        if not isinstance(j, dict):
+            print(f"[finnhub] {symbol} non-json response")
+            return None, None, None
         c = j.get("c")  # current price
         t = j.get("t")  # epoch seconds
-        if c is None or not t:
+        if c in (None, 0) or not t:
             print(f"[finnhub] {symbol} empty/invalid payload: {j}")
             return None, None, None
         dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
@@ -55,6 +65,42 @@ def finnhub_last(symbol: str, api_key: str):
     except Exception as e:
         print(f"[warn] finnhub {symbol} failed: {e}")
         return None, None, None
+
+
+def map_symbol_for_finnhub(symbol: str) -> str:
+    """Optionally remap symbols to Finnhub format.
+
+    - If data/finnhub-map.json exists, use its mapping object { src: dest }.
+    - Else if FINNHUB_MAP env is set (e.g., "ASML.AS=ASML.AS,SAP.DE=SAP.DE"), parse it.
+    - Otherwise, return the input symbol unchanged.
+    """
+    # 1) JSON file mapping
+    mapping_path = Path("data") / "finnhub-map.json"
+    if mapping_path.exists():
+        try:
+            obj = json.loads(mapping_path.read_text(encoding="utf-8"))
+            if isinstance(obj, dict) and symbol in obj:
+                return obj[symbol]
+        except Exception:
+            pass
+    # 2) Env var mapping
+    env_map = os.environ.get("FINNHUB_MAP")
+    if env_map:
+        try:
+            for part in env_map.split(","):
+                if not part:
+                    continue
+                if "=" in part:
+                    k, v = part.split("=", 1)
+                elif ":" in part:
+                    k, v = part.split(":", 1)
+                else:
+                    continue
+                if k.strip() == symbol:
+                    return v.strip()
+        except Exception:
+            pass
+    return symbol
 
 
 def load_previous():
@@ -82,8 +128,11 @@ def main():
         if not api_key:
             print(f"[warn] {s}: no API key; cannot update")
             continue
-        print(f"[main] {s} — try finnhub")
-        px, ts, src = finnhub_last(s, api_key)
+        fin_sym = map_symbol_for_finnhub(s)
+        if fin_sym != s:
+            print(f"[main] map {s} -> {fin_sym}")
+        print(f"[main] {fin_sym} — try finnhub")
+        px, ts, src = finnhub_last(fin_sym, api_key)
 
         if px is None:
             old = prev.get(s) or {}
@@ -122,4 +171,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
