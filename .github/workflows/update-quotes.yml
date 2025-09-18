@@ -1,7 +1,7 @@
 name: Update quotes (cron)
 on:
   schedule:
-    - cron: "*/10 * * * *"    # toutes les 10 minutes pour commencer
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -18,11 +18,14 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests==2.32.3  yfinance==0.2.52 pandas==2.2.2 numpy==1.26.4
+          python -m pip install requests==2.32.3
       - name: Generate quotes.json
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
         run: |
           python scripts/quotes.py
-          test -f data/quotes.json && head -n 20 data/quotes.json || true
+          test -f data/quotes.json && head -n 40 data/quotes.json || true
       - name: Commit quotes.json if changed
         run: |
           git config user.name "github-actions"

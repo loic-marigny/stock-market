@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import provider from "../lib/prices";
 
-const TICKERS = ["ASML.AS","SAP.DE","MC.PA","AIR.PA","BMW.DE","BNP.PA"] as const;
+const TICKERS = ["AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA"] as const;
 type TF = "1M"|"6M"|"YTD"|"1Y"|"MAX";
 
 export default function Explore(){
-  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("ASML.AS");
+  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("AAPL");
   const [tf, setTf] = useState<TF>("6M");
   const [data, setData] = useState<{date:string; close:number}[]>([]);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
