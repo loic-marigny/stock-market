@@ -1,9 +1,6 @@
 """
-Generate quotes.json using an official provider (Finnhub) only.
+Generate quotes.json using an official provider (Finnhub).
 
-Removes all Yahoo/yfinance code due to frequent rate-limiting on shared
-GitHub Actions runners. The script preserves previous values and never writes
-null fields.
 """
 
 from __future__ import annotations
