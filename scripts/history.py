@@ -105,7 +105,15 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
 
     Returns all available, trimmed to last N years.
     """
-    s = f"{symbol.lower()}.us"
+    sym = symbol.lower()
+    # Stooq supports .us suffix for US tickers; not Shanghai/Shenzhen
+    if "." in sym:
+        suff = sym.rsplit(".", 1)[-1]
+        if suff != "us":
+            return []
+        s = sym
+    else:
+        s = f"{sym}.us"
     url = f"https://stooq.com/q/d/l/?s={s}&i=d"
     print(f"[history-stooq] {symbol} GET {url}")
     r = SESSION.get(url, timeout=20)
@@ -134,31 +142,34 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
     for host in hosts:
         url = f"https://{host}/v8/finance/chart/{symbol}?range={rng}&interval=1d"
-        try:
-            print(f"[history-yahoo] {symbol} GET {url}")
-            r = SESSION.get(url, timeout=20)
-            print(f"[history-yahoo] {symbol} status={r.status_code}")
-            if r.status_code == 429:
-                time.sleep(2)
-                continue
-            r.raise_for_status()
-            j = r.json()
-            res = (j.get("chart") or {}).get("result") or []
-            if not res:
-                continue
-            res = res[0]
-            ts = res.get("timestamp") or []
-            q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
-            closes = q.get("close") or []
-            out = []
-            for t, c in zip(ts, closes):
-                if c is None:
+        for attempt in range(1, 4):
+            try:
+                print(f"[history-yahoo] {symbol} try#{attempt} GET {url}")
+                r = SESSION.get(url, timeout=20)
+                print(f"[history-yahoo] {symbol} status={r.status_code}")
+                if r.status_code == 429:
+                    # exponential backoff with jitter
+                    delay = (1.2 * attempt) + (attempt - 1)
+                    time.sleep(delay)
                     continue
-                out.append({"date": to_iso_utc(int(t)), "close": float(c)})
-            out.sort(key=lambda x: x["date"]) 
-            return out
-        except Exception as e:
-            print(f"[warn] {symbol} yahoo failed: {e}")
+                r.raise_for_status()
+                j = r.json()
+                res = (j.get("chart") or {}).get("result") or []
+                if not res:
+                    break
+                res = res[0]
+                ts = res.get("timestamp") or []
+                q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
+                closes = q.get("close") or []
+                out = []
+                for t, c in zip(ts, closes):
+                    if c is None:
+                        continue
+                    out.append({"date": to_iso_utc(int(t)), "close": float(c)})
+                out.sort(key=lambda x: x["date"]) 
+                return out
+            except Exception as e:
+                print(f"[warn] {symbol} yahoo failed: {e}")
     return []
 
 
@@ -223,10 +234,12 @@ def main():
                 print(f"[history] {sym} already has >=1y coverage; skip fetch (len={len(existing)})")
                 continue
             fresh: List[Dict[str, float]] = []
+            source = ""
             # 1) Finnhub primary
             if token:
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
+                    if fresh: source = "finnhub"
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
             # 2) Alpha Vantage fallback
@@ -235,25 +248,34 @@ def main():
                     fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
                     # respect AV rate limit (5/min)
                     time.sleep(12)
+                    if fresh: source = "alpha"
                 except Exception as e:
                     print(f"[warn] {sym} alpha failed: {e}")
             # 3) Stooq fallback (no key)
             if not fresh:
                 try:
                     fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
+                    if fresh: source = "stooq"
                 except Exception as e:
                     print(f"[warn] {sym} stooq failed: {e}")
             # 4) Yahoo fallback (no key)
             if not fresh:
                 try:
                     fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
+                    if fresh: source = "yahoo"
                 except Exception as e:
                     print(f"[warn] {sym} yahoo failed: {e}")
+            if not fresh and not existing:
+                print(f"[warn] {sym} no data from any provider; skip writing (keep absent)")
+                continue
             merged = merge_history(existing, fresh)
             out_path = OUT_DIR / f"{sym}.json"
             with open(out_path, "w") as f:
                 json.dump(merged, f)
-            print("[ok] wrote", out_path, f"len={len(merged)}")
+            print("[ok] wrote", out_path, f"len={len(merged)}", f"source={source or 'existing'}")
+            # throttle a bit after Yahoo to avoid 429
+            if source == "yahoo":
+                time.sleep(1.5)
         except Exception as e:
             print(f"[warn] {sym} history failed: {e}")
 
