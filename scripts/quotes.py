@@ -69,6 +69,57 @@ def finnhub_last(symbol: str, api_key: str):
 
 
 
+def twelvedata_last(symbol: str, api_key: str):
+    """Fetch last price from Twelve Data for CN tickers.
+
+    Uses /quote then /price; strips any trailing ".SS".
+    """
+    base_q = "https://api.twelvedata.com/quote"
+    base_p = "https://api.twelvedata.com/price"
+    sym = symbol.split(".")[0]
+    try:
+        print(f"[twelvedata] {symbol} GET {base_q} symbol={sym}")
+        r = SESSION.get(base_q, params={"symbol": sym, "apikey": api_key}, timeout=15)
+        print(f"[twelvedata] {symbol} status={r.status_code}")
+        j = None
+        try:
+            j = r.json()
+        except Exception:
+            j = None
+        if r.status_code >= 400:
+            print(f"[twelvedata] {symbol} error-body={j}")
+            r.raise_for_status()
+        if isinstance(j, dict) and j.get("status") == "error":
+            raise RuntimeError(j.get("message") or "twelvedata error")
+        price = None
+        if isinstance(j, dict):
+            price = j.get("price") or j.get("close")
+        if price is not None:
+            px = float(price)
+            ts = (j.get("datetime") or j.get("timestamp") or
+                  datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            print(f"[twelvedata] {symbol} last={px} @ {ts}")
+            return px, ts, "twelvedata"
+    except Exception as e:
+        print(f"[warn] twelvedata {symbol} failed: {e}")
+    try:
+        print(f"[twelvedata] {symbol} GET {base_p} symbol={sym}")
+        r = SESSION.get(base_p, params={"symbol": sym, "apikey": api_key}, timeout=15)
+        print(f"[twelvedata] {symbol} status={r.status_code}")
+        j = r.json()
+        if isinstance(j, dict) and j.get("status") == "error":
+            raise RuntimeError(j.get("message") or "twelvedata error")
+        price = j.get("price")
+        if price is not None:
+            px = float(price)
+            ts = j.get("timestamp") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+            print(f"[twelvedata] {symbol} last={px} @ {ts}")
+            return px, ts, "twelvedata"
+    except Exception as e:
+        print(f"[warn] twelvedata-price {symbol} failed: {e}")
+    return None, None, None
+
+
 def load_previous():
     if OUT.exists():
         try:
@@ -159,8 +210,11 @@ def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     api_key = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
+    td_key = os.environ.get("TWELVEDATA_API_KEY") or os.environ.get("TWELVEDATA_TOKEN")
     if not api_key:
-        print("[error] FINNHUB_API_KEY/FINNHUB_TOKEN not set; cannot fetch official data.")
+        print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set; US quotes unavailable.")
+    if not td_key:
+        print("[warn] TWELVEDATA_API_KEY/TOKEN not set; CN quotes unavailable.")
     had_prev = OUT.exists()
     prev = load_previous()
     us_list, cn_list = load_tickers_by_market()
@@ -181,12 +235,21 @@ def main():
     out: dict = {}
     changed = False
 
+    us_set = set(us_list)
+    cn_set = set(cn_list)
     for s in symbols:
-        if not api_key:
-            print(f"[warn] {s}: no API key; cannot update")
-            continue
-        print(f"[main] {s} - try finnhub")
-        px, ts, src = finnhub_last(s, api_key)
+        if s in cn_set:
+            if not td_key:
+                print(f"[warn] {s}: no Twelve Data key; cannot update CN ticker")
+                continue
+            print(f"[main] {s} - try Twelve Data")
+            px, ts, src = twelvedata_last(s, td_key)
+        else:
+            if not api_key:
+                print(f"[warn] {s}: no Finnhub key; cannot update US ticker")
+                continue
+            print(f"[main] {s} - try finnhub")
+            px, ts, src = finnhub_last(s, api_key)
 
         if px is None:
             old = prev.get(s) or {}
@@ -216,8 +279,8 @@ def main():
 
     out["meta"] = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": "finnhub /quote",
-        "note": "Official provider only; never writes nulls; preserves previous values if unavailable."
+        "source": "finnhub /quote; twelvedata /quote|/price",
+        "note": "Fetches US via Finnhub, CN via Twelve Data; never writes nulls; preserves previous values if unavailable."
     }
 
     with open(OUT, "w") as f:
