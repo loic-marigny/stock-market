@@ -71,7 +71,7 @@ export default function Explore(){
       <div className="chart-card">
         <canvas ref={canvasRef} />
       </div>
-      <p className="hint">Source: provider <code>mock</code>. On branchera Stooq/JSON ensuite.</p>
+      <p className="hint">Source: JSON statiques (Finnhub via CI).</p>
     </div>
   );
 }
