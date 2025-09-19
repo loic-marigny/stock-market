@@ -36,9 +36,10 @@ def load_tickers() -> List[Dict[str, Any]]:
         sym = str(it.get("symbol", "")).strip().upper()
         name = str(it.get("name", "")).strip()
         sector = str(it.get("sector", "")).strip()
+        market = str(it.get("market", "")).strip().upper() or None
         if not sym:
             continue
-        out.append({"symbol": sym, "name": name, "sector": sector})
+        out.append({"symbol": sym, "name": name, "sector": sector, "market": market})
     return out
 
 
@@ -59,6 +60,7 @@ def build_index(rows: List[Dict[str, Any]]) -> None:
         sym = it["symbol"]
         name = it.get("name")
         sector = it.get("sector")
+        market = it.get("market")
         ensure_profile(sym, name, sector)
         logo_rel = f"companies/{sym}/logo.svg"
         logo_path = COMP_DIR / sym / "logo.svg"
@@ -69,6 +71,7 @@ def build_index(rows: List[Dict[str, Any]]) -> None:
             "profile": f"companies/{sym}/profile.json",
             "logo": (logo_rel if logo_path.exists() else None),
             "history": f"history/{sym}.json",
+            "market": market,
         })
     with open(COMP_DIR / "index.json", "w", encoding="utf-8") as f:
         json.dump(idx, f, indent=2)
@@ -82,4 +85,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

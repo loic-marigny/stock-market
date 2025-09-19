@@ -22,11 +22,7 @@ import csv
 
 import requests
 
-TICKERS = [
-    "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
-    "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
-    "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
-]
+DATA_TICKERS = Path("data/tickers.json")
 MIN_YEARS = 1  # ensure at least this coverage
 
 SESSION = requests.Session()
@@ -132,6 +128,40 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     return rows
 
 
+def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    # Use Yahoo Chart API v8 for daily candles
+    rng = "1y" if years <= 1 else "2y"
+    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    for host in hosts:
+        url = f"https://{host}/v8/finance/chart/{symbol}?range={rng}&interval=1d"
+        try:
+            print(f"[history-yahoo] {symbol} GET {url}")
+            r = SESSION.get(url, timeout=20)
+            print(f"[history-yahoo] {symbol} status={r.status_code}")
+            if r.status_code == 429:
+                time.sleep(2)
+                continue
+            r.raise_for_status()
+            j = r.json()
+            res = (j.get("chart") or {}).get("result") or []
+            if not res:
+                continue
+            res = res[0]
+            ts = res.get("timestamp") or []
+            q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
+            closes = q.get("close") or []
+            out = []
+            for t, c in zip(ts, closes):
+                if c is None:
+                    continue
+                out.append({"date": to_iso_utc(int(t)), "close": float(c)})
+            out.sort(key=lambda x: x["date"]) 
+            return out
+        except Exception as e:
+            print(f"[warn] {symbol} yahoo failed: {e}")
+    return []
+
+
 def load_existing(sym: str) -> List[Dict[str, float]]:
     p = OUT_DIR / f"{sym}.json"
     if not p.exists():
@@ -178,7 +208,14 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    for sym in TICKERS:
+    # Load symbols from data/tickers.json
+    try:
+        arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
+        symbols = [str(it.get("symbol")).strip() for it in arr if isinstance(it, dict) and it.get("symbol")]
+    except Exception:
+        symbols = []
+
+    for sym in symbols:
         try:
             existing = load_existing(sym)
             cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365)).isoformat()
@@ -206,6 +243,12 @@ def main():
                     fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
                 except Exception as e:
                     print(f"[warn] {sym} stooq failed: {e}")
+            # 4) Yahoo fallback (no key)
+            if not fresh:
+                try:
+                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
+                except Exception as e:
+                    print(f"[warn] {sym} yahoo failed: {e}")
             merged = merge_history(existing, fresh)
             out_path = OUT_DIR / f"{sym}.json"
             with open(out_path, "w") as f:

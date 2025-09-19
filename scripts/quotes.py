@@ -1,6 +1,7 @@
 """
 Generate quotes.json using an official provider (Finnhub).
-
+Supports US and Shanghai tickers (loaded from data/tickers.json) and
+only fetches quotes when the corresponding market is open.
 """
 
 from __future__ import annotations
@@ -14,11 +15,7 @@ from datetime import datetime, timezone, time as dtime
 from zoneinfo import ZoneInfo
 import requests
 
-TICKERS = [
-    "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
-    "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
-    "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
-]
+DATA_TICKERS = Path("data/tickers.json")
 
 DATA_DIR = Path("data")
 PUBLIC_DIR = Path("public")
@@ -89,6 +86,28 @@ def load_previous():
     return {}
 
 
+def load_tickers_by_market():
+    us: list[str] = []
+    cn: list[str] = []
+    try:
+        arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
+        if isinstance(arr, list):
+            for it in arr:
+                if not isinstance(it, dict):
+                    continue
+                sym = str(it.get("symbol") or "").strip()
+                mkt = str(it.get("market") or "").strip().upper()
+                if not sym:
+                    continue
+                if mkt == "CN":
+                    cn.append(sym)
+                else:
+                    us.append(sym)
+    except Exception as e:
+        print(f"[warn] load tickers failed: {e}; defaulting to US only")
+    return us, cn
+
+
 def us_market_is_open(token: str | None) -> bool:
     """Return True if US stock market is open now.
 
@@ -125,6 +144,17 @@ def us_market_is_open(token: str | None) -> bool:
     return start <= ny.time() <= end
 
 
+def cn_market_is_open() -> bool:
+    # Shanghai regular sessions: 09:30–11:30 and 13:00–15:00, Mon–Fri
+    sh = datetime.now(ZoneInfo("Asia/Shanghai"))
+    if sh.weekday() >= 5:
+        return False
+    t = sh.time()
+    morning = dtime(9,30) <= t <= dtime(11,30)
+    afternoon = dtime(13,0) <= t <= dtime(15,0)
+    return morning or afternoon
+
+
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -133,18 +163,25 @@ def main():
         print("[error] FINNHUB_API_KEY/FINNHUB_TOKEN not set; cannot fetch official data.")
     had_prev = OUT.exists()
     prev = load_previous()
+    us_list, cn_list = load_tickers_by_market()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
-    # Gate by US market hours
-    if not us_market_is_open(api_key):
-        print("[info] US market closed; skip fetching quotes and preserve previous files")
+    open_us = us_market_is_open(api_key)
+    open_cn = cn_market_is_open()
+    symbols: list[str] = []
+    if open_us:
+        symbols.extend(us_list)
+    if open_cn:
+        symbols.extend(cn_list)
+    if not symbols:
+        print("[info] No market open now; skip fetching and preserve previous files")
         if had_prev or PUBLIC_OUT.exists():
             return
         else:
-            raise SystemExit("market closed and no previous file; aborting")
+            raise SystemExit("no market open and no previous file; aborting")
     out: dict = {}
     changed = False
 
-    for s in TICKERS:
+    for s in symbols:
         if not api_key:
             print(f"[warn] {s}: no API key; cannot update")
             continue

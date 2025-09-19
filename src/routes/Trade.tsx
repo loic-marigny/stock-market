@@ -4,11 +4,19 @@ import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTime
 import provider from "../lib/prices";
 import { computeCash, computePositions, type Order } from "../lib/portfolio";
 
-const TICKERS = [
+const US_TICKERS = [
   "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
   "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
   "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
 ] as const;
+const CN_TICKERS = [
+  "600519.SS","601318.SS","601398.SS","601288.SS","601988.SS","601857.SS",
+  "600028.SS","600036.SS","601166.SS","600900.SS","601888.SS","601012.SS",
+  "600104.SS","600030.SS","600585.SS","600000.SS","601601.SS","601939.SS",
+  "600019.SS","600276.SS","601766.SS","600309.SS","601633.SS","600887.SS",
+  "601668.SS","601658.SS","601728.SS","601628.SS","688981.SS",
+] as const;
+const TICKERS = [...US_TICKERS, ...CN_TICKERS] as const;
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
@@ -115,7 +123,12 @@ export default function Trade(){
         <div className="field">
           <label>Symbole</label>
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value as any)}>
-            {TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
+            <optgroup label="New York">
+              {US_TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
+            </optgroup>
+            <optgroup label="Shanghai">
+              {CN_TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
+            </optgroup>
           </select>
           <div className="hint">En portefeuille : <strong>{fmtQty(posQty)}</strong></div>
         </div>
