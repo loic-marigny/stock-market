@@ -10,13 +10,16 @@ import os
 import time
 import random
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, time as dtime
+from zoneinfo import ZoneInfo
 import requests
 
 TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "NVDA", "TSLA"]
 
 DATA_DIR = Path("data")
+PUBLIC_DIR = Path("public")
 OUT = DATA_DIR / "quotes.json"
+PUBLIC_OUT = PUBLIC_DIR / "quotes.json"
 
 # HTTP session with explicit User-Agent
 SESSION = requests.Session()
@@ -72,17 +75,68 @@ def load_previous():
                 return json.load(f)
         except Exception:
             pass
+    # fallback: read from public if exists
+    if PUBLIC_OUT.exists():
+        try:
+            with open(PUBLIC_OUT, "r") as f:
+                return json.load(f)
+        except Exception:
+            pass
     return {}
+
+
+def us_market_is_open(token: str | None) -> bool:
+    """Return True if US stock market is open now.
+
+    Prefer Finnhub market-status; fallback to local NY time window if API fails.
+    Session considered: Mon-Fri, 09:30–16:00 America/New_York (regular hours).
+    """
+    # 1) Try Finnhub endpoint if token present
+    if token:
+        try:
+            url = "https://finnhub.io/api/v1/stock/market-status"
+            r = SESSION.get(url, params={"exchange": "US", "token": token}, timeout=10)
+            if r.status_code == 200:
+                j = r.json()
+                # accept a variety of shapes
+                for k in ("isOpen", "is_open", "open"):
+                    v = j.get(k)
+                    if isinstance(v, bool):
+                        return v
+                # sometimes nested under 'market'
+                market = j.get("market") if isinstance(j, dict) else None
+                if isinstance(market, dict):
+                    v = market.get("isOpen") or market.get("open")
+                    if isinstance(v, bool):
+                        return v
+        except Exception as e:
+            print(f"[warn] market-status check failed, fallback to local window: {e}")
+
+    # 2) Fallback: check New York local time window
+    ny = datetime.now(ZoneInfo("America/New_York"))
+    if ny.weekday() >= 5:  # 5=Sat,6=Sun
+        return False
+    start = dtime(9, 30)
+    end = dtime(16, 0)
+    return start <= ny.time() <= end
 
 
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
+    PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     api_key = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
     if not api_key:
         print("[error] FINNHUB_API_KEY/FINNHUB_TOKEN not set; cannot fetch official data.")
     had_prev = OUT.exists()
     prev = load_previous()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
+    # Gate by US market hours
+    if not us_market_is_open(api_key):
+        print("[info] US market closed; skip fetching quotes and preserve previous files")
+        if had_prev or PUBLIC_OUT.exists():
+            return
+        else:
+            raise SystemExit("market closed and no previous file; aborting")
     out: dict = {}
     changed = False
 
@@ -127,7 +181,9 @@ def main():
 
     with open(OUT, "w") as f:
         json.dump(out, f, indent=2)
-    print("[ok] wrote", OUT)
+    with open(PUBLIC_OUT, "w") as f:
+        json.dump(out, f, indent=2)
+    print("[ok] wrote", OUT, "and", PUBLIC_OUT)
 
 
 if __name__ == "__main__":
