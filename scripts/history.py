@@ -136,41 +136,95 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     return rows
 
 
-def fetch_daily_twelvedata(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
-    """Twelve Data time_series for daily candles.
+    
 
-    Strips .SS suffix and fetches 1day interval; trims to last N years.
+
+def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    """Alltick daily history (CN) — tries common kline endpoints, strips .SS.
+
+    Note: Without official docs here, we attempt a reasonable default
+    and parse common field shapes. If your endpoint differs, set
+    ALLTICK_HISTORY_URL to override.
     """
-    base = "https://api.twelvedata.com/time_series"
     sym = symbol.split(".")[0]
-    params = {
-        "symbol": sym,
-        "interval": "1day",
-        "outputsize": 5000,
-        "apikey": api_key,
-    }
-    print(f"[history-td] {symbol} GET {base} interval=1day symbol={sym}")
-    r = SESSION.get(base, params=params, timeout=25)
-    print(f"[history-td] {symbol} status={r.status_code}")
-    r.raise_for_status()
-    j = r.json()
-    if isinstance(j, dict) and j.get("status") == "error":
-        raise RuntimeError(j.get("message") or "twelvedata error")
-    values = (j or {}).get("values") or []
-    out = []
-    for it in values:
-        try:
-            d = it.get("datetime") or it.get("date")
-            c = float(it.get("close"))
-            out.append({"date": d[:10], "close": c})
-        except Exception:
+    base_env = os.environ.get("ALLTICK_HISTORY_URL")
+    candidates = [
+        base_env,
+        "https://api.alltick.co/market/kline",
+        "https://api.alltick.co/kline",
+    ]
+    params = [
+        {"symbol": sym, "interval": "1day", "limit": 5000, "apikey": api_key},
+        {"symbol": sym, "interval": "1d", "limit": 5000, "apikey": api_key},
+    ]
+    for base in candidates:
+        if not base:
             continue
-    # Twelve Data returns most-recent-first; sort ASC and trim
-    out.sort(key=lambda x: x["date"]) 
-    if out:
-        cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat()
-        out = [x for x in out if x["date"] >= cutoff]
-    return out
+        for p in params:
+            try:
+                print(f"[history-alltick] {symbol} GET {base} params={p}")
+                r = SESSION.get(base, params=p, timeout=25)
+                print(f"[history-alltick] {symbol} status={r.status_code}")
+                r.raise_for_status()
+                j = r.json()
+                # Accept common shapes: {data:[...]}, directly list, or object
+                arr = None
+                if isinstance(j, list):
+                    arr = j
+                elif isinstance(j, dict):
+                    # try several keys
+                    for k in ("data", "kline", "values", "result"):
+                        v = j.get(k)
+                        if isinstance(v, list):
+                            arr = v
+                            break
+                if not isinstance(arr, list):
+                    continue
+                out: List[Dict[str, float]] = []
+                for it in arr:
+                    if not isinstance(it, (list, dict)):
+                        continue
+                    # Try dict first
+                    dts = None
+                    close = None
+                    if isinstance(it, dict):
+                        # common: t/time/datetime, c/close/last
+                        dts = it.get("datetime") or it.get("time") or it.get("t") or it.get("date")
+                        close = it.get("close") or it.get("c") or it.get("last") or it.get("price")
+                    else:
+                        # If list, assume [ts, open, high, low, close, ...]
+                        try:
+                            ts_val = it[0]
+                            close = float(it[4])
+                            if isinstance(ts_val, (int, float)):
+                                dts = to_iso_utc(int(ts_val))
+                            else:
+                                dts = str(ts_val)
+                        except Exception:
+                            pass
+                    if close is None or dts is None:
+                        continue
+                    try:
+                        c = float(close)
+                    except Exception:
+                        continue
+                    # normalize date
+                    if isinstance(dts, str) and len(dts) >= 10 and dts[4] == "-":
+                        d = dts[:10]
+                    else:
+                        try:
+                            d = to_iso_utc(int(dts))[:10]
+                        except Exception:
+                            continue
+                    out.append({"date": d, "close": c})
+                out.sort(key=lambda x: x["date"])
+                if out:
+                    cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat()
+                    out = [x for x in out if x["date"] >= cutoff]
+                return out
+            except Exception as e:
+                print(f"[warn] {symbol} alltick failed: {e}")
+    return []
 
 
 def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
@@ -251,7 +305,7 @@ def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> L
 def main():
     token = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
     av_key = os.environ.get("ALPHAVANTAGE_API_KEY") or os.environ.get("ALPHAVANTAGE_TOKEN")
-    td_key = os.environ.get("TWELVEDATA_API_KEY") or os.environ.get("TWELVEDATA_TOKEN")
+    at_key = os.environ.get("ALLTICK_API_KEY") or os.environ.get("ALLTICK_TOKEN")
     if not token:
         print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set or not authorized for candles; will try Alpha Vantage or Stooq")
 
@@ -280,13 +334,14 @@ def main():
                     if fresh: source = "finnhub"
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
-            # 1b) Twelve Data for CN first
-            if not fresh and td_key and sym.endswith('.SS'):
-                try:
-                    fresh = fetch_daily_twelvedata(sym, td_key, years=MIN_YEARS)
-                    if fresh: source = "twelvedata"
-                except Exception as e:
-                    print(f"[warn] {sym} twelvedata failed: {e}")
+            # 1b) CN: Alltick
+            if not fresh and sym.endswith('.SS'):
+                if at_key:
+                    try:
+                        fresh = fetch_daily_alltick(sym, at_key, years=MIN_YEARS)
+                        if fresh: source = "alltick"
+                    except Exception as e:
+                        print(f"[warn] {sym} alltick failed: {e}")
             # 2) Alpha Vantage fallback
             if not fresh and av_key:
                 try:

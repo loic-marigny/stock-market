@@ -68,55 +68,61 @@ def finnhub_last(symbol: str, api_key: str):
         return None, None, None
 
 
+def alltick_last(symbol: str, api_key: str):
+    """Fetch last price from Alltick for CN tickers (symbol without .SS).
 
-def twelvedata_last(symbol: str, api_key: str):
-    """Fetch last price from Twelve Data for CN tickers.
-
-    Uses /quote then /price; strips any trailing ".SS".
-    """
-    base_q = "https://api.twelvedata.com/quote"
-    base_p = "https://api.twelvedata.com/price"
+    Tries configurable ALLTICK_QUOTE_URL then common endpoints; parses common
+    fields (price/close, datetime/timestamp)."""
     sym = symbol.split(".")[0]
-    try:
-        print(f"[twelvedata] {symbol} GET {base_q} symbol={sym}")
-        r = SESSION.get(base_q, params={"symbol": sym, "apikey": api_key}, timeout=15)
-        print(f"[twelvedata] {symbol} status={r.status_code}")
-        j = None
+    base_env = os.environ.get("ALLTICK_QUOTE_URL")
+    candidates = [
+        base_env,
+        "https://api.alltick.co/quote",
+        "https://api.alltick.co/market/quote",
+        "https://api.alltick.co/price",
+    ]
+    for base in candidates:
+        if not base:
+            continue
         try:
-            j = r.json()
-        except Exception:
+            print(f"[allt] {symbol} GET {base} symbol={sym}")
+            r = SESSION.get(base, params={"symbol": sym, "apikey": api_key}, timeout=15)
+            print(f"[allt] {symbol} status={r.status_code}")
             j = None
-        if r.status_code >= 400:
-            print(f"[twelvedata] {symbol} error-body={j}")
-            r.raise_for_status()
-        if isinstance(j, dict) and j.get("status") == "error":
-            raise RuntimeError(j.get("message") or "twelvedata error")
-        price = None
-        if isinstance(j, dict):
-            price = j.get("price") or j.get("close")
-        if price is not None:
-            px = float(price)
-            ts = (j.get("datetime") or j.get("timestamp") or
-                  datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
-            print(f"[twelvedata] {symbol} last={px} @ {ts}")
-            return px, ts, "twelvedata"
-    except Exception as e:
-        print(f"[warn] twelvedata {symbol} failed: {e}")
-    try:
-        print(f"[twelvedata] {symbol} GET {base_p} symbol={sym}")
-        r = SESSION.get(base_p, params={"symbol": sym, "apikey": api_key}, timeout=15)
-        print(f"[twelvedata] {symbol} status={r.status_code}")
-        j = r.json()
-        if isinstance(j, dict) and j.get("status") == "error":
-            raise RuntimeError(j.get("message") or "twelvedata error")
-        price = j.get("price")
-        if price is not None:
-            px = float(price)
-            ts = j.get("timestamp") or datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-            print(f"[twelvedata] {symbol} last={px} @ {ts}")
-            return px, ts, "twelvedata"
-    except Exception as e:
-        print(f"[warn] twelvedata-price {symbol} failed: {e}")
+            try:
+                j = r.json()
+            except Exception:
+                j = None
+            if r.status_code >= 400:
+                print(f"[allt] {symbol} error-body={j}")
+                r.raise_for_status()
+            # Handle dict payloads
+            price = None
+            ts = None
+            if isinstance(j, dict):
+                # direct fields or nested under 'data'
+                src = j.get("data") if isinstance(j.get("data"), dict) else j
+                price = (src.get("price") if isinstance(src, dict) else None) or (
+                    src.get("close") if isinstance(src, dict) else None
+                )
+                ts = (src.get("datetime") if isinstance(src, dict) else None) or (
+                    src.get("timestamp") if isinstance(src, dict) else None
+                )
+            elif isinstance(j, list) and j:
+                # list, take last entry
+                item = j[-1]
+                if isinstance(item, dict):
+                    price = item.get("price") or item.get("close")
+                    ts = item.get("datetime") or item.get("timestamp")
+            if price is not None:
+                px = float(price)
+                if not ts:
+                    ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+                print(f"[allt] {symbol} last={px} @ {ts}")
+                return px, ts, "allt"
+        except Exception as e:
+            print(f"[warn] alltick {symbol} failed: {e}")
+            continue
     return None, None, None
 
 
@@ -210,11 +216,11 @@ def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     api_key = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
-    td_key = os.environ.get("TWELVEDATA_API_KEY") or os.environ.get("TWELVEDATA_TOKEN")
+    at_key = os.environ.get("ALLTICK_API_KEY") or os.environ.get("ALLTICK_TOKEN")
     if not api_key:
         print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set; US quotes unavailable.")
-    if not td_key:
-        print("[warn] TWELVEDATA_API_KEY/TOKEN not set; CN quotes unavailable.")
+    if not at_key:
+        print("[warn] ALLTICK_API_KEY/TOKEN not set; CN quotes unavailable.")
     had_prev = OUT.exists()
     prev = load_previous()
     us_list, cn_list = load_tickers_by_market()
@@ -239,11 +245,11 @@ def main():
     cn_set = set(cn_list)
     for s in symbols:
         if s in cn_set:
-            if not td_key:
-                print(f"[warn] {s}: no Twelve Data key; cannot update CN ticker")
+            if not at_key:
+                print(f"[warn] {s}: no Alltick key; cannot update CN ticker")
                 continue
-            print(f"[main] {s} - try Twelve Data")
-            px, ts, src = twelvedata_last(s, td_key)
+            print(f"[main] {s} - try Alltick")
+            px, ts, src = alltick_last(s, at_key)
         else:
             if not api_key:
                 print(f"[warn] {s}: no Finnhub key; cannot update US ticker")
@@ -279,8 +285,8 @@ def main():
 
     out["meta"] = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": "finnhub /quote; twelvedata /quote|/price",
-        "note": "Fetches US via Finnhub, CN via Twelve Data; never writes nulls; preserves previous values if unavailable."
+        "source": "Finnhub(/quote) for US; Alltick for CN",
+        "note": "Never writes nulls; preserves previous values if unavailable."
     }
 
     with open(OUT, "w") as f:

@@ -28,8 +28,8 @@ jobs:
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
           ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
           ALPHAVANTAGE_TOKEN: ${{ secrets.ALPHAVANTAGE_TOKEN }}
-          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
-          TWELVEDATA_TOKEN: ${{ secrets.TWELVEDATA_TOKEN }}
+          ALLTICK_API_KEY: ${{ secrets.ALLTICK_API_KEY }}
+          ALLTICK_TOKEN: ${{ secrets.ALLTICK_TOKEN }}
         run: |
           python scripts/history.py
           ls -l public/history || true

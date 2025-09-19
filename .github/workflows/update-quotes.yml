@@ -33,8 +33,8 @@ jobs:
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
-          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
-          TWELVEDATA_TOKEN: ${{ secrets.TWELVEDATA_TOKEN }}
+          ALLTICK_API_KEY: ${{ secrets.ALLTICK_API_KEY }}
+          ALLTICK_TOKEN: ${{ secrets.ALLTICK_TOKEN }}
         run: |
           python scripts/quotes.py
           test -f data/quotes.json && head -n 40 data/quotes.json || true
