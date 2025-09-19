@@ -28,13 +28,11 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests==2.32.3
+          python -m pip install requests==2.32.3 akshare pandas numpy lxml
       - name: Generate quotes.json
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
-          ALLTICK_API_KEY: ${{ secrets.ALLTICK_API_KEY }}
-          ALLTICK_TOKEN: ${{ secrets.ALLTICK_TOKEN }}
         run: |
           python scripts/quotes.py
           test -f data/quotes.json && head -n 40 data/quotes.json || true

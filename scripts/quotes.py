@@ -13,6 +13,8 @@ import random
 from pathlib import Path
 from datetime import datetime, timezone, time as dtime
 from zoneinfo import ZoneInfo
+import akshare as ak
+import pandas as pd
 import requests
 
 DATA_TICKERS = Path("data/tickers.json")
@@ -216,7 +218,7 @@ def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     api_key = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
-    at_key = os.environ.get("ALLTICK_API_KEY") or os.environ.get("ALLTICK_TOKEN")
+    at_key = None  # Alltick removed — using akshare for CN
     if not api_key:
         print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set; US quotes unavailable.")
     if not at_key:
@@ -245,11 +247,51 @@ def main():
     cn_set = set(cn_list)
     for s in symbols:
         if s in cn_set:
-            if not at_key:
-                print(f"[warn] {s}: no Alltick key; cannot update CN ticker")
-                continue
-            print(f"[main] {s} - try Alltick")
-            px, ts, src = alltick_last(s, at_key)
+            # CN via Akshare spot snapshot; fallback to last daily
+            code = s.split('.')[0]
+            px, ts, src = None, None, None
+            try:
+                print(f"[akshare] load CN spot snapshot")
+                spot = ak.stock_zh_a_spot_em()
+                if isinstance(spot, pd.DataFrame) and not spot.empty:
+                    # Columns: 代码, 最新价 (commonly)
+                    if '代码' in spot.columns and '最新价' in spot.columns:
+                        row = spot.loc[spot['代码'] == code]
+                        if not row.empty:
+                            px = float(row.iloc[0]['最新价'])
+                            ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+                            src = 'akshare_spot'
+            except Exception as e:
+                print(f"[warn] akshare spot failed: {e}")
+            if px is None:
+                try:
+                    df = ak.stock_zh_a_hist(symbol=code, period='daily', start_date=(datetime.now(timezone.utc).date()-timedelta(days=10)).strftime('%Y%m%d'), end_date=datetime.now(timezone.utc).date().strftime('%Y%m%d'), adjust='')
+                    if isinstance(df, pd.DataFrame) and not df.empty:
+                        date_key = '日期' if '日期' in df.columns else ('date' if 'date' in df.columns else None)
+                        close_key = '收盘' if '收盘' in df.columns else ('close' if 'close' in df.columns else None)
+                        if date_key and close_key:
+                            px = float(df[close_key].iloc[-1])
+                            ts_val = str(df[date_key].iloc[-1])
+                            ts = (ts_val[:10] + 'T00:00:00Z')
+                            src = 'akshare_daily'
+                except Exception as e:
+                    print(f"[warn] akshare daily failed: {e}")
+            if px is None:
+                old = prev.get(s) or {}
+                if old.get('last') is not None:
+                    print(f"[warn] {s}: no fresh CN data; keeping previous {old.get('last')} @ {old.get('as_of')}")
+                    new_entry = {"last": float(old.get("last")), "as_of": old.get("as_of"), "interval": old.get("interval")}
+                    out[s] = new_entry
+                    continue
+                else:
+                    print(f"[warn] {s}: no CN data and no previous; leaving unchanged")
+                    continue
+            new_entry = {"last": float(px), "as_of": ts, "interval": src}
+            if prev.get(s) != new_entry:
+                changed = True
+            out[s] = new_entry
+            time.sleep(0.2 + random.uniform(0,0.2))
+            continue
         else:
             if not api_key:
                 print(f"[warn] {s}: no Finnhub key; cannot update US ticker")

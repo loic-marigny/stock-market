@@ -18,6 +18,8 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import List, Dict
+import pandas as pd
+import akshare as ak
 import csv
 
 import requests
@@ -305,7 +307,7 @@ def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> L
 def main():
     token = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
     av_key = os.environ.get("ALPHAVANTAGE_API_KEY") or os.environ.get("ALPHAVANTAGE_TOKEN")
-    at_key = os.environ.get("ALLTICK_API_KEY") or os.environ.get("ALLTICK_TOKEN")
+    # Alltick/TwelveData removed; prefer Akshare for CN
     if not token:
         print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set or not authorized for candles; will try Alpha Vantage or Stooq")
 
@@ -334,14 +336,22 @@ def main():
                     if fresh: source = "finnhub"
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
-            # 1b) CN: Alltick
+            # 1b) CN: Akshare first
             if not fresh and sym.endswith('.SS'):
-                if at_key:
-                    try:
-                        fresh = fetch_daily_alltick(sym, at_key, years=MIN_YEARS)
-                        if fresh: source = "alltick"
-                    except Exception as e:
-                        print(f"[warn] {sym} alltick failed: {e}")
+                try:
+                    code = sym.split('.')[0]
+                    end = datetime.now(timezone.utc).date()
+                    start = (end - timedelta(days=365*MIN_YEARS+7)).strftime('%Y%m%d')
+                    df = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end.strftime('%Y%m%d'), adjust="")
+                    if isinstance(df, pd.DataFrame) and not df.empty:
+                        date_key = '日期' if '日期' in df.columns else ('date' if 'date' in df.columns else None)
+                        close_key = '收盘' if '收盘' in df.columns else ('close' if 'close' in df.columns else None)
+                        if date_key and close_key:
+                            fresh = [{"date": str(d)[:10], "close": float(c)} for d, c in zip(df[date_key], df[close_key]) if pd.notna(c)]
+                            fresh.sort(key=lambda x: x['date'])
+                            source = "akshare"
+                except Exception as e:
+                    print(f"[warn] {sym} akshare failed: {e}")
             # 2) Alpha Vantage fallback
             if not fresh and av_key:
                 try:
