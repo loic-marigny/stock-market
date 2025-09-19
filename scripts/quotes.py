@@ -14,7 +14,11 @@ from datetime import datetime, timezone, time as dtime
 from zoneinfo import ZoneInfo
 import requests
 
-TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "NVDA", "TSLA"]
+TICKERS = [
+    "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
+    "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
+    "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
+]
 
 DATA_DIR = Path("data")
 PUBLIC_DIR = Path("public")

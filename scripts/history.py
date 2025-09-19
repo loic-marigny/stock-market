@@ -22,7 +22,11 @@ import csv
 
 import requests
 
-TICKERS = ["AAPL", "MSFT", "AMZN", "GOOGL", "NVDA", "TSLA"]
+TICKERS = [
+    "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
+    "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
+    "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
+]
 MIN_YEARS = 1  # ensure at least this coverage
 
 SESSION = requests.Session()

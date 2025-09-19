@@ -4,7 +4,11 @@ import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTime
 import provider from "../lib/prices";
 import { computeCash, computePositions, type Order } from "../lib/portfolio";
 
-const TICKERS = ["AAPL","MSFT","AMZN","GOOGL","NVDA","TSLA"] as const;
+const TICKERS = [
+  "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
+  "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
+  "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
+] as const;
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
