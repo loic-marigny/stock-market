@@ -32,15 +32,19 @@ jobs:
           python scripts/quotes.py
           test -f data/quotes.json && head -n 40 data/quotes.json || true
           test -f public/quotes.json && head -n 40 public/quotes.json || true
+      - name: Build companies index
+        run: |
+          python scripts/build_companies_index.py
+          test -f public/companies/index.json && head -n 40 public/companies/index.json || true
       - name: Run summary (UTC/NY time)
         run: |
           echo "### Quotes run #${GITHUB_RUN_NUMBER}" >> $GITHUB_STEP_SUMMARY
           echo "UTC: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY
           echo "New York: $(TZ=America/New_York date +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_STEP_SUMMARY
-      - name: Commit quotes.json if changed
+      - name: Commit quotes/index if changed
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
-          git add data/quotes.json public/quotes.json || true
-          git commit -m "data(quotes): refresh quotes.json" || echo "no changes"
+          git add data/quotes.json public/quotes.json public/companies || true
+          git commit -m "data(quotes): refresh quotes & companies index" || echo "no changes"
           git push

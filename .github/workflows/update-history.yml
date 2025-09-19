@@ -32,16 +32,20 @@ jobs:
           python scripts/history.py
           ls -l public/history || true
           head -n 5 public/history/AAPL.json || true
+      - name: Build companies index
+        run: |
+          python scripts/build_companies_index.py
+          test -f public/companies/index.json && head -n 40 public/companies/index.json || true
       - name: Run summary (UTC/NY time)
         run: |
           echo "### History run #${GITHUB_RUN_NUMBER}" >> $GITHUB_STEP_SUMMARY
           echo "UTC: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY
           echo "New York: $(TZ=America/New_York date +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_STEP_SUMMARY
-      - name: Commit history if changed
+      - name: Commit history/index if changed
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
-          git add public/history || true
-          git commit -m "data(history): refresh daily history JSON" || echo "no changes"
+          git add public/history public/companies || true
+          git commit -m "data(history): refresh daily history & companies index" || echo "no changes"
           git push
 
