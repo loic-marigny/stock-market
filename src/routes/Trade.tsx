@@ -2,28 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from "firebase/firestore";
 import provider from "../lib/prices";
+import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { computeCash, computePositions, type Order } from "../lib/portfolio";
 
-const US_TICKERS = [
-  "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
-  "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
-  "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
-] as const;
-const CN_TICKERS = [
-  "600519.SS","601318.SS","601398.SS","601288.SS","601988.SS","601857.SS",
-  "600028.SS","600036.SS","601166.SS","600900.SS","601888.SS","601012.SS",
-  "600104.SS","600030.SS","600585.SS","600000.SS","601601.SS","601939.SS",
-  "600019.SS","600276.SS","601766.SS","600309.SS","601633.SS","600887.SS",
-  "601668.SS","601658.SS","601728.SS","601628.SS","688981.SS",
-] as const;
-const TICKERS = [...US_TICKERS, ...CN_TICKERS] as const;
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
   const uid = auth.currentUser!.uid;
 
   // état du formulaire
-  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("AAPL");
+  const [symbol, setSymbol] = useState<string>("AAPL");
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [mode, setMode] = useState<EntryMode>("qty");
   const [qty, setQty] = useState<number>(1);
   const [amount, setAmount] = useState<number>(0);
@@ -42,6 +31,18 @@ export default function Trade(){
   const cash = useMemo(()=> computeCash(initial, orders), [orders]);
   const positions = useMemo(()=> computePositions(orders), [orders]);
   const posQty = positions[symbol]?.qty ?? 0;
+
+  // charger liste entreprises
+  useEffect(()=>{ (async()=>{
+    try{
+      const idx = await fetchCompaniesIndex();
+      setCompanies(idx);
+      if (!idx.find(c=>c.symbol===symbol)){
+        const firstUS = idx.find(c=> (c.market||"").toUpperCase()==="US");
+        setSymbol(firstUS?.symbol || idx[0]?.symbol || symbol);
+      }
+    }catch{}
+  })() },[]);
 
   // charger le dernier prix
   useEffect(()=>{ (async()=> setLast(await provider.getLastPrice(symbol)))() }, [symbol]);
@@ -122,13 +123,12 @@ export default function Trade(){
       <div className="trade-grid">
         <div className="field">
           <label>Symbole</label>
-          <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value as any)}>
-            <optgroup label="New York">
-              {US_TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
-            </optgroup>
-            <optgroup label="Shanghai">
-              {CN_TICKERS.map(t=> <option key={t} value={t}>{t}</option>)}
-            </optgroup>
+          <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
+            {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
+              <optgroup key={mkt} label={marketLabel(mkt)}>
+                {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} — {c.name || c.symbol}</option>)}
+              </optgroup>
+            ))}
           </select>
           <div className="hint">En portefeuille : <strong>{fmtQty(posQty)}</strong></div>
         </div>
@@ -192,3 +192,18 @@ export default function Trade(){
 }
 
 function fmtQty(n:number){ return n.toLocaleString(undefined,{maximumFractionDigits:6}); }
+
+function groupByMarket(list: Company[]): Record<string, Company[]>{
+  const map: Record<string, Company[]> = {};
+  for(const c of list){
+    const key = (c.market || "OTHER").toUpperCase();
+    (map[key] ||= []).push(c);
+  }
+  for(const k of Object.keys(map)){
+    map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
+  }
+  const ordered: Record<string, Company[]> = {};
+  for(const pref of ["US","CN"]) if(map[pref]) ordered[pref]=map[pref];
+  for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
+  return ordered;
+}

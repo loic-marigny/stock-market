@@ -1,28 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import provider from "../lib/prices";
-
-const US_TICKERS = [
-  "AAPL","MSFT","NVDA","AMZN","GOOGL","GOOG","META","AVGO","LLY","TSLA",
-  "JPM","V","XOM","UNH","JNJ","WMT","MA","PG","ORCL","COST",
-  "MRK","HD","KO","PEP","BAC","ADBE","CRM","NFLX","CSCO","AMD",
-] as const;
-const CN_TICKERS = [
-  "600519.SS","601318.SS","601398.SS","601288.SS","601988.SS","601857.SS",
-  "600028.SS","600036.SS","601166.SS","600900.SS","601888.SS","601012.SS",
-  "600104.SS","600030.SS","600585.SS","600000.SS","601601.SS","601939.SS",
-  "600019.SS","600276.SS","601766.SS","600309.SS","601633.SS","600887.SS",
-  "601668.SS","601658.SS","601728.SS","601628.SS","688981.SS",
-] as const;
-const TICKERS = [...US_TICKERS, ...CN_TICKERS] as const;
+import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 type TF = "1M"|"6M"|"YTD"|"1Y"|"MAX";
 
 export default function Explore(){
-  const [symbol, setSymbol] = useState<(typeof TICKERS)[number]>("AAPL");
+  const [symbol, setSymbol] = useState<string>("AAPL");
   const [tf, setTf] = useState<TF>("6M");
   const [data, setData] = useState<{date:string; close:number}[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart | null>(null);
+
+  // load companies index for dynamic selector
+  useEffect(()=>{ (async()=>{
+    try{
+      const idx = await fetchCompaniesIndex();
+      setCompanies(idx);
+      if (!idx.find(c=>c.symbol===symbol)){
+        const firstUS = idx.find(c=> (c.market||"").toUpperCase()==="US");
+        setSymbol(firstUS?.symbol || idx[0]?.symbol || symbol);
+      }
+    }catch{}
+  })() },[]);
 
   useEffect(()=>{ (async()=>{
     const hist = await provider.getDailyHistory(symbol);
@@ -69,13 +69,12 @@ export default function Explore(){
   return (
     <div className="container">
       <div className="toolbar">
-        <select value={symbol} onChange={e=>setSymbol(e.target.value as any)} className="select">
-          <optgroup label="New York">
-            {US_TICKERS.map(t=><option key={t} value={t}>{t}</option>)}
-          </optgroup>
-          <optgroup label="Shanghai">
-            {CN_TICKERS.map(t=><option key={t} value={t}>{t}</option>)}
-          </optgroup>
+        <select value={symbol} onChange={e=>setSymbol(e.target.value)} className="select">
+          {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
+            <optgroup key={mkt} label={marketLabel(mkt)}>
+              {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} — {c.name || c.symbol}</option>)}
+            </optgroup>
+          ))}
         </select>
         <div className="tf">
           {(["1M","6M","YTD","1Y","MAX"] as TF[]).map(x=>(
@@ -88,11 +87,27 @@ export default function Explore(){
       <div className="chart-card">
         <canvas ref={canvasRef} />
       </div>
-      <p className="hint">Source: JSON statiques (Finnhub via CI).</p>
+      <p className="hint">Source: JSON statiques (Finnhub/AV/Stooq via CI).</p>
     </div>
   );
 }
 
 function shiftDays(d: Date, delta: number){
   const x = new Date(d); x.setDate(x.getDate()+delta); return x;
+}
+
+function groupByMarket(list: Company[]): Record<string, Company[]>{
+  const map: Record<string, Company[]> = {};
+  for(const c of list){
+    const key = (c.market || "OTHER").toUpperCase();
+    (map[key] ||= []).push(c);
+  }
+  for(const k of Object.keys(map)){
+    map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
+  }
+  // ensure stable order: US, CN, then others alpha
+  const ordered: Record<string, Company[]> = {};
+  for(const pref of ["US","CN"]) if(map[pref]) ordered[pref]=map[pref];
+  for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
+  return ordered;
 }
