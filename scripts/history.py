@@ -18,6 +18,7 @@ import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import List, Dict
+import csv
 
 import requests
 
@@ -36,7 +37,7 @@ def to_iso_utc(ts: int) -> str:
     return datetime.fromtimestamp(int(ts), tz=timezone.utc).strftime("%Y-%m-%d")
 
 
-def fetch_daily(symbol: str, token: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+def fetch_daily_finnhub(symbol: str, token: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
     now = int(time.time())
     start = now - int(365 * 24 * 3600 * years)
     url = "https://finnhub.io/api/v1/stock/candle"
@@ -62,6 +63,69 @@ def fetch_daily(symbol: str, token: str, years: int = MIN_YEARS) -> List[Dict[st
     # ensure ascending order by date
     out.sort(key=lambda x: x["date"])  # already ascending, but be safe
     return out
+
+
+def fetch_daily_alpha(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    """Alpha Vantage TIME_SERIES_DAILY_ADJUSTED fallback.
+
+    Free tier: 5 req/min, 500/day. We request 'full' then trim to last N years.
+    """
+    base = "https://www.alphavantage.co/query"
+    params = {
+        "function": "TIME_SERIES_DAILY_ADJUSTED",
+        "symbol": symbol,
+        "outputsize": "full",
+        "apikey": api_key,
+    }
+    print(f"[history-av] {symbol} GET {base} function={params['function']}")
+    r = SESSION.get(base, params=params, timeout=30)
+    print(f"[history-av] {symbol} status={r.status_code}")
+    r.raise_for_status()
+    j = r.json()
+    ts = j.get("Time Series (Daily)")
+    if not isinstance(ts, dict):
+        raise RuntimeError(f"alpha payload invalid for {symbol}: {list(j.keys())[:3]}")
+    rows = []
+    for d, v in ts.items():
+        try:
+            close = float(v.get("5. adjusted close") or v.get("4. close"))
+        except Exception:
+            continue
+        rows.append({"date": d, "close": close})
+    rows.sort(key=lambda x: x["date"])  # ascending
+    # keep last N years only
+    if rows:
+        cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat()
+        rows = [x for x in rows if x["date"] >= cutoff]
+    return rows
+
+
+def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    """Stooq CSV fallback (no key). US tickers via *.us.
+
+    Returns all available, trimmed to last N years.
+    """
+    s = f"{symbol.lower()}.us"
+    url = f"https://stooq.com/q/d/l/?s={s}&i=d"
+    print(f"[history-stooq] {symbol} GET {url}")
+    r = SESSION.get(url, timeout=20)
+    print(f"[history-stooq] {symbol} status={r.status_code}")
+    r.raise_for_status()
+    txt = r.text.strip()
+    reader = csv.DictReader(txt.splitlines())
+    rows = []
+    for row in reader:
+        try:
+            d = row.get("Date") or row.get("date")
+            c = float(row.get("Close") or row.get("close"))
+            rows.append({"date": d, "close": c})
+        except Exception:
+            continue
+    rows.sort(key=lambda x: x["date"])
+    if rows:
+        cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat()
+        rows = [x for x in rows if x["date"] >= cutoff]
+    return rows
 
 
 def load_existing(sym: str) -> List[Dict[str, float]]:
@@ -104,8 +168,9 @@ def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> L
 
 def main():
     token = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
+    av_key = os.environ.get("ALPHAVANTAGE_API_KEY") or os.environ.get("ALPHAVANTAGE_TOKEN")
     if not token:
-        raise SystemExit("FINNHUB_API_KEY/FINNHUB_TOKEN is required for history generation")
+        print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set or not authorized for candles; will try Alpha Vantage or Stooq")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -116,7 +181,27 @@ def main():
             if coverage_ok(existing, cutoff):
                 print(f"[history] {sym} already has >=1y coverage; skip fetch (len={len(existing)})")
                 continue
-            fresh = fetch_daily(sym, token, years=MIN_YEARS)
+            fresh: List[Dict[str, float]] = []
+            # 1) Finnhub primary
+            if token:
+                try:
+                    fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
+                except Exception as e:
+                    print(f"[warn] {sym} finnhub failed: {e}")
+            # 2) Alpha Vantage fallback
+            if not fresh and av_key:
+                try:
+                    fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
+                    # respect AV rate limit (5/min)
+                    time.sleep(12)
+                except Exception as e:
+                    print(f"[warn] {sym} alpha failed: {e}")
+            # 3) Stooq fallback (no key)
+            if not fresh:
+                try:
+                    fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
+                except Exception as e:
+                    print(f"[warn] {sym} stooq failed: {e}")
             merged = merge_history(existing, fresh)
             out_path = OUT_DIR / f"{sym}.json"
             with open(out_path, "w") as f:
