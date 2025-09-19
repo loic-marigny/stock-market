@@ -5,7 +5,8 @@
     "sector": "Information Technology",
     "profile": "companies/AAPL/profile.json",
     "logo": null,
-    "history": "history/AAPL.json"
+    "history": "history/AAPL.json",
+    "market": "US"
   },
   {
     "symbol": "MSFT",
@@ -13,7 +14,8 @@
     "sector": "Information Technology",
     "profile": "companies/MSFT/profile.json",
     "logo": null,
-    "history": "history/MSFT.json"
+    "history": "history/MSFT.json",
+    "market": "US"
   },
   {
     "symbol": "NVDA",
@@ -21,7 +23,8 @@
     "sector": "Information Technology",
     "profile": "companies/NVDA/profile.json",
     "logo": null,
-    "history": "history/NVDA.json"
+    "history": "history/NVDA.json",
+    "market": "US"
   },
   {
     "symbol": "AMZN",
@@ -29,7 +32,8 @@
     "sector": "Consumer Discretionary",
     "profile": "companies/AMZN/profile.json",
     "logo": null,
-    "history": "history/AMZN.json"
+    "history": "history/AMZN.json",
+    "market": "US"
   },
   {
     "symbol": "GOOGL",
@@ -37,7 +41,8 @@
     "sector": "Communication Services",
     "profile": "companies/GOOGL/profile.json",
     "logo": null,
-    "history": "history/GOOGL.json"
+    "history": "history/GOOGL.json",
+    "market": "US"
   },
   {
     "symbol": "GOOG",
@@ -45,7 +50,8 @@
     "sector": "Communication Services",
     "profile": "companies/GOOG/profile.json",
     "logo": null,
-    "history": "history/GOOG.json"
+    "history": "history/GOOG.json",
+    "market": "US"
   },
   {
     "symbol": "META",
@@ -53,7 +59,8 @@
     "sector": "Communication Services",
     "profile": "companies/META/profile.json",
     "logo": null,
-    "history": "history/META.json"
+    "history": "history/META.json",
+    "market": "US"
   },
   {
     "symbol": "AVGO",
@@ -61,7 +68,8 @@
     "sector": "Information Technology",
     "profile": "companies/AVGO/profile.json",
     "logo": null,
-    "history": "history/AVGO.json"
+    "history": "history/AVGO.json",
+    "market": "US"
   },
   {
     "symbol": "LLY",
@@ -69,7 +77,8 @@
     "sector": "Health Care",
     "profile": "companies/LLY/profile.json",
     "logo": null,
-    "history": "history/LLY.json"
+    "history": "history/LLY.json",
+    "market": "US"
   },
   {
     "symbol": "TSLA",
@@ -77,7 +86,8 @@
     "sector": "Consumer Discretionary",
     "profile": "companies/TSLA/profile.json",
     "logo": null,
-    "history": "history/TSLA.json"
+    "history": "history/TSLA.json",
+    "market": "US"
   },
   {
     "symbol": "JPM",
@@ -85,7 +95,8 @@
     "sector": "Financials",
     "profile": "companies/JPM/profile.json",
     "logo": null,
-    "history": "history/JPM.json"
+    "history": "history/JPM.json",
+    "market": "US"
   },
   {
     "symbol": "V",
@@ -93,7 +104,8 @@
     "sector": "Financials",
     "profile": "companies/V/profile.json",
     "logo": null,
-    "history": "history/V.json"
+    "history": "history/V.json",
+    "market": "US"
   },
   {
     "symbol": "XOM",
@@ -101,7 +113,8 @@
     "sector": "Energy",
     "profile": "companies/XOM/profile.json",
     "logo": null,
-    "history": "history/XOM.json"
+    "history": "history/XOM.json",
+    "market": "US"
   },
   {
     "symbol": "UNH",
@@ -109,7 +122,8 @@
     "sector": "Health Care",
     "profile": "companies/UNH/profile.json",
     "logo": null,
-    "history": "history/UNH.json"
+    "history": "history/UNH.json",
+    "market": "US"
   },
   {
     "symbol": "JNJ",
@@ -117,7 +131,8 @@
     "sector": "Health Care",
     "profile": "companies/JNJ/profile.json",
     "logo": null,
-    "history": "history/JNJ.json"
+    "history": "history/JNJ.json",
+    "market": "US"
   },
   {
     "symbol": "WMT",
@@ -125,7 +140,8 @@
     "sector": "Consumer Staples",
     "profile": "companies/WMT/profile.json",
     "logo": null,
-    "history": "history/WMT.json"
+    "history": "history/WMT.json",
+    "market": "US"
   },
   {
     "symbol": "MA",
@@ -133,7 +149,8 @@
     "sector": "Financials",
     "profile": "companies/MA/profile.json",
     "logo": null,
-    "history": "history/MA.json"
+    "history": "history/MA.json",
+    "market": "US"
   },
   {
     "symbol": "PG",
@@ -141,7 +158,8 @@
     "sector": "Consumer Staples",
     "profile": "companies/PG/profile.json",
     "logo": null,
-    "history": "history/PG.json"
+    "history": "history/PG.json",
+    "market": "US"
   },
   {
     "symbol": "ORCL",
@@ -149,7 +167,8 @@
     "sector": "Information Technology",
     "profile": "companies/ORCL/profile.json",
     "logo": null,
-    "history": "history/ORCL.json"
+    "history": "history/ORCL.json",
+    "market": "US"
   },
   {
     "symbol": "COST",
@@ -157,7 +176,8 @@
     "sector": "Consumer Staples",
     "profile": "companies/COST/profile.json",
     "logo": null,
-    "history": "history/COST.json"
+    "history": "history/COST.json",
+    "market": "US"
   },
   {
     "symbol": "MRK",
@@ -165,7 +185,8 @@
     "sector": "Health Care",
     "profile": "companies/MRK/profile.json",
     "logo": null,
-    "history": "history/MRK.json"
+    "history": "history/MRK.json",
+    "market": "US"
   },
   {
     "symbol": "HD",
@@ -173,7 +194,8 @@
     "sector": "Consumer Discretionary",
     "profile": "companies/HD/profile.json",
     "logo": null,
-    "history": "history/HD.json"
+    "history": "history/HD.json",
+    "market": "US"
   },
   {
     "symbol": "KO",
@@ -181,7 +203,8 @@
     "sector": "Consumer Staples",
     "profile": "companies/KO/profile.json",
     "logo": null,
-    "history": "history/KO.json"
+    "history": "history/KO.json",
+    "market": "US"
   },
   {
     "symbol": "PEP",
@@ -189,7 +212,8 @@
     "sector": "Consumer Staples",
     "profile": "companies/PEP/profile.json",
     "logo": null,
-    "history": "history/PEP.json"
+    "history": "history/PEP.json",
+    "market": "US"
   },
   {
     "symbol": "BAC",
@@ -197,7 +221,8 @@
     "sector": "Financials",
     "profile": "companies/BAC/profile.json",
     "logo": null,
-    "history": "history/BAC.json"
+    "history": "history/BAC.json",
+    "market": "US"
   },
   {
     "symbol": "ADBE",
@@ -205,7 +230,8 @@
     "sector": "Information Technology",
     "profile": "companies/ADBE/profile.json",
     "logo": null,
-    "history": "history/ADBE.json"
+    "history": "history/ADBE.json",
+    "market": "US"
   },
   {
     "symbol": "CRM",
@@ -213,7 +239,8 @@
     "sector": "Information Technology",
     "profile": "companies/CRM/profile.json",
     "logo": null,
-    "history": "history/CRM.json"
+    "history": "history/CRM.json",
+    "market": "US"
   },
   {
     "symbol": "NFLX",
@@ -221,7 +248,8 @@
     "sector": "Communication Services",
     "profile": "companies/NFLX/profile.json",
     "logo": null,
-    "history": "history/NFLX.json"
+    "history": "history/NFLX.json",
+    "market": "US"
   },
   {
     "symbol": "CSCO",
@@ -229,7 +257,8 @@
     "sector": "Information Technology",
     "profile": "companies/CSCO/profile.json",
     "logo": null,
-    "history": "history/CSCO.json"
+    "history": "history/CSCO.json",
+    "market": "US"
   },
   {
     "symbol": "AMD",
@@ -237,6 +266,268 @@
     "sector": "Information Technology",
     "profile": "companies/AMD/profile.json",
     "logo": null,
-    "history": "history/AMD.json"
+    "history": "history/AMD.json",
+    "market": "US"
+  },
+  {
+    "symbol": "600519.SS",
+    "name": "Kweichow Moutai Co., Ltd.",
+    "sector": "Consumer Staples",
+    "profile": "companies/600519.SS/profile.json",
+    "logo": null,
+    "history": "history/600519.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601318.SS",
+    "name": "Ping An Insurance (Group) Co. of China",
+    "sector": "Financials",
+    "profile": "companies/601318.SS/profile.json",
+    "logo": null,
+    "history": "history/601318.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601398.SS",
+    "name": "Industrial and Commercial Bank of China",
+    "sector": "Financials",
+    "profile": "companies/601398.SS/profile.json",
+    "logo": null,
+    "history": "history/601398.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601288.SS",
+    "name": "Agricultural Bank of China",
+    "sector": "Financials",
+    "profile": "companies/601288.SS/profile.json",
+    "logo": null,
+    "history": "history/601288.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601988.SS",
+    "name": "Bank of China",
+    "sector": "Financials",
+    "profile": "companies/601988.SS/profile.json",
+    "logo": null,
+    "history": "history/601988.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601857.SS",
+    "name": "PetroChina Company Limited",
+    "sector": "Energy",
+    "profile": "companies/601857.SS/profile.json",
+    "logo": null,
+    "history": "history/601857.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600028.SS",
+    "name": "China Petroleum & Chemical (Sinopec)",
+    "sector": "Energy",
+    "profile": "companies/600028.SS/profile.json",
+    "logo": null,
+    "history": "history/600028.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600036.SS",
+    "name": "China Merchants Bank",
+    "sector": "Financials",
+    "profile": "companies/600036.SS/profile.json",
+    "logo": null,
+    "history": "history/600036.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601166.SS",
+    "name": "Industrial Bank Co., Ltd.",
+    "sector": "Financials",
+    "profile": "companies/601166.SS/profile.json",
+    "logo": null,
+    "history": "history/601166.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600900.SS",
+    "name": "China Yangtze Power Co., Ltd.",
+    "sector": "Utilities",
+    "profile": "companies/600900.SS/profile.json",
+    "logo": null,
+    "history": "history/600900.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601888.SS",
+    "name": "China Tourism Group Duty Free",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/601888.SS/profile.json",
+    "logo": null,
+    "history": "history/601888.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601012.SS",
+    "name": "LONGi Green Energy Technology",
+    "sector": "Information Technology",
+    "profile": "companies/601012.SS/profile.json",
+    "logo": null,
+    "history": "history/601012.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600104.SS",
+    "name": "SAIC Motor Corporation Limited",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/600104.SS/profile.json",
+    "logo": null,
+    "history": "history/600104.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600030.SS",
+    "name": "CITIC Securities Co., Ltd.",
+    "sector": "Financials",
+    "profile": "companies/600030.SS/profile.json",
+    "logo": null,
+    "history": "history/600030.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600585.SS",
+    "name": "Anhui Conch Cement Company Limited",
+    "sector": "Materials",
+    "profile": "companies/600585.SS/profile.json",
+    "logo": null,
+    "history": "history/600585.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600000.SS",
+    "name": "Shanghai Pudong Development Bank",
+    "sector": "Financials",
+    "profile": "companies/600000.SS/profile.json",
+    "logo": null,
+    "history": "history/600000.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601601.SS",
+    "name": "China Pacific Insurance (Group)",
+    "sector": "Financials",
+    "profile": "companies/601601.SS/profile.json",
+    "logo": null,
+    "history": "history/601601.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601939.SS",
+    "name": "China Construction Bank",
+    "sector": "Financials",
+    "profile": "companies/601939.SS/profile.json",
+    "logo": null,
+    "history": "history/601939.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600019.SS",
+    "name": "Baoshan Iron & Steel Co., Ltd.",
+    "sector": "Materials",
+    "profile": "companies/600019.SS/profile.json",
+    "logo": null,
+    "history": "history/600019.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600276.SS",
+    "name": "Jiangsu Hengrui Pharmaceuticals",
+    "sector": "Health Care",
+    "profile": "companies/600276.SS/profile.json",
+    "logo": null,
+    "history": "history/600276.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601766.SS",
+    "name": "CRRC Corporation Limited",
+    "sector": "Industrials",
+    "profile": "companies/601766.SS/profile.json",
+    "logo": null,
+    "history": "history/601766.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600309.SS",
+    "name": "Wanhua Chemical Group Co., Ltd.",
+    "sector": "Materials",
+    "profile": "companies/600309.SS/profile.json",
+    "logo": null,
+    "history": "history/600309.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601633.SS",
+    "name": "Great Wall Motor Company Limited",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/601633.SS/profile.json",
+    "logo": null,
+    "history": "history/601633.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "600887.SS",
+    "name": "Inner Mongolia Yili Industrial Group",
+    "sector": "Consumer Staples",
+    "profile": "companies/600887.SS/profile.json",
+    "logo": null,
+    "history": "history/600887.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601668.SS",
+    "name": "China State Construction Engineering",
+    "sector": "Industrials",
+    "profile": "companies/601668.SS/profile.json",
+    "logo": null,
+    "history": "history/601668.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601658.SS",
+    "name": "Postal Savings Bank of China",
+    "sector": "Financials",
+    "profile": "companies/601658.SS/profile.json",
+    "logo": null,
+    "history": "history/601658.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601728.SS",
+    "name": "China Telecom Corporation Limited",
+    "sector": "Communication Services",
+    "profile": "companies/601728.SS/profile.json",
+    "logo": null,
+    "history": "history/601728.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "601628.SS",
+    "name": "China Life Insurance Company Limited",
+    "sector": "Financials",
+    "profile": "companies/601628.SS/profile.json",
+    "logo": null,
+    "history": "history/601628.SS.json",
+    "market": "CN"
+  },
+  {
+    "symbol": "688981.SS",
+    "name": "Semiconductor Manufacturing International (SMIC)",
+    "sector": "Information Technology",
+    "profile": "companies/688981.SS/profile.json",
+    "logo": null,
+    "history": "history/688981.SS.json",
+    "market": "CN"
   }
 ]
