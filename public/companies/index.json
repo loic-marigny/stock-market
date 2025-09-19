@@ -1,0 +1,242 @@
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/AAPL/profile.json",
+    "logo": null,
+    "history": "history/AAPL.json"
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "sector": "Information Technology",
+    "profile": "companies/MSFT/profile.json",
+    "logo": null,
+    "history": "history/MSFT.json"
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "sector": "Information Technology",
+    "profile": "companies/NVDA/profile.json",
+    "logo": null,
+    "history": "history/NVDA.json"
+  },
+  {
+    "symbol": "AMZN",
+    "name": "Amazon.com, Inc.",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/AMZN/profile.json",
+    "logo": null,
+    "history": "history/AMZN.json"
+  },
+  {
+    "symbol": "GOOGL",
+    "name": "Alphabet Inc. Class A",
+    "sector": "Communication Services",
+    "profile": "companies/GOOGL/profile.json",
+    "logo": null,
+    "history": "history/GOOGL.json"
+  },
+  {
+    "symbol": "GOOG",
+    "name": "Alphabet Inc. Class C",
+    "sector": "Communication Services",
+    "profile": "companies/GOOG/profile.json",
+    "logo": null,
+    "history": "history/GOOG.json"
+  },
+  {
+    "symbol": "META",
+    "name": "Meta Platforms, Inc.",
+    "sector": "Communication Services",
+    "profile": "companies/META/profile.json",
+    "logo": null,
+    "history": "history/META.json"
+  },
+  {
+    "symbol": "AVGO",
+    "name": "Broadcom Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/AVGO/profile.json",
+    "logo": null,
+    "history": "history/AVGO.json"
+  },
+  {
+    "symbol": "LLY",
+    "name": "Eli Lilly and Company",
+    "sector": "Health Care",
+    "profile": "companies/LLY/profile.json",
+    "logo": null,
+    "history": "history/LLY.json"
+  },
+  {
+    "symbol": "TSLA",
+    "name": "Tesla, Inc.",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/TSLA/profile.json",
+    "logo": null,
+    "history": "history/TSLA.json"
+  },
+  {
+    "symbol": "JPM",
+    "name": "JPMorgan Chase & Co.",
+    "sector": "Financials",
+    "profile": "companies/JPM/profile.json",
+    "logo": null,
+    "history": "history/JPM.json"
+  },
+  {
+    "symbol": "V",
+    "name": "Visa Inc.",
+    "sector": "Financials",
+    "profile": "companies/V/profile.json",
+    "logo": null,
+    "history": "history/V.json"
+  },
+  {
+    "symbol": "XOM",
+    "name": "Exxon Mobil Corporation",
+    "sector": "Energy",
+    "profile": "companies/XOM/profile.json",
+    "logo": null,
+    "history": "history/XOM.json"
+  },
+  {
+    "symbol": "UNH",
+    "name": "UnitedHealth Group Incorporated",
+    "sector": "Health Care",
+    "profile": "companies/UNH/profile.json",
+    "logo": null,
+    "history": "history/UNH.json"
+  },
+  {
+    "symbol": "JNJ",
+    "name": "Johnson & Johnson",
+    "sector": "Health Care",
+    "profile": "companies/JNJ/profile.json",
+    "logo": null,
+    "history": "history/JNJ.json"
+  },
+  {
+    "symbol": "WMT",
+    "name": "Walmart Inc.",
+    "sector": "Consumer Staples",
+    "profile": "companies/WMT/profile.json",
+    "logo": null,
+    "history": "history/WMT.json"
+  },
+  {
+    "symbol": "MA",
+    "name": "Mastercard Incorporated",
+    "sector": "Financials",
+    "profile": "companies/MA/profile.json",
+    "logo": null,
+    "history": "history/MA.json"
+  },
+  {
+    "symbol": "PG",
+    "name": "Procter & Gamble Company",
+    "sector": "Consumer Staples",
+    "profile": "companies/PG/profile.json",
+    "logo": null,
+    "history": "history/PG.json"
+  },
+  {
+    "symbol": "ORCL",
+    "name": "Oracle Corporation",
+    "sector": "Information Technology",
+    "profile": "companies/ORCL/profile.json",
+    "logo": null,
+    "history": "history/ORCL.json"
+  },
+  {
+    "symbol": "COST",
+    "name": "Costco Wholesale Corporation",
+    "sector": "Consumer Staples",
+    "profile": "companies/COST/profile.json",
+    "logo": null,
+    "history": "history/COST.json"
+  },
+  {
+    "symbol": "MRK",
+    "name": "Merck & Co., Inc.",
+    "sector": "Health Care",
+    "profile": "companies/MRK/profile.json",
+    "logo": null,
+    "history": "history/MRK.json"
+  },
+  {
+    "symbol": "HD",
+    "name": "The Home Depot, Inc.",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/HD/profile.json",
+    "logo": null,
+    "history": "history/HD.json"
+  },
+  {
+    "symbol": "KO",
+    "name": "The Coca-Cola Company",
+    "sector": "Consumer Staples",
+    "profile": "companies/KO/profile.json",
+    "logo": null,
+    "history": "history/KO.json"
+  },
+  {
+    "symbol": "PEP",
+    "name": "PepsiCo, Inc.",
+    "sector": "Consumer Staples",
+    "profile": "companies/PEP/profile.json",
+    "logo": null,
+    "history": "history/PEP.json"
+  },
+  {
+    "symbol": "BAC",
+    "name": "Bank of America Corporation",
+    "sector": "Financials",
+    "profile": "companies/BAC/profile.json",
+    "logo": null,
+    "history": "history/BAC.json"
+  },
+  {
+    "symbol": "ADBE",
+    "name": "Adobe Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/ADBE/profile.json",
+    "logo": null,
+    "history": "history/ADBE.json"
+  },
+  {
+    "symbol": "CRM",
+    "name": "Salesforce, Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/CRM/profile.json",
+    "logo": null,
+    "history": "history/CRM.json"
+  },
+  {
+    "symbol": "NFLX",
+    "name": "Netflix, Inc.",
+    "sector": "Communication Services",
+    "profile": "companies/NFLX/profile.json",
+    "logo": null,
+    "history": "history/NFLX.json"
+  },
+  {
+    "symbol": "CSCO",
+    "name": "Cisco Systems, Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/CSCO/profile.json",
+    "logo": null,
+    "history": "history/CSCO.json"
+  },
+  {
+    "symbol": "AMD",
+    "name": "Advanced Micro Devices, Inc.",
+    "sector": "Information Technology",
+    "profile": "companies/AMD/profile.json",
+    "logo": null,
+    "history": "history/AMD.json"
+  }
+]
