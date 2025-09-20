@@ -1,4 +1,4 @@
-"""
+﻿"""
 Generate/ensure daily history JSON for tickers via the Cloudflare Yahoo
 proxy when available, falling back to Finnhub candle data and other providers.
 
@@ -23,6 +23,7 @@ from typing import List, Dict
 import pandas as pd
 import akshare as ak
 import csv
+from urllib.parse import quote
 
 import requests
 
@@ -74,7 +75,9 @@ def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, fl
 
     base_url = (os.environ.get("YAHOO_WORKER_URL") or "").strip()
     if not base_url:
-        return []
+        time.sleep(2)
+    time.sleep(2)
+    return []
 
     range_env = (os.environ.get("YAHOO_WORKER_RANGE") or "").strip()
     if range_env:
@@ -89,7 +92,8 @@ def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, fl
         range_value = "10y"
 
     params = {"range": range_value, "interval": "1d"}
-    url = f"{base_url.rstrip('/')}/history/{symbol}"
+    encoded = quote(symbol, safe='')
+    url = f"{base_url.rstrip('/')}/history/{encoded}"
 
     headers: Dict[str, str] = {}
     token = (os.environ.get("YAHOO_WORKER_TOKEN") or "").strip()
@@ -204,7 +208,7 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
 
 
 def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
-    """Alltick daily history (CN) — tries common kline endpoints, strips .SS.
+    """Alltick daily history (CN) â€” tries common kline endpoints, strips .SS.
 
     Note: Without official docs here, we attempt a reasonable default
     and parse common field shapes. If your endpoint differs, set
@@ -295,15 +299,15 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     # Use Yahoo Chart API v8 for daily candles
     rng = "1y" if years <= 1 else "2y"
     hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    encoded = quote(symbol, safe='')
     for host in hosts:
-        url = f"https://{host}/v8/finance/chart/{symbol}?range={rng}&interval=1d"
+        url = f"https://{host}/v8/finance/chart/{encoded}?range={rng}&interval=1d"
         for attempt in range(1, 4):
             try:
                 print(f"[history-yahoo] {symbol} try#{attempt} GET {url}")
                 r = SESSION.get(url, timeout=20)
                 print(f"[history-yahoo] {symbol} status={r.status_code}")
                 if r.status_code == 429:
-                    # exponential backoff with jitter
                     delay = (1.2 * attempt) + (attempt - 1)
                     time.sleep(delay)
                     continue
@@ -316,15 +320,17 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
                 ts = res.get("timestamp") or []
                 q = ((res.get("indicators") or {}).get("quote") or [{}])[0]
                 closes = q.get("close") or []
-                out = []
+                out: List[Dict[str, float]] = []
                 for t, c in zip(ts, closes):
                     if c is None:
                         continue
                     out.append({"date": to_iso_utc(int(t)), "close": float(c)})
-                out.sort(key=lambda x: x["date"]) 
+                out.sort(key=lambda x: x["date"])
                 return out
             except Exception as e:
                 print(f"[warn] {symbol} yahoo failed: {e}")
+                time.sleep(2)
+    time.sleep(2)
     return []
 
 
