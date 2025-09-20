@@ -1159,5 +1159,275 @@
     "logo": null,
     "history": "history/KC=F.json",
     "market": "COM"
+  },
+  {
+    "symbol": "^GSPC",
+    "name": "S&P 500",
+    "sector": "Index",
+    "profile": "companies/^GSPC/profile.json",
+    "logo": null,
+    "history": "history/^GSPC.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^DJI",
+    "name": "Dow Jones Industrial Average",
+    "sector": "Index",
+    "profile": "companies/^DJI/profile.json",
+    "logo": null,
+    "history": "history/^DJI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^IXIC",
+    "name": "NASDAQ Composite",
+    "sector": "Index",
+    "profile": "companies/^IXIC/profile.json",
+    "logo": null,
+    "history": "history/^IXIC.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^RUT",
+    "name": "Russell 2000",
+    "sector": "Index",
+    "profile": "companies/^RUT/profile.json",
+    "logo": null,
+    "history": "history/^RUT.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^GSPTSE",
+    "name": "S&P/TSX Composite",
+    "sector": "Index",
+    "profile": "companies/^GSPTSE/profile.json",
+    "logo": null,
+    "history": "history/^GSPTSE.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^FTSE",
+    "name": "FTSE 100",
+    "sector": "Index",
+    "profile": "companies/^FTSE/profile.json",
+    "logo": null,
+    "history": "history/^FTSE.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^GDAXI",
+    "name": "DAX",
+    "sector": "Index",
+    "profile": "companies/^GDAXI/profile.json",
+    "logo": null,
+    "history": "history/^GDAXI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^FCHI",
+    "name": "CAC 40",
+    "sector": "Index",
+    "profile": "companies/^FCHI/profile.json",
+    "logo": null,
+    "history": "history/^FCHI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^STOXX50E",
+    "name": "Euro STOXX 50",
+    "sector": "Index",
+    "profile": "companies/^STOXX50E/profile.json",
+    "logo": null,
+    "history": "history/^STOXX50E.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "FTSEMIB.MI",
+    "name": "FTSE MIB",
+    "sector": "Index",
+    "profile": "companies/FTSEMIB.MI/profile.json",
+    "logo": null,
+    "history": "history/FTSEMIB.MI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^SMI",
+    "name": "Swiss Market Index",
+    "sector": "Index",
+    "profile": "companies/^SMI/profile.json",
+    "logo": null,
+    "history": "history/^SMI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^IBEX",
+    "name": "IBEX 35",
+    "sector": "Index",
+    "profile": "companies/^IBEX/profile.json",
+    "logo": null,
+    "history": "history/^IBEX.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^AEX",
+    "name": "AEX",
+    "sector": "Index",
+    "profile": "companies/^AEX/profile.json",
+    "logo": null,
+    "history": "history/^AEX.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BFX",
+    "name": "BEL 20",
+    "sector": "Index",
+    "profile": "companies/^BFX/profile.json",
+    "logo": null,
+    "history": "history/^BFX.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^OMX",
+    "name": "OMX Nordic All-Share",
+    "sector": "Index",
+    "profile": "companies/^OMX/profile.json",
+    "logo": null,
+    "history": "history/^OMX.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^N100",
+    "name": "Euronext 100",
+    "sector": "Index",
+    "profile": "companies/^N100/profile.json",
+    "logo": null,
+    "history": "history/^N100.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^N225",
+    "name": "Nikkei 225",
+    "sector": "Index",
+    "profile": "companies/^N225/profile.json",
+    "logo": null,
+    "history": "history/^N225.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^TOPX",
+    "name": "TOPIX",
+    "sector": "Index",
+    "profile": "companies/^TOPX/profile.json",
+    "logo": null,
+    "history": "history/^TOPX.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^HSI",
+    "name": "Hang Seng Index",
+    "sector": "Index",
+    "profile": "companies/^HSI/profile.json",
+    "logo": null,
+    "history": "history/^HSI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^SSEC",
+    "name": "Shanghai Composite",
+    "sector": "Index",
+    "profile": "companies/^SSEC/profile.json",
+    "logo": null,
+    "history": "history/^SSEC.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "399001.SZ",
+    "name": "SZSE Component",
+    "sector": "Index",
+    "profile": "companies/399001.SZ/profile.json",
+    "logo": null,
+    "history": "history/399001.SZ.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^KS11",
+    "name": "KOSPI",
+    "sector": "Index",
+    "profile": "companies/^KS11/profile.json",
+    "logo": null,
+    "history": "history/^KS11.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^TWII",
+    "name": "TAIEX",
+    "sector": "Index",
+    "profile": "companies/^TWII/profile.json",
+    "logo": null,
+    "history": "history/^TWII.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^STI",
+    "name": "Straits Times Index",
+    "sector": "Index",
+    "profile": "companies/^STI/profile.json",
+    "logo": null,
+    "history": "history/^STI.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BSESN",
+    "name": "BSE Sensex",
+    "sector": "Index",
+    "profile": "companies/^BSESN/profile.json",
+    "logo": null,
+    "history": "history/^BSESN.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^AXJO",
+    "name": "S&P/ASX 200",
+    "sector": "Index",
+    "profile": "companies/^AXJO/profile.json",
+    "logo": null,
+    "history": "history/^AXJO.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^NZ50",
+    "name": "NZX 50",
+    "sector": "Index",
+    "profile": "companies/^NZ50/profile.json",
+    "logo": null,
+    "history": "history/^NZ50.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^JKSE",
+    "name": "Jakarta Composite",
+    "sector": "Index",
+    "profile": "companies/^JKSE/profile.json",
+    "logo": null,
+    "history": "history/^JKSE.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^KLSE",
+    "name": "FTSE Bursa Malaysia KLCI",
+    "sector": "Index",
+    "profile": "companies/^KLSE/profile.json",
+    "logo": null,
+    "history": "history/^KLSE.json",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BVSP",
+    "name": "Bovespa Index",
+    "sector": "Index",
+    "profile": "companies/^BVSP/profile.json",
+    "logo": null,
+    "history": "history/^BVSP.json",
+    "market": "IDX"
   }
 ]

@@ -1,6 +1,6 @@
 """
 Generate quotes.json using an official provider (Finnhub).
-Supports global equities plus crypto, FX, and commodity benchmarks (loaded from data/tickers.json) and
+Supports global equities plus crypto, FX, commodities, and major indices (loaded from data/tickers.json) and
 only fetches quotes when the corresponding market is open (crypto stays open 24/7).
 """
 
@@ -154,6 +154,7 @@ def load_tickers_by_market():
     crypto: list[str] = []
     fx: list[str] = []
     com: list[str] = []
+    idx: list[str] = []
     try:
         arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
         if isinstance(arr, list):
@@ -178,11 +179,13 @@ def load_tickers_by_market():
                     fx.append(sym)
                 elif mkt in {"COM", "COMMODITY"}:
                     com.append(sym)
+                elif mkt in {"IDX", "INDEX"}:
+                    idx.append(sym)
                 elif mkt == "US" or not mkt:
                     us.append(sym)
     except Exception as e:
         print(f"[warn] load tickers failed: {e}; defaulting to US only")
-    return us, cn, eu, jp, sa, crypto, fx, com
+    return us, cn, eu, jp, sa, crypto, fx, com, idx
 
 
 def us_market_is_open(token: str | None) -> bool:
@@ -275,6 +278,14 @@ def commodities_market_is_open() -> bool:
     return True
 
 
+def indices_market_is_open() -> bool:
+    """Indices are evaluated on weekdays similar to FX."""
+    now = datetime.now(timezone.utc)
+    if now.weekday() >= 5:
+        return False
+    return True
+
+
 def yahoo_last(symbol: str):
     hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
     for host in hosts:
@@ -320,7 +331,7 @@ def main():
         print("[warn] ALLTICK_API_KEY/TOKEN not set; CN quotes unavailable.")
     had_prev = OUT.exists()
     prev = load_previous()
-    us_list, cn_list, eu_list, jp_list, sa_list, crypto_list, fx_list, com_list = load_tickers_by_market()
+    us_list, cn_list, eu_list, jp_list, sa_list, crypto_list, fx_list, com_list, idx_list = load_tickers_by_market()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
     open_us = us_market_is_open(api_key)
     open_cn = cn_market_is_open()
@@ -330,6 +341,7 @@ def main():
     open_crypto = bool(crypto_list) and crypto_market_is_open()
     open_fx = bool(fx_list) and fx_market_is_open()
     open_com = bool(com_list) and commodities_market_is_open()
+    open_idx = bool(idx_list) and indices_market_is_open()
     symbols: list[str] = []
     if open_us:
         symbols.extend(us_list)
@@ -347,6 +359,8 @@ def main():
         symbols.extend(fx_list)
     if open_com:
         symbols.extend(com_list)
+    if open_idx:
+        symbols.extend(idx_list)
     if not symbols:
         print("[info] No market open now; skip fetching and preserve previous files")
         if had_prev or PUBLIC_OUT.exists():
@@ -364,6 +378,7 @@ def main():
     crypto_set = set(crypto_list)
     fx_set = set(fx_list)
     com_set = set(com_list)
+    idx_set = set(idx_list)
     for s in symbols:
         if s in cn_set:
             # CN via Akshare spot snapshot; fallback to last daily
@@ -423,6 +438,9 @@ def main():
         elif s in com_set:
             print(f"[main] {s} - try Yahoo commodity")
             px, ts, src = yahoo_last(s)
+        elif s in idx_set:
+            print(f"[main] {s} - try Yahoo index")
+            px, ts, src = yahoo_last(s)
         else:
             if s not in us_set:
                 print(f"[main] {s} - fallback Yahoo global")
@@ -462,7 +480,7 @@ def main():
 
     out["meta"] = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities",
+        "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
         "note": "Never writes nulls; preserves previous values if unavailable."
     }
 

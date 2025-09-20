@@ -409,7 +409,7 @@ for sym, market in tickers:
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
             # 1) Finnhub primary
-            if not fresh and token and market not in {"CRYPTO", "FX", "COM"} and not sym.endswith('.SS'):
+            if not fresh and token and market not in {"CRYPTO", "FX", "COM", "IDX"} and not sym.endswith('.SS'):
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
                     if fresh:
@@ -433,7 +433,7 @@ for sym, market in tickers:
                 except Exception as e:
                     print(f"[warn] {sym} akshare failed: {e}")
             # 2) Alpha Vantage fallback
-            if not fresh and av_key and market not in {"CRYPTO", "FX", "COM"}:
+            if not fresh and av_key and market not in {"CRYPTO", "FX", "COM", "IDX"}:
                 try:
                     fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
                     # respect AV rate limit (5/min)
@@ -442,7 +442,7 @@ for sym, market in tickers:
                 except Exception as e:
                     print(f"[warn] {sym} alpha failed: {e}")
             # 3) Stooq fallback (no key)
-            if not fresh and market not in {"CRYPTO", "FX", "COM"}:
+            if not fresh and market not in {"CRYPTO", "FX", "COM", "IDX"}:
                 try:
                     fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
                     if fresh: source = "stooq"

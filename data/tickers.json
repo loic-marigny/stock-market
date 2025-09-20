@@ -772,5 +772,185 @@
     "name": "Coffee Futures",
     "sector": "Agriculture",
     "market": "COM"
+  },
+  {
+    "symbol": "^GSPC",
+    "name": "S&P 500",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^DJI",
+    "name": "Dow Jones Industrial Average",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^IXIC",
+    "name": "NASDAQ Composite",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^RUT",
+    "name": "Russell 2000",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^GSPTSE",
+    "name": "S&P/TSX Composite",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^FTSE",
+    "name": "FTSE 100",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^GDAXI",
+    "name": "DAX",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^FCHI",
+    "name": "CAC 40",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^STOXX50E",
+    "name": "Euro STOXX 50",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "FTSEMIB.MI",
+    "name": "FTSE MIB",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^SMI",
+    "name": "Swiss Market Index",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^IBEX",
+    "name": "IBEX 35",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^AEX",
+    "name": "AEX",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BFX",
+    "name": "BEL 20",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^OMX",
+    "name": "OMX Nordic All-Share",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^N100",
+    "name": "Euronext 100",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^N225",
+    "name": "Nikkei 225",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^TOPX",
+    "name": "TOPIX",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^HSI",
+    "name": "Hang Seng Index",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^SSEC",
+    "name": "Shanghai Composite",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "399001.SZ",
+    "name": "SZSE Component",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^KS11",
+    "name": "KOSPI",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^TWII",
+    "name": "TAIEX",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^STI",
+    "name": "Straits Times Index",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BSESN",
+    "name": "BSE Sensex",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^AXJO",
+    "name": "S&P/ASX 200",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^NZ50",
+    "name": "NZX 50",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^JKSE",
+    "name": "Jakarta Composite",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^KLSE",
+    "name": "FTSE Bursa Malaysia KLCI",
+    "sector": "Index",
+    "market": "IDX"
+  },
+  {
+    "symbol": "^BVSP",
+    "name": "Bovespa Index",
+    "sector": "Index",
+    "market": "IDX"
   }
 ]

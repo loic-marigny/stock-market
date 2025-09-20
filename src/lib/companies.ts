@@ -37,5 +37,6 @@ export function marketLabel(mkt?: string): string {
   if (code === "CRYPTO") return "Crypto";
   if (code === "FX" || code === "FOREX") return "Forex";
   if (code === "COM") return "Commodities";
+  if (code === "IDX") return "Indices";
   return code || "Other";
 }
