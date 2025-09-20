@@ -369,29 +369,27 @@ def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> L
 def main():
     token = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
     av_key = os.environ.get("ALPHAVANTAGE_API_KEY") or os.environ.get("ALPHAVANTAGE_TOKEN")
-    # Alltick/TwelveData removed; prefer Akshare for CN
     if not token:
         print("[warn] FINNHUB_API_KEY/FINNHUB_TOKEN not set or not authorized for candles; will try Alpha Vantage or Stooq")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Load symbols from data/tickers.json
-try:
-    arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
-    tickers: list[tuple[str, str]] = []
-    if isinstance(arr, list):
-        for it in arr:
-            if not isinstance(it, dict):
-                continue
-            sym = str(it.get("symbol") or "").strip()
-            if not sym:
-                continue
-            market = str(it.get("market") or "").strip().upper()
-            tickers.append((sym, market))
-except Exception:
-    tickers = []
+    try:
+        arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
+        tickers: list[tuple[str, str]] = []
+        if isinstance(arr, list):
+            for it in arr:
+                if not isinstance(it, dict):
+                    continue
+                sym = str(it.get("symbol") or "").strip()
+                if not sym:
+                    continue
+                market = str(it.get("market") or "").strip().upper()
+                tickers.append((sym, market))
+    except Exception:
+        tickers = []
 
-for sym, market in tickers:
+    for sym, market in tickers:
         try:
             existing = load_existing(sym)
             cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365)).isoformat()
@@ -400,7 +398,6 @@ for sym, market in tickers:
                 continue
             fresh: List[Dict[str, float]] = []
             source = ""
-            # 0) Cloudflare worker proxy
             if not fresh:
                 try:
                     fresh = fetch_daily_worker(sym, years=MIN_YEARS)
@@ -408,7 +405,6 @@ for sym, market in tickers:
                         source = "yahoo_worker"
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
-            # 1) Finnhub primary
             if not fresh and token and market not in {"CRYPTO", "FX", "COM", "IDX"} and not sym.endswith('.SS'):
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
@@ -416,43 +412,41 @@ for sym, market in tickers:
                         source = "finnhub"
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
-            # 1b) CN: Akshare first
             if not fresh and (market == "CN" or sym.endswith('.SS')):
                 try:
                     code = sym.split('.')[0]
                     end = datetime.now(timezone.utc).date()
-                    start = (end - timedelta(days=365*MIN_YEARS+7)).strftime('%Y%m%d')
+                    start = (end - timedelta(days=365 * MIN_YEARS + 7)).strftime('%Y%m%d')
                     df = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end.strftime('%Y%m%d'), adjust="")
                     if isinstance(df, pd.DataFrame) and not df.empty:
-                        date_key = '日期' if '日期' in df.columns else ('date' if 'date' in df.columns else None)
-                        close_key = '收盘' if '收盘' in df.columns else ('close' if 'close' in df.columns else None)
+                        date_key = '?-??oY' if '?-??oY' in df.columns else ('date' if 'date' in df.columns else None)
+                        close_key = '?"?>~' if '?"?>~' in df.columns else ('close' if 'close' in df.columns else None)
                         if date_key and close_key:
                             fresh = [{"date": str(d)[:10], "close": float(c)} for d, c in zip(df[date_key], df[close_key]) if pd.notna(c)]
                             fresh.sort(key=lambda x: x['date'])
                             source = "akshare"
                 except Exception as e:
                     print(f"[warn] {sym} akshare failed: {e}")
-            # 2) Alpha Vantage fallback
             if not fresh and av_key and market not in {"CRYPTO", "FX", "COM", "IDX"}:
                 try:
                     fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
-                    # respect AV rate limit (5/min)
                     time.sleep(12)
-                    if fresh: source = "alpha"
+                    if fresh:
+                        source = "alpha"
                 except Exception as e:
                     print(f"[warn] {sym} alpha failed: {e}")
-            # 3) Stooq fallback (no key)
             if not fresh and market not in {"CRYPTO", "FX", "COM", "IDX"}:
                 try:
                     fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
-                    if fresh: source = "stooq"
+                    if fresh:
+                        source = "stooq"
                 except Exception as e:
                     print(f"[warn] {sym} stooq failed: {e}")
-            # 4) Yahoo fallback (no key)
             if not fresh:
                 try:
                     fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
-                    if fresh: source = "yahoo"
+                    if fresh:
+                        source = "yahoo"
                 except Exception as e:
                     print(f"[warn] {sym} yahoo failed: {e}")
             if not fresh and not existing:
@@ -463,12 +457,9 @@ for sym, market in tickers:
             with open(out_path, "w") as f:
                 json.dump(merged, f)
             print("[ok] wrote", out_path, f"len={len(merged)}", f"source={source or 'existing'}")
-            # throttle a bit after Yahoo to avoid 429
             if source == "yahoo":
                 time.sleep(1.5)
         except Exception as e:
             print(f"[warn] {sym} history failed: {e}")
-
-
 if __name__ == "__main__":
     main()
