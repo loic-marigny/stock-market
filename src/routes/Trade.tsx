@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from "firebase/firestore";
+import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
-import { computeCash, computePositions, type Order } from "../lib/portfolio";
+import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
   const uid = auth.currentUser!.uid;
 
-  // état du formulaire
   const [symbol, setSymbol] = useState<string>("AAPL");
   const [companies, setCompanies] = useState<Company[]>([]);
   const [mode, setMode] = useState<EntryMode>("qty");
@@ -20,34 +19,28 @@ export default function Trade(){
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState<string>("");
 
-  // ordres en temps réel
-  const [orders, setOrders] = useState<Order[]>([]);
-  useEffect(()=>{
-    const qRef = query(collection(db,"users",uid,"orders"), orderBy("ts","asc"));
-    return onSnapshot(qRef, snap => setOrders(snap.docs.map(d=>d.data() as Order)));
-  },[uid]);
-
-  const initial = 100;
-  const cash = useMemo(()=> computeCash(initial, orders), [orders]);
-  const positions = useMemo(()=> computePositions(orders), [orders]);
+  const { positions, cash } = usePortfolioSnapshot(uid);
   const posQty = positions[symbol]?.qty ?? 0;
 
-  // charger liste entreprises
-  useEffect(()=>{ (async()=>{
-    try{
-      const idx = await fetchCompaniesIndex();
-      setCompanies(idx);
-      if (!idx.find(c=>c.symbol===symbol)){
-        const firstUS = idx.find(c=> (c.market||"").toUpperCase()==="US");
-        setSymbol(firstUS?.symbol || idx[0]?.symbol || symbol);
-      }
-    }catch{}
-  })() },[]);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const idx = await fetchCompaniesIndex();
+        setCompanies(idx);
+        if (!idx.find(c => c.symbol === symbol)){
+          const firstUS = idx.find(c => (c.market || "").toUpperCase() === "US");
+          setSymbol(firstUS?.symbol || idx[0]?.symbol || symbol);
+        }
+      }catch{}
+    })();
+  }, []);
 
-  // charger le dernier prix
-  useEffect(()=>{ (async()=> setLast(await provider.getLastPrice(symbol)))() }, [symbol]);
+  useEffect(()=>{
+    (async()=>{
+      setLast(await provider.getLastPrice(symbol));
+    })();
+  }, [symbol]);
 
-  // helpers
   const round6 = (x:number) => Math.round(x * 1e6) / 1e6;
   const previewQty = mode === "qty"
     ? Math.max(0, qty || 0)
@@ -55,11 +48,11 @@ export default function Trade(){
 
   const validate = (side:"buy"|"sell", px:number) => {
     const q = mode === "qty" ? qty : round6(amount / px);
-    if (!q || q <= 0) return "Quantité ou montant invalide.";
+    if (!q || q <= 0) return "Quantite ou montant invalide.";
     if (side === "sell" && posQty < q - 1e-9) return "Position insuffisante pour cette vente.";
     if (side === "buy") {
       const needed = q * px;
-      if (cash + 1e-6 < needed) return "Crédits insuffisants pour cet achat.";
+      if (cash + 1e-6 < needed) return "Credits insuffisants pour cet achat.";
     }
     return "";
   };
@@ -68,15 +61,14 @@ export default function Trade(){
     setMsg("");
     setLoading(true);
     try{
-      // prix d’exécution rafraîchi
       const fillPrice = await provider.getLastPrice(symbol);
       const q = mode === "qty" ? Number(qty) : round6(Number(amount) / fillPrice);
 
       const err = validate(side, fillPrice);
       if (err) { setMsg(err); setLoading(false); return; }
 
-      const posRef = doc(db,"users",uid,"positions",symbol);
-      const ordRef = doc(collection(db,"users",uid,"orders"));
+      const posRef = doc(db, "users", uid, "positions", symbol);
+      const ordRef = doc(collection(db, "users", uid, "orders"));
 
       await runTransaction(db, async (tx)=>{
         const snap = await tx.get(posRef);
@@ -102,9 +94,8 @@ export default function Trade(){
         tx.set(posRef, { qty: newQty, avgPrice: newAvg });
       });
 
-      setMsg(side === "buy" ? "Achat exécuté." : "Vente exécutée.");
+      setMsg(side === "buy" ? "Achat execute." : "Vente executee.");
 
-      // reset champs de saisie (selon le mode)
       if (mode === "qty") setQty(1);
       else setAmount(0);
 
@@ -126,7 +117,9 @@ export default function Trade(){
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
             {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
               <optgroup key={mkt} label={marketLabel(mkt)}>
-                {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} - {c.name || c.symbol}</option>)}
+                {arr.map(c=> (
+                  <option key={c.symbol} value={c.symbol}>{c.symbol} - {c.name || c.symbol}</option>
+                ))}
               </optgroup>
             ))}
           </select>
@@ -138,52 +131,48 @@ export default function Trade(){
           <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
         </div>
 
-        <div className="field" style={{gridColumn:'1 / -1'}}>
+        <div className="field" style={{gridColumn:"1 / -1"}}>
           <div className="seg">
-            <button type="button" className={mode==='qty'?'on':''} onClick={()=>setMode('qty')}>Entrer par quantité</button>
-            <button type="button" className={mode==='amount'?'on':''} onClick={()=>setMode('amount')}>Entrer par montant</button>
+            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>Entrer par quantite</button>
+            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>Entrer par montant</button>
           </div>
         </div>
 
         {mode === "qty" ? (
-          <>
-            <div className="field">
-              <label>Quantite (unites)</label>
-              <input className="input" type="number" min={0} step="any"
-                     value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-              <div className="hint">Coût estimé : <strong>{last ? (qty*last).toFixed(2) : "-"}</strong></div>
-            </div>
-          </>
+          <div className="field">
+            <label>Quantite (unites)</label>
+            <input className="input" type="number" min={0} step="any"
+                   value={qty} onChange={e=>setQty(Number(e.target.value))}/>
+            <div className="hint">Cout estime : <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
+          </div>
         ) : (
-          <>
-            <div className="field">
-              <label>Montant (crédits)</label>
-              <input className="input" type="number" min={0} step="0.01"
-                     value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
-              <div className="hint">Quantité estimée : <strong>{fmtQty(previewQty)}</strong></div>
-            </div>
-          </>
+          <div className="field">
+            <label>Montant (credits)</label>
+            <input className="input" type="number" min={0} step="0.01"
+                   value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
+            <div className="hint">Quantite estimee : <strong>{fmtQty(previewQty)}</strong></div>
+          </div>
         )}
 
         <div className="field">
-          <label>Crédits dispo</label>
+          <label>Credits dispo</label>
           <div className="price-tile">{cash.toFixed(2)}</div>
         </div>
       </div>
 
       <div className="trade-actions">
-        <button className="btn btn-accent" disabled={loading} onClick={()=>place("buy")}>
+        <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
           Acheter
         </button>
-        <button className="btn btn-sell" disabled={loading} onClick={()=>place("sell")}>
+        <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
           Vendre
         </button>
       </div>
 
       <div className="hint">
-        {mode==='qty'
-          ? <>Exécution: quantité × dernier prix au moment du clic.</>
-          : <>Exécution: quantité calculée = montant / dernier prix.</>}
+        {mode === "qty"
+          ? "Execution: quantite x dernier prix au moment du clic."
+          : "Execution: quantite calculee = montant / dernier prix."}
       </div>
 
       {msg && <div className="trade-msg">{msg}</div>}
@@ -191,7 +180,9 @@ export default function Trade(){
   );
 }
 
-function fmtQty(n:number){ return n.toLocaleString(undefined,{maximumFractionDigits:6}); }
+function fmtQty(n:number){
+  return n.toLocaleString(undefined,{maximumFractionDigits:6});
+}
 
 function groupByMarket(list: Company[]): Record<string, Company[]>{
   const map: Record<string, Company[]> = {};

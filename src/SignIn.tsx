@@ -30,7 +30,7 @@ export default function SignIn(){
     if (!snap.exists()) {
       await setDoc(ref, {
         email: email || '',
-        initialCredits: 100,
+        initialCredits: 1_000_000,
         createdAt: serverTimestamp(),
       })
     }
