@@ -1,5 +1,6 @@
 """
-Generate/ensure daily history JSON for US tickers via Finnhub /stock/candle.
+Generate/ensure daily history JSON for tickers via the Cloudflare Yahoo
+proxy when available, falling back to Finnhub candle data and other providers.
 
 Guarantees at least the last 1 year of daily closes is present. If a file
 already exists, it loads and checks coverage; if incomplete, it fetches
@@ -7,7 +8,8 @@ the missing range (implemented by refetching the last 1y and merging),
 then writes to public/history/{SYMBOL}.json as an array of
 {date: YYYY-MM-DD, close: number} sorted ascending.
 
-Requires FINNHUB_API_KEY (or FINNHUB_TOKEN) env var.
+Requires FINNHUB_API_KEY (or FINNHUB_TOKEN) env var unless
+YAHOO_WORKER_URL is configured.
 """
 
 from __future__ import annotations
@@ -65,6 +67,66 @@ def fetch_daily_finnhub(symbol: str, token: str, years: int = MIN_YEARS) -> List
     # ensure ascending order by date
     out.sort(key=lambda x: x["date"])  # already ascending, but be safe
     return out
+
+
+def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    """Fetch daily closes via Cloudflare Yahoo proxy if configured."""
+
+    base_url = (os.environ.get("YAHOO_WORKER_URL") or "").strip()
+    if not base_url:
+        return []
+
+    range_env = (os.environ.get("YAHOO_WORKER_RANGE") or "").strip()
+    if range_env:
+        range_value = range_env
+    elif years <= 1:
+        range_value = "1y"
+    elif years <= 2:
+        range_value = "2y"
+    elif years <= 5:
+        range_value = "5y"
+    else:
+        range_value = "10y"
+
+    params = {"range": range_value, "interval": "1d"}
+    url = f"{base_url.rstrip('/')}/history/{symbol}"
+
+    headers: Dict[str, str] = {}
+    token = (os.environ.get("YAHOO_WORKER_TOKEN") or "").strip()
+    if token:
+        headers["X-Worker-Token"] = token
+    query_desc = "&".join(f"{k}={v}" for k, v in params.items())
+    print(f"[history-worker] {symbol} GET {url}?{query_desc}")
+
+    r = SESSION.get(url, params=params, headers=headers, timeout=20)
+    print(f"[history-worker] {symbol} status={r.status_code}")
+    if r.status_code == 404:
+        return []
+    r.raise_for_status()
+
+    try:
+        data = r.json()
+    except Exception as exc:
+        raise RuntimeError(f"worker payload not JSON for {symbol}: {exc}") from exc
+
+    if not isinstance(data, list):
+        raise RuntimeError(f"worker payload invalid for {symbol}: type={type(data)!r}")
+
+    out: List[Dict[str, float]] = []
+    for point in data:
+        if not isinstance(point, dict):
+            continue
+        date = point.get("date")
+        close = point.get("close")
+        if isinstance(date, str) and isinstance(close, (int, float)):
+            out.append({"date": date, "close": float(close)})
+
+    out.sort(key=lambda x: x["date"])
+    if not out:
+        raise RuntimeError(f"worker payload empty for {symbol}")
+    return out
+
+
 
 
 def fetch_daily_alpha(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
@@ -329,11 +391,20 @@ def main():
                 continue
             fresh: List[Dict[str, float]] = []
             source = ""
+            # 0) Cloudflare worker proxy
+            if not fresh:
+                try:
+                    fresh = fetch_daily_worker(sym, years=MIN_YEARS)
+                    if fresh:
+                        source = "yahoo_worker"
+                except Exception as e:
+                    print(f"[warn] {sym} worker failed: {e}")
             # 1) Finnhub primary
-            if token and not sym.endswith('.SS'):
+            if not fresh and token and not sym.endswith('.SS'):
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
-                    if fresh: source = "finnhub"
+                    if fresh:
+                        source = "finnhub"
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
             # 1b) CN: Akshare first

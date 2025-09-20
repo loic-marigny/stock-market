@@ -28,6 +28,8 @@ jobs:
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
           ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
           ALPHAVANTAGE_TOKEN: ${{ secrets.ALPHAVANTAGE_TOKEN }}
+          YAHOO_WORKER_URL: ${{ secrets.YAHOO_WORKER_URL }}
+          YAHOO_WORKER_TOKEN: ${{ secrets.YAHOO_WORKER_TOKEN }}
         run: |
           python scripts/history.py
           ls -l public/history || true
