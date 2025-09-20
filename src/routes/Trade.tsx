@@ -126,7 +126,7 @@ export default function Trade(){
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
             {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
               <optgroup key={mkt} label={marketLabel(mkt)}>
-                {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} — {c.name || c.symbol}</option>)}
+                {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} - {c.name || c.symbol}</option>)}
               </optgroup>
             ))}
           </select>
@@ -135,7 +135,7 @@ export default function Trade(){
 
         <div className="field">
           <label>Dernier prix</label>
-          <div className="price-tile">{last ? last.toFixed(2) : "—"}</div>
+          <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
         </div>
 
         <div className="field" style={{gridColumn:'1 / -1'}}>
@@ -148,10 +148,10 @@ export default function Trade(){
         {mode === "qty" ? (
           <>
             <div className="field">
-              <label>Quantité (actions)</label>
+              <label>Quantite (unites)</label>
               <input className="input" type="number" min={0} step="any"
                      value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-              <div className="hint">Coût estimé : <strong>{last ? (qty*last).toFixed(2) : "—"}</strong></div>
+              <div className="hint">Coût estimé : <strong>{last ? (qty*last).toFixed(2) : "-"}</strong></div>
             </div>
           </>
         ) : (
@@ -203,7 +203,7 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
     map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
   }
   const ordered: Record<string, Company[]> = {};
-  for(const pref of ["US","CN"]) if(map[pref]) ordered[pref]=map[pref];
+  for(const pref of ["US","CN","EU","JP","SA","CRYPTO","FX"]) if(map[pref]) ordered[pref]=map[pref];
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }

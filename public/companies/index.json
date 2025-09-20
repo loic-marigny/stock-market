@@ -799,5 +799,275 @@
     "logo": null,
     "history": "history/4013.SR.json",
     "market": "SA"
+  },
+  {
+    "symbol": "BTC-USD",
+    "name": "Bitcoin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/BTC-USD/profile.json",
+    "logo": null,
+    "history": "history/BTC-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "ETH-USD",
+    "name": "Ethereum",
+    "sector": "Cryptocurrency",
+    "profile": "companies/ETH-USD/profile.json",
+    "logo": null,
+    "history": "history/ETH-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "USDT-USD",
+    "name": "Tether (USDT)",
+    "sector": "Cryptocurrency",
+    "profile": "companies/USDT-USD/profile.json",
+    "logo": null,
+    "history": "history/USDT-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "BNB-USD",
+    "name": "BNB",
+    "sector": "Cryptocurrency",
+    "profile": "companies/BNB-USD/profile.json",
+    "logo": null,
+    "history": "history/BNB-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "SOL-USD",
+    "name": "Solana",
+    "sector": "Cryptocurrency",
+    "profile": "companies/SOL-USD/profile.json",
+    "logo": null,
+    "history": "history/SOL-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "XRP-USD",
+    "name": "Ripple (XRP)",
+    "sector": "Cryptocurrency",
+    "profile": "companies/XRP-USD/profile.json",
+    "logo": null,
+    "history": "history/XRP-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "USDC-USD",
+    "name": "USD Coin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/USDC-USD/profile.json",
+    "logo": null,
+    "history": "history/USDC-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DOGE-USD",
+    "name": "Dogecoin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/DOGE-USD/profile.json",
+    "logo": null,
+    "history": "history/DOGE-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "ADA-USD",
+    "name": "Cardano",
+    "sector": "Cryptocurrency",
+    "profile": "companies/ADA-USD/profile.json",
+    "logo": null,
+    "history": "history/ADA-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "TRX-USD",
+    "name": "TRON",
+    "sector": "Cryptocurrency",
+    "profile": "companies/TRX-USD/profile.json",
+    "logo": null,
+    "history": "history/TRX-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "TON-USD",
+    "name": "Toncoin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/TON-USD/profile.json",
+    "logo": null,
+    "history": "history/TON-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "AVAX-USD",
+    "name": "Avalanche",
+    "sector": "Cryptocurrency",
+    "profile": "companies/AVAX-USD/profile.json",
+    "logo": null,
+    "history": "history/AVAX-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "SHIB-USD",
+    "name": "Shiba Inu",
+    "sector": "Cryptocurrency",
+    "profile": "companies/SHIB-USD/profile.json",
+    "logo": null,
+    "history": "history/SHIB-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DOT-USD",
+    "name": "Polkadot",
+    "sector": "Cryptocurrency",
+    "profile": "companies/DOT-USD/profile.json",
+    "logo": null,
+    "history": "history/DOT-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DAI-USD",
+    "name": "Dai",
+    "sector": "Cryptocurrency",
+    "profile": "companies/DAI-USD/profile.json",
+    "logo": null,
+    "history": "history/DAI-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "LTC-USD",
+    "name": "Litecoin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/LTC-USD/profile.json",
+    "logo": null,
+    "history": "history/LTC-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "WBTC-USD",
+    "name": "Wrapped Bitcoin",
+    "sector": "Cryptocurrency",
+    "profile": "companies/WBTC-USD/profile.json",
+    "logo": null,
+    "history": "history/WBTC-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "BCH-USD",
+    "name": "Bitcoin Cash",
+    "sector": "Cryptocurrency",
+    "profile": "companies/BCH-USD/profile.json",
+    "logo": null,
+    "history": "history/BCH-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "LINK-USD",
+    "name": "Chainlink",
+    "sector": "Cryptocurrency",
+    "profile": "companies/LINK-USD/profile.json",
+    "logo": null,
+    "history": "history/LINK-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "NEAR-USD",
+    "name": "NEAR Protocol",
+    "sector": "Cryptocurrency",
+    "profile": "companies/NEAR-USD/profile.json",
+    "logo": null,
+    "history": "history/NEAR-USD.json",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "EURUSD=X",
+    "name": "EUR/USD",
+    "sector": "Forex",
+    "profile": "companies/EURUSD=X/profile.json",
+    "logo": null,
+    "history": "history/EURUSD=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDJPY=X",
+    "name": "USD/JPY",
+    "sector": "Forex",
+    "profile": "companies/USDJPY=X/profile.json",
+    "logo": null,
+    "history": "history/USDJPY=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "GBPUSD=X",
+    "name": "GBP/USD",
+    "sector": "Forex",
+    "profile": "companies/GBPUSD=X/profile.json",
+    "logo": null,
+    "history": "history/GBPUSD=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCNY=X",
+    "name": "USD/CNY",
+    "sector": "Forex",
+    "profile": "companies/USDCNY=X/profile.json",
+    "logo": null,
+    "history": "history/USDCNY=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCHF=X",
+    "name": "USD/CHF",
+    "sector": "Forex",
+    "profile": "companies/USDCHF=X/profile.json",
+    "logo": null,
+    "history": "history/USDCHF=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "AUDUSD=X",
+    "name": "AUD/USD",
+    "sector": "Forex",
+    "profile": "companies/AUDUSD=X/profile.json",
+    "logo": null,
+    "history": "history/AUDUSD=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCAD=X",
+    "name": "USD/CAD",
+    "sector": "Forex",
+    "profile": "companies/USDCAD=X/profile.json",
+    "logo": null,
+    "history": "history/USDCAD=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "NZDUSD=X",
+    "name": "NZD/USD",
+    "sector": "Forex",
+    "profile": "companies/NZDUSD=X/profile.json",
+    "logo": null,
+    "history": "history/NZDUSD=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "EURJPY=X",
+    "name": "EUR/JPY",
+    "sector": "Forex",
+    "profile": "companies/EURJPY=X/profile.json",
+    "logo": null,
+    "history": "history/EURJPY=X.json",
+    "market": "FX"
+  },
+  {
+    "symbol": "GBPJPY=X",
+    "name": "GBP/JPY",
+    "sector": "Forex",
+    "profile": "companies/GBPJPY=X/profile.json",
+    "logo": null,
+    "history": "history/GBPJPY=X.json",
+    "market": "FX"
   }
 ]

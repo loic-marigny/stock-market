@@ -1,7 +1,7 @@
 """
 Generate quotes.json using an official provider (Finnhub).
-Supports US and Shanghai tickers (loaded from data/tickers.json) and
-only fetches quotes when the corresponding market is open.
+Supports global equities plus crypto and major FX pairs (loaded from data/tickers.json) and
+only fetches quotes when the corresponding market is open (crypto stays open 24/7).
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ import os
 import time
 import random
 from pathlib import Path
-from datetime import datetime, timezone, time as dtime
+from datetime import datetime, timezone, time as dtime, timedelta
 from zoneinfo import ZoneInfo
 import akshare as ak
 import pandas as pd
@@ -151,6 +151,8 @@ def load_tickers_by_market():
     eu: list[str] = []
     jp: list[str] = []
     sa: list[str] = []
+    crypto: list[str] = []
+    fx: list[str] = []
     try:
         arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
         if isinstance(arr, list):
@@ -169,11 +171,15 @@ def load_tickers_by_market():
                     jp.append(sym)
                 elif mkt == "SA":
                     sa.append(sym)
+                elif mkt == "CRYPTO":
+                    crypto.append(sym)
+                elif mkt in {"FX", "FOREX"}:
+                    fx.append(sym)
                 elif mkt == "US" or not mkt:
                     us.append(sym)
     except Exception as e:
         print(f"[warn] load tickers failed: {e}; defaulting to US only")
-    return us, cn, eu, jp, sa
+    return us, cn, eu, jp, sa, crypto, fx
 
 
 def us_market_is_open(token: str | None) -> bool:
@@ -248,6 +254,19 @@ def sa_market_is_open() -> bool:
     return dtime(10,0) <= sa.time() <= dtime(15,0)
 
 
+def crypto_market_is_open() -> bool:
+    """Crypto trades 24/7; treat as always open."""
+    return True
+
+
+def fx_market_is_open() -> bool:
+    """Approximate FX session: keep open on weekdays."""
+    now = datetime.now(timezone.utc)
+    if now.weekday() >= 5:
+        return False
+    return True
+
+
 def yahoo_last(symbol: str):
     hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
     for host in hosts:
@@ -293,13 +312,15 @@ def main():
         print("[warn] ALLTICK_API_KEY/TOKEN not set; CN quotes unavailable.")
     had_prev = OUT.exists()
     prev = load_previous()
-    us_list, cn_list, eu_list, jp_list, sa_list = load_tickers_by_market()
+    us_list, cn_list, eu_list, jp_list, sa_list, crypto_list, fx_list = load_tickers_by_market()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
     open_us = us_market_is_open(api_key)
     open_cn = cn_market_is_open()
     open_eu = eu_market_is_open()
     open_jp = jp_market_is_open()
     open_sa = sa_market_is_open()
+    open_crypto = bool(crypto_list) and crypto_market_is_open()
+    open_fx = bool(fx_list) and fx_market_is_open()
     symbols: list[str] = []
     if open_us:
         symbols.extend(us_list)
@@ -311,6 +332,10 @@ def main():
         symbols.extend(jp_list)
     if open_sa:
         symbols.extend(sa_list)
+    if open_crypto:
+        symbols.extend(crypto_list)
+    if open_fx:
+        symbols.extend(fx_list)
     if not symbols:
         print("[info] No market open now; skip fetching and preserve previous files")
         if had_prev or PUBLIC_OUT.exists():
@@ -322,6 +347,11 @@ def main():
 
     us_set = set(us_list)
     cn_set = set(cn_list)
+    eu_set = set(eu_list)
+    jp_set = set(jp_list)
+    sa_set = set(sa_list)
+    crypto_set = set(crypto_list)
+    fx_set = set(fx_list)
     for s in symbols:
         if s in cn_set:
             # CN via Akshare spot snapshot; fallback to last daily
@@ -369,15 +399,25 @@ def main():
             out[s] = new_entry
             time.sleep(0.2 + random.uniform(0,0.2))
             continue
-        elif s in eu_list or s in jp_list or s in sa_list:
+        elif s in eu_set or s in jp_set or s in sa_set:
             print(f"[main] {s} - try Yahoo 1d")
             px, ts, src = yahoo_last(s)
+        elif s in crypto_set:
+            print(f"[main] {s} - try Yahoo crypto")
+            px, ts, src = yahoo_last(s)
+        elif s in fx_set:
+            print(f"[main] {s} - try Yahoo fx")
+            px, ts, src = yahoo_last(s)
         else:
-            if not api_key:
-                print(f"[warn] {s}: no Finnhub key; cannot update US ticker")
-                continue
-            print(f"[main] {s} - try finnhub")
-            px, ts, src = finnhub_last(s, api_key)
+            if s not in us_set:
+                print(f"[main] {s} - fallback Yahoo global")
+                px, ts, src = yahoo_last(s)
+            else:
+                if not api_key:
+                    print(f"[warn] {s}: no Finnhub key; cannot update US ticker")
+                    continue
+                print(f"[main] {s} - try finnhub")
+                px, ts, src = finnhub_last(s, api_key)
 
         if px is None:
             old = prev.get(s) or {}
@@ -407,7 +447,7 @@ def main():
 
     out["meta"] = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "source": "Finnhub(/quote) for US; Alltick for CN",
+        "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX",
         "note": "Never writes nulls; preserves previous values if unavailable."
     }
 

@@ -72,7 +72,7 @@ export default function Explore(){
         <select value={symbol} onChange={e=>setSymbol(e.target.value)} className="select">
           {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
             <optgroup key={mkt} label={marketLabel(mkt)}>
-              {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} — {c.name || c.symbol}</option>)}
+              {arr.map(c=> <option key={c.symbol} value={c.symbol}>{c.symbol} - {c.name || c.symbol}</option>)}
             </optgroup>
           ))}
         </select>
@@ -87,7 +87,7 @@ export default function Explore(){
       <div className="chart-card">
         <canvas ref={canvasRef} />
       </div>
-      <p className="hint">Source: JSON statiques (Finnhub/AV/Stooq via CI).</p>
+      <p className="hint">Source: JSON statiques (Finnhub/Akshare/Yahoo via CI).</p>
     </div>
   );
 }
@@ -105,9 +105,9 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
   for(const k of Object.keys(map)){
     map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
   }
-  // ensure stable order: US, CN, then others alpha
+  // ensure stable order: main regions first, then others alpha
   const ordered: Record<string, Company[]> = {};
-  for(const pref of ["US","CN"]) if(map[pref]) ordered[pref]=map[pref];
+  for(const pref of ["US","CN","EU","JP","SA","CRYPTO","FX"]) if(map[pref]) ordered[pref]=map[pref];
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }

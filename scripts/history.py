@@ -376,13 +376,22 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Load symbols from data/tickers.json
-    try:
-        arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
-        symbols = [str(it.get("symbol")).strip() for it in arr if isinstance(it, dict) and it.get("symbol")]
-    except Exception:
-        symbols = []
+try:
+    arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
+    tickers: list[tuple[str, str]] = []
+    if isinstance(arr, list):
+        for it in arr:
+            if not isinstance(it, dict):
+                continue
+            sym = str(it.get("symbol") or "").strip()
+            if not sym:
+                continue
+            market = str(it.get("market") or "").strip().upper()
+            tickers.append((sym, market))
+except Exception:
+    tickers = []
 
-    for sym in symbols:
+for sym, market in tickers:
         try:
             existing = load_existing(sym)
             cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365)).isoformat()
@@ -400,7 +409,7 @@ def main():
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
             # 1) Finnhub primary
-            if not fresh and token and not sym.endswith('.SS'):
+            if not fresh and token and market not in {"CRYPTO", "FX"} and not sym.endswith('.SS'):
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
                     if fresh:
@@ -408,7 +417,7 @@ def main():
                 except Exception as e:
                     print(f"[warn] {sym} finnhub failed: {e}")
             # 1b) CN: Akshare first
-            if not fresh and sym.endswith('.SS'):
+            if not fresh and (market == "CN" or sym.endswith('.SS')):
                 try:
                     code = sym.split('.')[0]
                     end = datetime.now(timezone.utc).date()
@@ -424,7 +433,7 @@ def main():
                 except Exception as e:
                     print(f"[warn] {sym} akshare failed: {e}")
             # 2) Alpha Vantage fallback
-            if not fresh and av_key:
+            if not fresh and av_key and market not in {"CRYPTO", "FX"}:
                 try:
                     fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
                     # respect AV rate limit (5/min)
@@ -433,7 +442,7 @@ def main():
                 except Exception as e:
                     print(f"[warn] {sym} alpha failed: {e}")
             # 3) Stooq fallback (no key)
-            if not fresh:
+            if not fresh and market not in {"CRYPTO", "FX"}:
                 try:
                     fresh = fetch_daily_stooq(sym, years=MIN_YEARS)
                     if fresh: source = "stooq"

@@ -114,7 +114,7 @@ export default function Portfolio(){
         </table>
       </div>
 
-      <p className="hint">Les prix proviennent du provider <code>mock</code>. On branchera une source réelle ensuite.</p>
+      <p className="hint">Les prix proviennent du provider <code>json</code> mis a jour par les scripts.</p>
     </div>
   );
 }
