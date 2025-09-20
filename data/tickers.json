@@ -1,127 +1,776 @@
 [
-  {"symbol":"AAPL","name":"Apple Inc.","sector":"Information Technology","market":"US"},
-  {"symbol":"MSFT","name":"Microsoft Corporation","sector":"Information Technology","market":"US"},
-  {"symbol":"NVDA","name":"NVIDIA Corporation","sector":"Information Technology","market":"US"},
-  {"symbol":"AMZN","name":"Amazon.com, Inc.","sector":"Consumer Discretionary","market":"US"},
-  {"symbol":"GOOGL","name":"Alphabet Inc. Class A","sector":"Communication Services","market":"US"},
-  {"symbol":"GOOG","name":"Alphabet Inc. Class C","sector":"Communication Services","market":"US"},
-  {"symbol":"META","name":"Meta Platforms, Inc.","sector":"Communication Services","market":"US"},
-  {"symbol":"AVGO","name":"Broadcom Inc.","sector":"Information Technology","market":"US"},
-  {"symbol":"LLY","name":"Eli Lilly and Company","sector":"Health Care","market":"US"},
-  {"symbol":"TSLA","name":"Tesla, Inc.","sector":"Consumer Discretionary","market":"US"},
-  {"symbol":"JPM","name":"JPMorgan Chase & Co.","sector":"Financials","market":"US"},
-  {"symbol":"V","name":"Visa Inc.","sector":"Financials","market":"US"},
-  {"symbol":"XOM","name":"Exxon Mobil Corporation","sector":"Energy","market":"US"},
-  {"symbol":"UNH","name":"UnitedHealth Group Incorporated","sector":"Health Care","market":"US"},
-  {"symbol":"JNJ","name":"Johnson & Johnson","sector":"Health Care","market":"US"},
-  {"symbol":"WMT","name":"Walmart Inc.","sector":"Consumer Staples","market":"US"},
-  {"symbol":"MA","name":"Mastercard Incorporated","sector":"Financials","market":"US"},
-  {"symbol":"PG","name":"Procter & Gamble Company","sector":"Consumer Staples","market":"US"},
-  {"symbol":"ORCL","name":"Oracle Corporation","sector":"Information Technology","market":"US"},
-  {"symbol":"COST","name":"Costco Wholesale Corporation","sector":"Consumer Staples","market":"US"},
-  {"symbol":"MRK","name":"Merck & Co., Inc.","sector":"Health Care","market":"US"},
-  {"symbol":"HD","name":"The Home Depot, Inc.","sector":"Consumer Discretionary","market":"US"},
-  {"symbol":"KO","name":"The Coca-Cola Company","sector":"Consumer Staples","market":"US"},
-  {"symbol":"PEP","name":"PepsiCo, Inc.","sector":"Consumer Staples","market":"US"},
-  {"symbol":"BAC","name":"Bank of America Corporation","sector":"Financials","market":"US"},
-  {"symbol":"ADBE","name":"Adobe Inc.","sector":"Information Technology","market":"US"},
-  {"symbol":"CRM","name":"Salesforce, Inc.","sector":"Information Technology","market":"US"},
-  {"symbol":"NFLX","name":"Netflix, Inc.","sector":"Communication Services","market":"US"},
-  {"symbol":"CSCO","name":"Cisco Systems, Inc.","sector":"Information Technology","market":"US"},
-  {"symbol":"AMD","name":"Advanced Micro Devices, Inc.","sector":"Information Technology","market":"US"},
-
-  {"symbol":"600519.SS","name":"Kweichow Moutai Co., Ltd.","sector":"Consumer Staples","market":"CN"},
-  {"symbol":"601318.SS","name":"Ping An Insurance (Group) Co. of China","sector":"Financials","market":"CN"},
-  {"symbol":"601398.SS","name":"Industrial and Commercial Bank of China","sector":"Financials","market":"CN"},
-  {"symbol":"601288.SS","name":"Agricultural Bank of China","sector":"Financials","market":"CN"},
-  {"symbol":"601988.SS","name":"Bank of China","sector":"Financials","market":"CN"},
-  {"symbol":"601857.SS","name":"PetroChina Company Limited","sector":"Energy","market":"CN"},
-  {"symbol":"600028.SS","name":"China Petroleum & Chemical (Sinopec)","sector":"Energy","market":"CN"},
-  {"symbol":"600036.SS","name":"China Merchants Bank","sector":"Financials","market":"CN"},
-  {"symbol":"601166.SS","name":"Industrial Bank Co., Ltd.","sector":"Financials","market":"CN"},
-  {"symbol":"600900.SS","name":"China Yangtze Power Co., Ltd.","sector":"Utilities","market":"CN"},
-  {"symbol":"601888.SS","name":"China Tourism Group Duty Free","sector":"Consumer Discretionary","market":"CN"},
-  {"symbol":"601012.SS","name":"LONGi Green Energy Technology","sector":"Information Technology","market":"CN"},
-  {"symbol":"600104.SS","name":"SAIC Motor Corporation Limited","sector":"Consumer Discretionary","market":"CN"},
-  {"symbol":"600030.SS","name":"CITIC Securities Co., Ltd.","sector":"Financials","market":"CN"},
-  {"symbol":"600585.SS","name":"Anhui Conch Cement Company Limited","sector":"Materials","market":"CN"},
-  {"symbol":"600000.SS","name":"Shanghai Pudong Development Bank","sector":"Financials","market":"CN"},
-  {"symbol":"601601.SS","name":"China Pacific Insurance (Group)","sector":"Financials","market":"CN"},
-  {"symbol":"601939.SS","name":"China Construction Bank","sector":"Financials","market":"CN"},
-  {"symbol":"600019.SS","name":"Baoshan Iron & Steel Co., Ltd.","sector":"Materials","market":"CN"},
-  {"symbol":"600276.SS","name":"Jiangsu Hengrui Pharmaceuticals","sector":"Health Care","market":"CN"},
-  {"symbol":"601766.SS","name":"CRRC Corporation Limited","sector":"Industrials","market":"CN"},
-  {"symbol":"600309.SS","name":"Wanhua Chemical Group Co., Ltd.","sector":"Materials","market":"CN"},
-  {"symbol":"601633.SS","name":"Great Wall Motor Company Limited","sector":"Consumer Discretionary","market":"CN"},
-  {"symbol":"600887.SS","name":"Inner Mongolia Yili Industrial Group","sector":"Consumer Staples","market":"CN"},
-  {"symbol":"601668.SS","name":"China State Construction Engineering","sector":"Industrials","market":"CN"},
-  {"symbol":"601658.SS","name":"Postal Savings Bank of China","sector":"Financials","market":"CN"},
-  {"symbol":"601728.SS","name":"China Telecom Corporation Limited","sector":"Communication Services","market":"CN"},
-  {"symbol":"601628.SS","name":"China Life Insurance Company Limited","sector":"Financials","market":"CN"},
-  {"symbol":"688981.SS","name":"Semiconductor Manufacturing International (SMIC)","sector":"Information Technology","market":"CN"}
-  ,
-  {"symbol":"MC.PA","name":"LVMH Moët Hennessy Louis Vuitton","sector":"Consumer Discretionary","market":"EU"},
-  {"symbol":"ASML.AS","name":"ASML Holding N.V.","sector":"Information Technology","market":"EU"},
-  {"symbol":"OR.PA","name":"L'Oréal S.A.","sector":"Consumer Staples","market":"EU"},
-  {"symbol":"TTE.PA","name":"TotalEnergies SE","sector":"Energy","market":"EU"},
-  {"symbol":"SAN.PA","name":"Sanofi","sector":"Health Care","market":"EU"},
-  {"symbol":"RMS.PA","name":"Hermès International SCA","sector":"Consumer Discretionary","market":"EU"},
-  {"symbol":"AIR.PA","name":"Airbus SE","sector":"Industrials","market":"EU"},
-  {"symbol":"BNP.PA","name":"BNP Paribas","sector":"Financials","market":"EU"},
-  {"symbol":"SU.PA","name":"Schneider Electric SE","sector":"Industrials","market":"EU"},
-  {"symbol":"KER.PA","name":"Kering","sector":"Consumer Discretionary","market":"EU"},
-
-  {"symbol":"7203.T","name":"Toyota Motor Corporation","sector":"Consumer Discretionary","market":"JP"},
-  {"symbol":"6758.T","name":"Sony Group Corporation","sector":"Communication Services","market":"JP"},
-  {"symbol":"9984.T","name":"SoftBank Group Corp.","sector":"Communication Services","market":"JP"},
-  {"symbol":"6861.T","name":"Keyence Corporation","sector":"Information Technology","market":"JP"},
-  {"symbol":"8035.T","name":"Tokyo Electron Ltd.","sector":"Information Technology","market":"JP"},
-  {"symbol":"9983.T","name":"Fast Retailing Co., Ltd.","sector":"Consumer Discretionary","market":"JP"},
-  {"symbol":"9432.T","name":"Nippon Telegraph and Telephone Corp.","sector":"Communication Services","market":"JP"},
-  {"symbol":"6098.T","name":"Recruit Holdings Co., Ltd.","sector":"Industrials","market":"JP"},
-  {"symbol":"4502.T","name":"Takeda Pharmaceutical Co., Ltd.","sector":"Health Care","market":"JP"},
-  {"symbol":"8316.T","name":"Sumitomo Mitsui Financial Group, Inc.","sector":"Financials","market":"JP"},
-
-  {"symbol":"2222.SR","name":"Saudi Arabian Oil Company (Aramco)","sector":"Energy","market":"SA"},
-  {"symbol":"1120.SR","name":"Al Rajhi Bank","sector":"Financials","market":"SA"},
-  {"symbol":"2010.SR","name":"Saudi Basic Industries Corporation (SABIC)","sector":"Materials","market":"SA"},
-  {"symbol":"1180.SR","name":"The Saudi National Bank","sector":"Financials","market":"SA"},
-  {"symbol":"1211.SR","name":"Saudi Arabian Mining Company (Ma’aden)","sector":"Materials","market":"SA"},
-  {"symbol":"7010.SR","name":"Saudi Telecom Company (stc)","sector":"Communication Services","market":"SA"},
-  {"symbol":"2280.SR","name":"Almarai Company","sector":"Consumer Staples","market":"SA"},
-  {"symbol":"1050.SR","name":"Saudi British Bank","sector":"Financials","market":"SA"},
-  {"symbol":"1060.SR","name":"Banque Saudi Fransi","sector":"Financials","market":"SA"},
-  {"symbol":"4013.SR","name":"Dr. Sulaiman Al Habib Medical Services Group","sector":"Health Care","market":"SA"},
-
-  {"symbol":"BTC-USD","name":"Bitcoin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"ETH-USD","name":"Ethereum","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"USDT-USD","name":"Tether (USDT)","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"BNB-USD","name":"BNB","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"SOL-USD","name":"Solana","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"XRP-USD","name":"Ripple (XRP)","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"USDC-USD","name":"USD Coin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"DOGE-USD","name":"Dogecoin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"ADA-USD","name":"Cardano","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"TRX-USD","name":"TRON","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"TON-USD","name":"Toncoin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"AVAX-USD","name":"Avalanche","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"SHIB-USD","name":"Shiba Inu","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"DOT-USD","name":"Polkadot","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"DAI-USD","name":"Dai","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"LTC-USD","name":"Litecoin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"WBTC-USD","name":"Wrapped Bitcoin","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"BCH-USD","name":"Bitcoin Cash","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"LINK-USD","name":"Chainlink","sector":"Cryptocurrency","market":"CRYPTO"},
-  {"symbol":"NEAR-USD","name":"NEAR Protocol","sector":"Cryptocurrency","market":"CRYPTO"},
-
-  {"symbol":"EURUSD=X","name":"EUR/USD","sector":"Forex","market":"FX"},
-  {"symbol":"USDJPY=X","name":"USD/JPY","sector":"Forex","market":"FX"},
-  {"symbol":"GBPUSD=X","name":"GBP/USD","sector":"Forex","market":"FX"},
-  {"symbol":"USDCNY=X","name":"USD/CNY","sector":"Forex","market":"FX"},
-  {"symbol":"USDCHF=X","name":"USD/CHF","sector":"Forex","market":"FX"},
-  {"symbol":"AUDUSD=X","name":"AUD/USD","sector":"Forex","market":"FX"},
-  {"symbol":"USDCAD=X","name":"USD/CAD","sector":"Forex","market":"FX"},
-  {"symbol":"NZDUSD=X","name":"NZD/USD","sector":"Forex","market":"FX"},
-  {"symbol":"EURJPY=X","name":"EUR/JPY","sector":"Forex","market":"FX"},
-  {"symbol":"GBPJPY=X","name":"GBP/JPY","sector":"Forex","market":"FX"}
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "AMZN",
+    "name": "Amazon.com, Inc.",
+    "sector": "Consumer Discretionary",
+    "market": "US"
+  },
+  {
+    "symbol": "GOOGL",
+    "name": "Alphabet Inc. Class A",
+    "sector": "Communication Services",
+    "market": "US"
+  },
+  {
+    "symbol": "GOOG",
+    "name": "Alphabet Inc. Class C",
+    "sector": "Communication Services",
+    "market": "US"
+  },
+  {
+    "symbol": "META",
+    "name": "Meta Platforms, Inc.",
+    "sector": "Communication Services",
+    "market": "US"
+  },
+  {
+    "symbol": "AVGO",
+    "name": "Broadcom Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "LLY",
+    "name": "Eli Lilly and Company",
+    "sector": "Health Care",
+    "market": "US"
+  },
+  {
+    "symbol": "TSLA",
+    "name": "Tesla, Inc.",
+    "sector": "Consumer Discretionary",
+    "market": "US"
+  },
+  {
+    "symbol": "JPM",
+    "name": "JPMorgan Chase & Co.",
+    "sector": "Financials",
+    "market": "US"
+  },
+  {
+    "symbol": "V",
+    "name": "Visa Inc.",
+    "sector": "Financials",
+    "market": "US"
+  },
+  {
+    "symbol": "XOM",
+    "name": "Exxon Mobil Corporation",
+    "sector": "Energy",
+    "market": "US"
+  },
+  {
+    "symbol": "UNH",
+    "name": "UnitedHealth Group Incorporated",
+    "sector": "Health Care",
+    "market": "US"
+  },
+  {
+    "symbol": "JNJ",
+    "name": "Johnson & Johnson",
+    "sector": "Health Care",
+    "market": "US"
+  },
+  {
+    "symbol": "WMT",
+    "name": "Walmart Inc.",
+    "sector": "Consumer Staples",
+    "market": "US"
+  },
+  {
+    "symbol": "MA",
+    "name": "Mastercard Incorporated",
+    "sector": "Financials",
+    "market": "US"
+  },
+  {
+    "symbol": "PG",
+    "name": "Procter & Gamble Company",
+    "sector": "Consumer Staples",
+    "market": "US"
+  },
+  {
+    "symbol": "ORCL",
+    "name": "Oracle Corporation",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "COST",
+    "name": "Costco Wholesale Corporation",
+    "sector": "Consumer Staples",
+    "market": "US"
+  },
+  {
+    "symbol": "MRK",
+    "name": "Merck & Co., Inc.",
+    "sector": "Health Care",
+    "market": "US"
+  },
+  {
+    "symbol": "HD",
+    "name": "The Home Depot, Inc.",
+    "sector": "Consumer Discretionary",
+    "market": "US"
+  },
+  {
+    "symbol": "KO",
+    "name": "The Coca-Cola Company",
+    "sector": "Consumer Staples",
+    "market": "US"
+  },
+  {
+    "symbol": "PEP",
+    "name": "PepsiCo, Inc.",
+    "sector": "Consumer Staples",
+    "market": "US"
+  },
+  {
+    "symbol": "BAC",
+    "name": "Bank of America Corporation",
+    "sector": "Financials",
+    "market": "US"
+  },
+  {
+    "symbol": "ADBE",
+    "name": "Adobe Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "CRM",
+    "name": "Salesforce, Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "NFLX",
+    "name": "Netflix, Inc.",
+    "sector": "Communication Services",
+    "market": "US"
+  },
+  {
+    "symbol": "CSCO",
+    "name": "Cisco Systems, Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "AMD",
+    "name": "Advanced Micro Devices, Inc.",
+    "sector": "Information Technology",
+    "market": "US"
+  },
+  {
+    "symbol": "600519.SS",
+    "name": "Kweichow Moutai Co., Ltd.",
+    "sector": "Consumer Staples",
+    "market": "CN"
+  },
+  {
+    "symbol": "601318.SS",
+    "name": "Ping An Insurance (Group) Co. of China",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601398.SS",
+    "name": "Industrial and Commercial Bank of China",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601288.SS",
+    "name": "Agricultural Bank of China",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601988.SS",
+    "name": "Bank of China",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601857.SS",
+    "name": "PetroChina Company Limited",
+    "sector": "Energy",
+    "market": "CN"
+  },
+  {
+    "symbol": "600028.SS",
+    "name": "China Petroleum & Chemical (Sinopec)",
+    "sector": "Energy",
+    "market": "CN"
+  },
+  {
+    "symbol": "600036.SS",
+    "name": "China Merchants Bank",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601166.SS",
+    "name": "Industrial Bank Co., Ltd.",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600900.SS",
+    "name": "China Yangtze Power Co., Ltd.",
+    "sector": "Utilities",
+    "market": "CN"
+  },
+  {
+    "symbol": "601888.SS",
+    "name": "China Tourism Group Duty Free",
+    "sector": "Consumer Discretionary",
+    "market": "CN"
+  },
+  {
+    "symbol": "601012.SS",
+    "name": "LONGi Green Energy Technology",
+    "sector": "Information Technology",
+    "market": "CN"
+  },
+  {
+    "symbol": "600104.SS",
+    "name": "SAIC Motor Corporation Limited",
+    "sector": "Consumer Discretionary",
+    "market": "CN"
+  },
+  {
+    "symbol": "600030.SS",
+    "name": "CITIC Securities Co., Ltd.",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600585.SS",
+    "name": "Anhui Conch Cement Company Limited",
+    "sector": "Materials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600000.SS",
+    "name": "Shanghai Pudong Development Bank",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601601.SS",
+    "name": "China Pacific Insurance (Group)",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601939.SS",
+    "name": "China Construction Bank",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600019.SS",
+    "name": "Baoshan Iron & Steel Co., Ltd.",
+    "sector": "Materials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600276.SS",
+    "name": "Jiangsu Hengrui Pharmaceuticals",
+    "sector": "Health Care",
+    "market": "CN"
+  },
+  {
+    "symbol": "601766.SS",
+    "name": "CRRC Corporation Limited",
+    "sector": "Industrials",
+    "market": "CN"
+  },
+  {
+    "symbol": "600309.SS",
+    "name": "Wanhua Chemical Group Co., Ltd.",
+    "sector": "Materials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601633.SS",
+    "name": "Great Wall Motor Company Limited",
+    "sector": "Consumer Discretionary",
+    "market": "CN"
+  },
+  {
+    "symbol": "600887.SS",
+    "name": "Inner Mongolia Yili Industrial Group",
+    "sector": "Consumer Staples",
+    "market": "CN"
+  },
+  {
+    "symbol": "601668.SS",
+    "name": "China State Construction Engineering",
+    "sector": "Industrials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601658.SS",
+    "name": "Postal Savings Bank of China",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "601728.SS",
+    "name": "China Telecom Corporation Limited",
+    "sector": "Communication Services",
+    "market": "CN"
+  },
+  {
+    "symbol": "601628.SS",
+    "name": "China Life Insurance Company Limited",
+    "sector": "Financials",
+    "market": "CN"
+  },
+  {
+    "symbol": "688981.SS",
+    "name": "Semiconductor Manufacturing International (SMIC)",
+    "sector": "Information Technology",
+    "market": "CN"
+  },
+  {
+    "symbol": "MC.PA",
+    "name": "LVMH Mo\u00c3\u0192\u00c2\u00abt Hennessy Louis Vuitton",
+    "sector": "Consumer Discretionary",
+    "market": "EU"
+  },
+  {
+    "symbol": "ASML.AS",
+    "name": "ASML Holding N.V.",
+    "sector": "Information Technology",
+    "market": "EU"
+  },
+  {
+    "symbol": "OR.PA",
+    "name": "L'Or\u00c3\u0192\u00c2\u00a9al S.A.",
+    "sector": "Consumer Staples",
+    "market": "EU"
+  },
+  {
+    "symbol": "TTE.PA",
+    "name": "TotalEnergies SE",
+    "sector": "Energy",
+    "market": "EU"
+  },
+  {
+    "symbol": "SAN.PA",
+    "name": "Sanofi",
+    "sector": "Health Care",
+    "market": "EU"
+  },
+  {
+    "symbol": "RMS.PA",
+    "name": "Herm\u00c3\u0192\u00c2\u00a8s International SCA",
+    "sector": "Consumer Discretionary",
+    "market": "EU"
+  },
+  {
+    "symbol": "AIR.PA",
+    "name": "Airbus SE",
+    "sector": "Industrials",
+    "market": "EU"
+  },
+  {
+    "symbol": "BNP.PA",
+    "name": "BNP Paribas",
+    "sector": "Financials",
+    "market": "EU"
+  },
+  {
+    "symbol": "SU.PA",
+    "name": "Schneider Electric SE",
+    "sector": "Industrials",
+    "market": "EU"
+  },
+  {
+    "symbol": "KER.PA",
+    "name": "Kering",
+    "sector": "Consumer Discretionary",
+    "market": "EU"
+  },
+  {
+    "symbol": "7203.T",
+    "name": "Toyota Motor Corporation",
+    "sector": "Consumer Discretionary",
+    "market": "JP"
+  },
+  {
+    "symbol": "6758.T",
+    "name": "Sony Group Corporation",
+    "sector": "Communication Services",
+    "market": "JP"
+  },
+  {
+    "symbol": "9984.T",
+    "name": "SoftBank Group Corp.",
+    "sector": "Communication Services",
+    "market": "JP"
+  },
+  {
+    "symbol": "6861.T",
+    "name": "Keyence Corporation",
+    "sector": "Information Technology",
+    "market": "JP"
+  },
+  {
+    "symbol": "8035.T",
+    "name": "Tokyo Electron Ltd.",
+    "sector": "Information Technology",
+    "market": "JP"
+  },
+  {
+    "symbol": "9983.T",
+    "name": "Fast Retailing Co., Ltd.",
+    "sector": "Consumer Discretionary",
+    "market": "JP"
+  },
+  {
+    "symbol": "9432.T",
+    "name": "Nippon Telegraph and Telephone Corp.",
+    "sector": "Communication Services",
+    "market": "JP"
+  },
+  {
+    "symbol": "6098.T",
+    "name": "Recruit Holdings Co., Ltd.",
+    "sector": "Industrials",
+    "market": "JP"
+  },
+  {
+    "symbol": "4502.T",
+    "name": "Takeda Pharmaceutical Co., Ltd.",
+    "sector": "Health Care",
+    "market": "JP"
+  },
+  {
+    "symbol": "8316.T",
+    "name": "Sumitomo Mitsui Financial Group, Inc.",
+    "sector": "Financials",
+    "market": "JP"
+  },
+  {
+    "symbol": "2222.SR",
+    "name": "Saudi Arabian Oil Company (Aramco)",
+    "sector": "Energy",
+    "market": "SA"
+  },
+  {
+    "symbol": "1120.SR",
+    "name": "Al Rajhi Bank",
+    "sector": "Financials",
+    "market": "SA"
+  },
+  {
+    "symbol": "2010.SR",
+    "name": "Saudi Basic Industries Corporation (SABIC)",
+    "sector": "Materials",
+    "market": "SA"
+  },
+  {
+    "symbol": "1180.SR",
+    "name": "The Saudi National Bank",
+    "sector": "Financials",
+    "market": "SA"
+  },
+  {
+    "symbol": "1211.SR",
+    "name": "Saudi Arabian Mining Company (Ma\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2aden)",
+    "sector": "Materials",
+    "market": "SA"
+  },
+  {
+    "symbol": "7010.SR",
+    "name": "Saudi Telecom Company (stc)",
+    "sector": "Communication Services",
+    "market": "SA"
+  },
+  {
+    "symbol": "2280.SR",
+    "name": "Almarai Company",
+    "sector": "Consumer Staples",
+    "market": "SA"
+  },
+  {
+    "symbol": "1050.SR",
+    "name": "Saudi British Bank",
+    "sector": "Financials",
+    "market": "SA"
+  },
+  {
+    "symbol": "1060.SR",
+    "name": "Banque Saudi Fransi",
+    "sector": "Financials",
+    "market": "SA"
+  },
+  {
+    "symbol": "4013.SR",
+    "name": "Dr. Sulaiman Al Habib Medical Services Group",
+    "sector": "Health Care",
+    "market": "SA"
+  },
+  {
+    "symbol": "BTC-USD",
+    "name": "Bitcoin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "ETH-USD",
+    "name": "Ethereum",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "USDT-USD",
+    "name": "Tether (USDT)",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "BNB-USD",
+    "name": "BNB",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "SOL-USD",
+    "name": "Solana",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "XRP-USD",
+    "name": "Ripple (XRP)",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "USDC-USD",
+    "name": "USD Coin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DOGE-USD",
+    "name": "Dogecoin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "ADA-USD",
+    "name": "Cardano",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "TRX-USD",
+    "name": "TRON",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "TON-USD",
+    "name": "Toncoin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "AVAX-USD",
+    "name": "Avalanche",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "SHIB-USD",
+    "name": "Shiba Inu",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DOT-USD",
+    "name": "Polkadot",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "DAI-USD",
+    "name": "Dai",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "LTC-USD",
+    "name": "Litecoin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "WBTC-USD",
+    "name": "Wrapped Bitcoin",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "BCH-USD",
+    "name": "Bitcoin Cash",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "LINK-USD",
+    "name": "Chainlink",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "NEAR-USD",
+    "name": "NEAR Protocol",
+    "sector": "Cryptocurrency",
+    "market": "CRYPTO"
+  },
+  {
+    "symbol": "EURUSD=X",
+    "name": "EUR/USD",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDJPY=X",
+    "name": "USD/JPY",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "GBPUSD=X",
+    "name": "GBP/USD",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCNY=X",
+    "name": "USD/CNY",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCHF=X",
+    "name": "USD/CHF",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "AUDUSD=X",
+    "name": "AUD/USD",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "USDCAD=X",
+    "name": "USD/CAD",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "NZDUSD=X",
+    "name": "NZD/USD",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "EURJPY=X",
+    "name": "EUR/JPY",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "GBPJPY=X",
+    "name": "GBP/JPY",
+    "sector": "Forex",
+    "market": "FX"
+  },
+  {
+    "symbol": "GC=F",
+    "name": "Gold Futures",
+    "sector": "Commodities",
+    "market": "COM"
+  },
+  {
+    "symbol": "SI=F",
+    "name": "Silver Futures",
+    "sector": "Commodities",
+    "market": "COM"
+  },
+  {
+    "symbol": "PL=F",
+    "name": "Platinum Futures",
+    "sector": "Commodities",
+    "market": "COM"
+  },
+  {
+    "symbol": "CL=F",
+    "name": "Crude Oil WTI",
+    "sector": "Energy",
+    "market": "COM"
+  },
+  {
+    "symbol": "BZ=F",
+    "name": "Brent Crude Oil",
+    "sector": "Energy",
+    "market": "COM"
+  },
+  {
+    "symbol": "NG=F",
+    "name": "Natural Gas",
+    "sector": "Energy",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZC=F",
+    "name": "Corn Futures",
+    "sector": "Agriculture",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZW=F",
+    "name": "Wheat Futures",
+    "sector": "Agriculture",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZS=F",
+    "name": "Soybean Futures",
+    "sector": "Agriculture",
+    "market": "COM"
+  },
+  {
+    "symbol": "KC=F",
+    "name": "Coffee Futures",
+    "sector": "Agriculture",
+    "market": "COM"
+  }
 ]

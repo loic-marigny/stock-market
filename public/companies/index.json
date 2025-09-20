@@ -532,7 +532,7 @@
   },
   {
     "symbol": "MC.PA",
-    "name": "LVMH Mo\u00ebt Hennessy Louis Vuitton",
+    "name": "LVMH Mo\u00c3\u0192\u00c2\u00abt Hennessy Louis Vuitton",
     "sector": "Consumer Discretionary",
     "profile": "companies/MC.PA/profile.json",
     "logo": null,
@@ -550,7 +550,7 @@
   },
   {
     "symbol": "OR.PA",
-    "name": "L'Or\u00e9al S.A.",
+    "name": "L'Or\u00c3\u0192\u00c2\u00a9al S.A.",
     "sector": "Consumer Staples",
     "profile": "companies/OR.PA/profile.json",
     "logo": null,
@@ -577,7 +577,7 @@
   },
   {
     "symbol": "RMS.PA",
-    "name": "Herm\u00e8s International SCA",
+    "name": "Herm\u00c3\u0192\u00c2\u00a8s International SCA",
     "sector": "Consumer Discretionary",
     "profile": "companies/RMS.PA/profile.json",
     "logo": null,
@@ -748,7 +748,7 @@
   },
   {
     "symbol": "1211.SR",
-    "name": "Saudi Arabian Mining Company (Ma\u2019aden)",
+    "name": "Saudi Arabian Mining Company (Ma\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2aden)",
     "sector": "Materials",
     "profile": "companies/1211.SR/profile.json",
     "logo": null,
@@ -1069,5 +1069,95 @@
     "logo": null,
     "history": "history/GBPJPY=X.json",
     "market": "FX"
+  },
+  {
+    "symbol": "GC=F",
+    "name": "Gold Futures",
+    "sector": "Commodities",
+    "profile": "companies/GC=F/profile.json",
+    "logo": null,
+    "history": "history/GC=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "SI=F",
+    "name": "Silver Futures",
+    "sector": "Commodities",
+    "profile": "companies/SI=F/profile.json",
+    "logo": null,
+    "history": "history/SI=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "PL=F",
+    "name": "Platinum Futures",
+    "sector": "Commodities",
+    "profile": "companies/PL=F/profile.json",
+    "logo": null,
+    "history": "history/PL=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "CL=F",
+    "name": "Crude Oil WTI",
+    "sector": "Energy",
+    "profile": "companies/CL=F/profile.json",
+    "logo": null,
+    "history": "history/CL=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "BZ=F",
+    "name": "Brent Crude Oil",
+    "sector": "Energy",
+    "profile": "companies/BZ=F/profile.json",
+    "logo": null,
+    "history": "history/BZ=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "NG=F",
+    "name": "Natural Gas",
+    "sector": "Energy",
+    "profile": "companies/NG=F/profile.json",
+    "logo": null,
+    "history": "history/NG=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZC=F",
+    "name": "Corn Futures",
+    "sector": "Agriculture",
+    "profile": "companies/ZC=F/profile.json",
+    "logo": null,
+    "history": "history/ZC=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZW=F",
+    "name": "Wheat Futures",
+    "sector": "Agriculture",
+    "profile": "companies/ZW=F/profile.json",
+    "logo": null,
+    "history": "history/ZW=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "ZS=F",
+    "name": "Soybean Futures",
+    "sector": "Agriculture",
+    "profile": "companies/ZS=F/profile.json",
+    "logo": null,
+    "history": "history/ZS=F.json",
+    "market": "COM"
+  },
+  {
+    "symbol": "KC=F",
+    "name": "Coffee Futures",
+    "sector": "Agriculture",
+    "profile": "companies/KC=F/profile.json",
+    "logo": null,
+    "history": "history/KC=F.json",
+    "market": "COM"
   }
 ]

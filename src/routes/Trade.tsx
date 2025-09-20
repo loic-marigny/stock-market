@@ -194,7 +194,7 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
     map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
   }
   const ordered: Record<string, Company[]> = {};
-  for(const pref of ["US","CN","EU","JP","SA","CRYPTO","FX"]) if(map[pref]) ordered[pref]=map[pref];
+  for(const pref of ["US","CN","EU","JP","SA","COM","CRYPTO","FX"]) if(map[pref]) ordered[pref]=map[pref];
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }
