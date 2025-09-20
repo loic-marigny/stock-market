@@ -21,12 +21,21 @@ async function fetchJSON<T>(url: string): Promise<T> {
 
 export const jsonProvider: PriceProvider = {
   async getDailyHistory(symbol: string): Promise<OHLC[]> {
-    const url = fromBase(`history/${encodeURIComponent(symbol)}.json`);
-    try {
+    const tryFetch = async (pathSymbol: string) => {
+      const url = fromBase(`history/${pathSymbol}.json`);
       const arr = await fetchJSON<OHLC[]>(url);
       arr.sort((a,b)=> a.date.localeCompare(b.date));
       return arr;
+    };
+    try {
+      return await tryFetch(symbol);
     } catch {
+      try {
+        const enc = encodeURIComponent(symbol);
+        if (enc !== symbol) {
+          return await tryFetch(enc);
+        }
+      } catch {}
       return [];
     }
   },
