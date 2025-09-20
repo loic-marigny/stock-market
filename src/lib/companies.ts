@@ -31,6 +31,8 @@ export function marketLabel(mkt?: string): string {
   const code = (mkt || "").toUpperCase();
   if (code === "US") return "New York";
   if (code === "CN") return "Shanghai";
+  if (code === "EU") return "Euronext";
+  if (code === "JP") return "Tokyo";
+  if (code === "SA") return "Saudi Arabia";
   return code || "Other";
 }
-

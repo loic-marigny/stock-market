@@ -148,6 +148,9 @@ def load_previous():
 def load_tickers_by_market():
     us: list[str] = []
     cn: list[str] = []
+    eu: list[str] = []
+    jp: list[str] = []
+    sa: list[str] = []
     try:
         arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
         if isinstance(arr, list):
@@ -160,11 +163,17 @@ def load_tickers_by_market():
                     continue
                 if mkt == "CN":
                     cn.append(sym)
-                else:
+                elif mkt == "EU":
+                    eu.append(sym)
+                elif mkt == "JP":
+                    jp.append(sym)
+                elif mkt == "SA":
+                    sa.append(sym)
+                elif mkt == "US" or not mkt:
                     us.append(sym)
     except Exception as e:
         print(f"[warn] load tickers failed: {e}; defaulting to US only")
-    return us, cn
+    return us, cn, eu, jp, sa
 
 
 def us_market_is_open(token: str | None) -> bool:
@@ -214,6 +223,65 @@ def cn_market_is_open() -> bool:
     return morning or afternoon
 
 
+def eu_market_is_open() -> bool:
+    # Euronext Paris: 09:00–17:30 local time, Mon–Fri
+    eu = datetime.now(ZoneInfo("Europe/Paris"))
+    if eu.weekday() >= 5:
+        return False
+    return dtime(9,0) <= eu.time() <= dtime(17,30)
+
+
+def jp_market_is_open() -> bool:
+    # Tokyo: 09:00–11:30 and 12:30–15:00 local time, Mon–Fri
+    jp = datetime.now(ZoneInfo("Asia/Tokyo"))
+    if jp.weekday() >= 5:
+        return False
+    t = jp.time()
+    return (dtime(9,0) <= t <= dtime(11,30)) or (dtime(12,30) <= t <= dtime(15,0))
+
+
+def sa_market_is_open() -> bool:
+    # Tadawul (KSA): Sun–Thu, 10:00–15:00 local time
+    sa = datetime.now(ZoneInfo("Asia/Riyadh"))
+    if sa.weekday() not in {6,0,1,2,3}:  # Sun(6)–Thu(3)
+        return False
+    return dtime(10,0) <= sa.time() <= dtime(15,0)
+
+
+def yahoo_last(symbol: str):
+    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    for host in hosts:
+        url = f"https://{host}/v8/finance/chart/{symbol}?range=1mo&interval=1d"
+        for attempt in range(1,3):
+            try:
+                print(f"[yahoo] {symbol} try#{attempt} GET {url}")
+                r = SESSION.get(url, timeout=15)
+                print(f"[yahoo] {symbol} status={r.status_code}")
+                if r.status_code == 429:
+                    time.sleep(1.2 * attempt)
+                    continue
+                r.raise_for_status()
+                j = r.json()
+                res = (j.get("chart") or {}).get("result") or []
+                if not res:
+                    break
+                res0 = res[0]
+                ts = res0.get("timestamp") or []
+                q = ((res0.get("indicators") or {}).get("quote") or [{}])[0]
+                closes = q.get("close") or []
+                for i in range(len(closes)-1, -1, -1):
+                    c = closes[i]
+                    if c is None:
+                        continue
+                    t = ts[i]
+                    dt = datetime.fromtimestamp(int(t), tz=timezone.utc)
+                    iso = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                    return float(c), iso, "yahoo_1d"
+            except Exception as e:
+                print(f"[warn] yahoo {symbol} failed: {e}")
+    return None, None, None
+
+
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -225,15 +293,24 @@ def main():
         print("[warn] ALLTICK_API_KEY/TOKEN not set; CN quotes unavailable.")
     had_prev = OUT.exists()
     prev = load_previous()
-    us_list, cn_list = load_tickers_by_market()
+    us_list, cn_list, eu_list, jp_list, sa_list = load_tickers_by_market()
     print(f"[main] start; had_prev={had_prev}; prev_keys={list(prev.keys())}")
     open_us = us_market_is_open(api_key)
     open_cn = cn_market_is_open()
+    open_eu = eu_market_is_open()
+    open_jp = jp_market_is_open()
+    open_sa = sa_market_is_open()
     symbols: list[str] = []
     if open_us:
         symbols.extend(us_list)
     if open_cn:
         symbols.extend(cn_list)
+    if open_eu:
+        symbols.extend(eu_list)
+    if open_jp:
+        symbols.extend(jp_list)
+    if open_sa:
+        symbols.extend(sa_list)
     if not symbols:
         print("[info] No market open now; skip fetching and preserve previous files")
         if had_prev or PUBLIC_OUT.exists():
@@ -292,6 +369,9 @@ def main():
             out[s] = new_entry
             time.sleep(0.2 + random.uniform(0,0.2))
             continue
+        elif s in eu_list or s in jp_list or s in sa_list:
+            print(f"[main] {s} - try Yahoo 1d")
+            px, ts, src = yahoo_last(s)
         else:
             if not api_key:
                 print(f"[warn] {s}: no Finnhub key; cannot update US ticker")

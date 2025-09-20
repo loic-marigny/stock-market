@@ -12,6 +12,13 @@ on:
     - cron: "*/10 2-3 * * 1-5"
     - cron: "*/10 5-6 * * 1-5"
     - cron: "0 7 * * 1-5"
+    # Euronext Paris (approx UTC): 08:00–16:30 Mon–Fri
+    - cron: "*/10 8-16 * * 1-5"
+    # Tokyo (approx UTC): 00:00–02:30 and 03:30–06:00 Mon–Fri
+    - cron: "*/10 0-2 * * 1-5"
+    - cron: "*/10 3-5 * * 1-5"
+    # Tadawul (KSA) UTC: 07:00–12:00 Sun–Thu
+    - cron: "*/10 7-12 * * 0-4"
   workflow_dispatch:
 
 permissions:
