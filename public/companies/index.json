@@ -529,5 +529,275 @@
     "logo": null,
     "history": "history/688981.SS.json",
     "market": "CN"
+  },
+  {
+    "symbol": "MC.PA",
+    "name": "LVMH Mo\u00ebt Hennessy Louis Vuitton",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/MC.PA/profile.json",
+    "logo": null,
+    "history": "history/MC.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "ASML.AS",
+    "name": "ASML Holding N.V.",
+    "sector": "Information Technology",
+    "profile": "companies/ASML.AS/profile.json",
+    "logo": null,
+    "history": "history/ASML.AS.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "OR.PA",
+    "name": "L'Or\u00e9al S.A.",
+    "sector": "Consumer Staples",
+    "profile": "companies/OR.PA/profile.json",
+    "logo": null,
+    "history": "history/OR.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "TTE.PA",
+    "name": "TotalEnergies SE",
+    "sector": "Energy",
+    "profile": "companies/TTE.PA/profile.json",
+    "logo": null,
+    "history": "history/TTE.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "SAN.PA",
+    "name": "Sanofi",
+    "sector": "Health Care",
+    "profile": "companies/SAN.PA/profile.json",
+    "logo": null,
+    "history": "history/SAN.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "RMS.PA",
+    "name": "Herm\u00e8s International SCA",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/RMS.PA/profile.json",
+    "logo": null,
+    "history": "history/RMS.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "AIR.PA",
+    "name": "Airbus SE",
+    "sector": "Industrials",
+    "profile": "companies/AIR.PA/profile.json",
+    "logo": null,
+    "history": "history/AIR.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "BNP.PA",
+    "name": "BNP Paribas",
+    "sector": "Financials",
+    "profile": "companies/BNP.PA/profile.json",
+    "logo": null,
+    "history": "history/BNP.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "SU.PA",
+    "name": "Schneider Electric SE",
+    "sector": "Industrials",
+    "profile": "companies/SU.PA/profile.json",
+    "logo": null,
+    "history": "history/SU.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "KER.PA",
+    "name": "Kering",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/KER.PA/profile.json",
+    "logo": null,
+    "history": "history/KER.PA.json",
+    "market": "EU"
+  },
+  {
+    "symbol": "7203.T",
+    "name": "Toyota Motor Corporation",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/7203.T/profile.json",
+    "logo": null,
+    "history": "history/7203.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "6758.T",
+    "name": "Sony Group Corporation",
+    "sector": "Communication Services",
+    "profile": "companies/6758.T/profile.json",
+    "logo": null,
+    "history": "history/6758.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "9984.T",
+    "name": "SoftBank Group Corp.",
+    "sector": "Communication Services",
+    "profile": "companies/9984.T/profile.json",
+    "logo": null,
+    "history": "history/9984.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "6861.T",
+    "name": "Keyence Corporation",
+    "sector": "Information Technology",
+    "profile": "companies/6861.T/profile.json",
+    "logo": null,
+    "history": "history/6861.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "8035.T",
+    "name": "Tokyo Electron Ltd.",
+    "sector": "Information Technology",
+    "profile": "companies/8035.T/profile.json",
+    "logo": null,
+    "history": "history/8035.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "9983.T",
+    "name": "Fast Retailing Co., Ltd.",
+    "sector": "Consumer Discretionary",
+    "profile": "companies/9983.T/profile.json",
+    "logo": null,
+    "history": "history/9983.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "9432.T",
+    "name": "Nippon Telegraph and Telephone Corp.",
+    "sector": "Communication Services",
+    "profile": "companies/9432.T/profile.json",
+    "logo": null,
+    "history": "history/9432.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "6098.T",
+    "name": "Recruit Holdings Co., Ltd.",
+    "sector": "Industrials",
+    "profile": "companies/6098.T/profile.json",
+    "logo": null,
+    "history": "history/6098.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "4502.T",
+    "name": "Takeda Pharmaceutical Co., Ltd.",
+    "sector": "Health Care",
+    "profile": "companies/4502.T/profile.json",
+    "logo": null,
+    "history": "history/4502.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "8316.T",
+    "name": "Sumitomo Mitsui Financial Group, Inc.",
+    "sector": "Financials",
+    "profile": "companies/8316.T/profile.json",
+    "logo": null,
+    "history": "history/8316.T.json",
+    "market": "JP"
+  },
+  {
+    "symbol": "2222.SR",
+    "name": "Saudi Arabian Oil Company (Aramco)",
+    "sector": "Energy",
+    "profile": "companies/2222.SR/profile.json",
+    "logo": null,
+    "history": "history/2222.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "1120.SR",
+    "name": "Al Rajhi Bank",
+    "sector": "Financials",
+    "profile": "companies/1120.SR/profile.json",
+    "logo": null,
+    "history": "history/1120.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "2010.SR",
+    "name": "Saudi Basic Industries Corporation (SABIC)",
+    "sector": "Materials",
+    "profile": "companies/2010.SR/profile.json",
+    "logo": null,
+    "history": "history/2010.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "1180.SR",
+    "name": "The Saudi National Bank",
+    "sector": "Financials",
+    "profile": "companies/1180.SR/profile.json",
+    "logo": null,
+    "history": "history/1180.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "1211.SR",
+    "name": "Saudi Arabian Mining Company (Ma\u2019aden)",
+    "sector": "Materials",
+    "profile": "companies/1211.SR/profile.json",
+    "logo": null,
+    "history": "history/1211.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "7010.SR",
+    "name": "Saudi Telecom Company (stc)",
+    "sector": "Communication Services",
+    "profile": "companies/7010.SR/profile.json",
+    "logo": null,
+    "history": "history/7010.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "2280.SR",
+    "name": "Almarai Company",
+    "sector": "Consumer Staples",
+    "profile": "companies/2280.SR/profile.json",
+    "logo": null,
+    "history": "history/2280.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "1050.SR",
+    "name": "Saudi British Bank",
+    "sector": "Financials",
+    "profile": "companies/1050.SR/profile.json",
+    "logo": null,
+    "history": "history/1050.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "1060.SR",
+    "name": "Banque Saudi Fransi",
+    "sector": "Financials",
+    "profile": "companies/1060.SR/profile.json",
+    "logo": null,
+    "history": "history/1060.SR.json",
+    "market": "SA"
+  },
+  {
+    "symbol": "4013.SR",
+    "name": "Dr. Sulaiman Al Habib Medical Services Group",
+    "sector": "Health Care",
+    "profile": "companies/4013.SR/profile.json",
+    "logo": null,
+    "history": "history/4013.SR.json",
+    "market": "SA"
   }
 ]
