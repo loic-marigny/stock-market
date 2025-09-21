@@ -308,7 +308,7 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
                 r = SESSION.get(url, timeout=20)
                 print(f"[history-yahoo] {symbol} status={r.status_code}")
                 if r.status_code == 429:
-                    delay = (1.2 * attempt) + (attempt - 1)
+                    delay = 3.0 * attempt + 2.0
                     time.sleep(delay)
                     continue
                 r.raise_for_status()
@@ -330,6 +330,7 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
             except Exception as e:
                 print(f"[warn] {symbol} yahoo failed: {e}")
                 time.sleep(2)
+        time.sleep(3)
     time.sleep(2)
     return []
 
