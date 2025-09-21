@@ -56,11 +56,7 @@ for company_folder in os.listdir(FOLDER_PATH):
                     values
                 )
 
-            print(f"Inserted data from {filename}")
-
 # Commit and close connection
 conn.commit()
 cur.close()
 conn.close()
-
-print("All data inserted successfully!")
