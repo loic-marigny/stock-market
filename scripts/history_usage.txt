@@ -1,0 +1,6 @@
+﻿Usage: python scripts/history.py [--symbols SYMBOL[,SYMBOL...]] [--limit N]
+       --symbols   Optional comma-separated list of ticker symbols to refresh.
+       --limit     Optional integer; stops after processing N symbols.
+
+If neither flag is provided, the script processes every entry listed in
+`data/tickers.json` as before.
