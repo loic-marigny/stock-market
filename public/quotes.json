@@ -1,56 +1,56 @@
 {
   "600519.SS": {
-    "last": 1440.89,
-    "as_of": "2025-09-23T03:24:34Z",
+    "last": 1443.42,
+    "as_of": "2025-09-23T05:12:58Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 55.17,
-    "as_of": "2025-09-23T03:26:02Z",
+    "last": 55.3,
+    "as_of": "2025-09-23T05:14:49Z",
     "interval": "akshare_spot"
   },
   "601398.SS": {
     "last": 7.38,
-    "as_of": "2025-09-23T03:27:26Z",
+    "as_of": "2025-09-23T05:16:38Z",
     "interval": "akshare_spot"
   },
   "601288.SS": {
-    "last": 6.7,
-    "as_of": "2025-09-23T03:28:59Z",
+    "last": 6.66,
+    "as_of": "2025-09-23T05:18:26Z",
     "interval": "akshare_spot"
   },
   "601988.SS": {
-    "last": 5.31,
-    "as_of": "2025-09-23T03:30:35Z",
+    "last": 5.29,
+    "as_of": "2025-09-23T05:20:17Z",
     "interval": "akshare_spot"
   },
   "601857.SS": {
-    "last": 8.1,
-    "as_of": "2025-09-23T03:32:16Z",
-    "interval": "akshare_spot"
+    "last": 8.15,
+    "as_of": "2025-09-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.34,
-    "as_of": "2025-09-23T03:33:32Z",
-    "interval": "akshare_spot"
+    "last": 5.35,
+    "as_of": "2025-09-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 41.53,
-    "as_of": "2025-09-23T03:35:05Z",
-    "interval": "akshare_spot"
+    "last": 41.5,
+    "as_of": "2025-09-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.4,
-    "as_of": "2025-09-23T03:36:45Z",
-    "interval": "akshare_spot"
+    "last": 20.41,
+    "as_of": "2025-09-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 27.24,
-    "as_of": "2025-09-23T03:38:09Z",
-    "interval": "akshare_spot"
+    "last": 27.22,
+    "as_of": "2025-09-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.93,
+    "last": 70.02,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -60,12 +60,12 @@
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 18.6,
+    "last": 18.62,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 28.36,
+    "last": 28.34,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -75,17 +75,17 @@
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 12.46,
+    "last": 12.44,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 34.9,
+    "last": 34.82,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 8.87,
+    "last": 8.8,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -95,7 +95,7 @@
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 68.72,
+    "last": 68.98,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -105,27 +105,27 @@
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 62.79,
+    "last": 63.0,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 24.22,
+    "last": 24.26,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.32,
+    "last": 27.26,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.53,
+    "last": 5.54,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 6.07,
+    "last": 6.04,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -135,17 +135,17 @@
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 37.8,
+    "last": 37.85,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 123.63,
+    "last": 124.23,
     "as_of": "2025-09-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "meta": {
-    "generated_at": "2025-09-23T03:48:38Z",
+    "generated_at": "2025-09-23T05:32:42Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
