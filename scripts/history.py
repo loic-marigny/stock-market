@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import List, Dict
 import pandas as pd
 import akshare as ak
+import yfinance as yf
 import csv
 import random
 from urllib.parse import quote
@@ -206,6 +207,27 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
 
 
     
+
+
+def fetch_daily_yfinance(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    period_years = max(int(years), 1)
+    period = "max" if period_years > 10 else f"{period_years}y"
+    df = yf.Ticker(symbol).history(period=period, interval="1d", auto_adjust=False)
+    if df.empty:
+        return []
+    df = df.dropna(subset=["Close"])
+    cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat() if years > 0 else None
+    out: List[Dict[str, float]] = []
+    for index, close in df["Close"].items():
+        try:
+            dt = index.to_pydatetime()
+        except AttributeError:
+            dt = datetime.fromtimestamp(float(index), tz=timezone.utc)
+        out.append({"date": dt.date().isoformat(), "close": float(close)})
+    out.sort(key=lambda item: item["date"])
+    if cutoff:
+        out = [item for item in out if item["date"] >= cutoff]
+    return out
 
 
 def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
@@ -439,6 +461,13 @@ def main():
                 continue
             fresh: List[Dict[str, float]] = []
             source = ""
+            if not fresh:
+                try:
+                    fresh = fetch_daily_yfinance(sym, years=MIN_YEARS)
+                    if fresh:
+                        source = "yfinance"
+                except Exception as e:
+                    print(f"[warn] {sym} yfinance failed: {e}")
             if not fresh:
                 try:
                     fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
