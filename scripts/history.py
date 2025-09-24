@@ -22,12 +22,15 @@ from pathlib import Path
 from typing import List, Dict
 import pandas as pd
 import akshare as ak
+import yfinance as yf
 import csv
+import random
 from urllib.parse import quote
 
 import requests
 
-DATA_TICKERS = Path("data/tickers.json")
+ROOT = Path(__file__).resolve().parents[1]
+DATA_TICKERS = ROOT / "data" / "tickers.json"
 MIN_YEARS = 1  # ensure at least this coverage
 
 SESSION = requests.Session()
@@ -35,7 +38,8 @@ SESSION.headers["User-Agent"] = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
 
-OUT_DIR = Path("public/history")
+
+OUT_DIR = ROOT / "public" / "history"
 
 
 def to_iso_utc(ts: int) -> str:
@@ -75,9 +79,7 @@ def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, fl
 
     base_url = (os.environ.get("YAHOO_WORKER_URL") or "").strip()
     if not base_url:
-        time.sleep(2)
-    time.sleep(2)
-    return []
+        return []
 
     range_env = (os.environ.get("YAHOO_WORKER_RANGE") or "").strip()
     if range_env:
@@ -207,6 +209,27 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     
 
 
+def fetch_daily_yfinance(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
+    period_years = max(int(years), 1)
+    period = "max" if period_years > 10 else f"{period_years}y"
+    df = yf.Ticker(symbol).history(period=period, interval="1d", auto_adjust=False)
+    if df.empty:
+        return []
+    df = df.dropna(subset=["Close"])
+    cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat() if years > 0 else None
+    out: List[Dict[str, float]] = []
+    for index, close in df["Close"].items():
+        try:
+            dt = index.to_pydatetime()
+        except AttributeError:
+            dt = datetime.fromtimestamp(float(index), tz=timezone.utc)
+        out.append({"date": dt.date().isoformat(), "close": float(close)})
+    out.sort(key=lambda item: item["date"])
+    if cutoff:
+        out = [item for item in out if item["date"] >= cutoff]
+    return out
+
+
 def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
     """Alltick daily history (CN) â€” tries common kline endpoints, strips .SS.
 
@@ -298,18 +321,22 @@ def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> Li
 def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
     # Use Yahoo Chart API v8 for daily candles
     rng = "1y" if years <= 1 else "2y"
-    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"]
+    hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com", "query3.finance.yahoo.com", "query2.finance.yahoo.com"]
     encoded = quote(symbol, safe='')
     for host in hosts:
-        url = f"https://{host}/v8/finance/chart/{encoded}?range={rng}&interval=1d"
-        for attempt in range(1, 4):
+        for attempt in range(1, 33):
+            query_host = host.replace('HOST', str(((attempt - 1) % len(hosts)) + 1)) if 'HOST' in host else host
+            url = f"https://{query_host}/v8/finance/chart/{encoded}?range={rng}&interval=1d"
             try:
                 print(f"[history-yahoo] {symbol} try#{attempt} GET {url}")
                 r = SESSION.get(url, timeout=20)
                 print(f"[history-yahoo] {symbol} status={r.status_code}")
                 if r.status_code == 429:
-                    delay = 3.0 * attempt + 2.0
-                    time.sleep(delay)
+                    sleep = min(15.0 * attempt, 60.0) + random.uniform(1.0, 3.0)
+                    time.sleep(sleep)
+                    continue
+                if r.status_code in {500, 502, 503, 504}:
+                    time.sleep(random.uniform(3.0, 6.0))
                     continue
                 r.raise_for_status()
                 j = r.json()
@@ -329,10 +356,7 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
                 return out
             except Exception as e:
                 print(f"[warn] {symbol} yahoo failed: {e}")
-                time.sleep(2)
-        time.sleep(3)
-    time.sleep(2)
-    return []
+                return []
 
 
 def load_existing(sym: str) -> List[Dict[str, float]]:
@@ -373,7 +397,21 @@ def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> L
     return out
 
 
+def parse_args():
+    import argparse
+    parser = argparse.ArgumentParser(description="Fetch daily history JSON files")
+    parser.add_argument('--symbols', type=str, help='Comma-separated list of symbols to refresh')
+    parser.add_argument('--limit', type=int, help='Limit number of symbols processed')
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
+    symbol_filter: set[str] | None = None
+    if args.symbols:
+        symbol_filter = {sym.strip() for sym in args.symbols.split(',') if sym.strip()}
+    max_count = args.limit if args.limit and args.limit > 0 else None
+
     token = os.environ.get("FINNHUB_API_KEY") or os.environ.get("FINNHUB_TOKEN")
     av_key = os.environ.get("ALPHAVANTAGE_API_KEY") or os.environ.get("ALPHAVANTAGE_TOKEN")
     if not token:
@@ -381,6 +419,9 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+    use_worker = bool((os.environ.get("YAHOO_WORKER_URL") or "").strip())
+    worker_first = (os.environ.get("HISTORY_WORKER_PRIORITY") or "").strip().lower() in {"1", "true", "yes"}
+    symbol_delay = float(os.environ.get("HISTORY_SYMBOL_DELAY") or "1.5")
     try:
         arr = json.loads(DATA_TICKERS.read_text(encoding="utf-8"))
         tickers: list[tuple[str, str]] = []
@@ -396,7 +437,22 @@ def main():
     except Exception:
         tickers = []
 
+    if symbol_filter is not None:
+        tickers = [(sym, mkt) for sym, mkt in tickers if sym in symbol_filter]
+
+    use_worker = bool(os.environ.get("YAHOO_WORKER_URL"))
+
+    total = len(tickers)
+    if total == 0:
+        print('[history] no symbols to process')
+        return
+    limit_total = min(total, max_count) if max_count else total
+    processed = 0
     for sym, market in tickers:
+        if max_count is not None and processed >= max_count:
+            break
+        idx_display = processed + 1 if limit_total else processed + 1
+        print(f"[history] ({idx_display}/{limit_total or total}) {sym}")
         try:
             existing = load_existing(sym)
             cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365)).isoformat()
@@ -407,8 +463,22 @@ def main():
             source = ""
             if not fresh:
                 try:
-                    fresh = fetch_daily_worker(sym, years=MIN_YEARS)
+                    fresh = fetch_daily_yfinance(sym, years=MIN_YEARS)
                     if fresh:
+                        source = "yfinance"
+                except Exception as e:
+                    print(f"[warn] {sym} yfinance failed: {e}")
+            if not fresh:
+                try:
+                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
+                    if fresh:
+                        source = "yahoo"
+                except Exception as e:
+                    print(f"[warn] {sym} yahoo failed: {e}")
+            if not fresh and use_worker:
+                try:
+                    fresh = fetch_daily_worker(sym, years=MIN_YEARS)
+                    if fresh and not source:
                         source = "yahoo_worker"
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
@@ -423,8 +493,8 @@ def main():
                 try:
                     code = sym.split('.')[0]
                     end = datetime.now(timezone.utc).date()
-                    start = (end - timedelta(days=365 * MIN_YEARS + 7)).strftime('%Y%m%d')
-                    df = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start, end_date=end.strftime('%Y%m%d'), adjust="")
+                    start_date = (end - timedelta(days=365 * MIN_YEARS + 7)).strftime('%Y%m%d')
+                    df = ak.stock_zh_a_hist(symbol=code, period="daily", start_date=start_date, end_date=end.strftime('%Y%m%d'), adjust="")
                     if isinstance(df, pd.DataFrame) and not df.empty:
                         date_key = '?-??oY' if '?-??oY' in df.columns else ('date' if 'date' in df.columns else None)
                         close_key = '?"?>~' if '?"?>~' in df.columns else ('close' if 'close' in df.columns else None)
@@ -437,7 +507,6 @@ def main():
             if not fresh and av_key and market not in {"CRYPTO", "FX", "COM", "IDX"}:
                 try:
                     fresh = fetch_daily_alpha(sym, av_key, years=MIN_YEARS)
-                    time.sleep(12)
                     if fresh:
                         source = "alpha"
                 except Exception as e:
@@ -449,13 +518,6 @@ def main():
                         source = "stooq"
                 except Exception as e:
                     print(f"[warn] {sym} stooq failed: {e}")
-            if not fresh:
-                try:
-                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
-                    if fresh:
-                        source = "yahoo"
-                except Exception as e:
-                    print(f"[warn] {sym} yahoo failed: {e}")
             if not fresh and not existing:
                 print(f"[warn] {sym} no data from any provider; skip writing (keep absent)")
                 continue
@@ -464,9 +526,9 @@ def main():
             with open(out_path, "w") as f:
                 json.dump(merged, f)
             print("[ok] wrote", out_path, f"len={len(merged)}", f"source={source or 'existing'}")
-            if source == "yahoo":
-                time.sleep(1.5)
         except Exception as e:
             print(f"[warn] {sym} history failed: {e}")
+        finally:
+            processed += 1
 if __name__ == "__main__":
     main()

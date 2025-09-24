@@ -834,7 +834,7 @@
     "market": "IDX"
   },
   {
-    "symbol": "^SMI",
+    "symbol": "SMIN.SW",
     "name": "Swiss Market Index",
     "sector": "Index",
     "market": "IDX"
@@ -876,7 +876,7 @@
     "market": "IDX"
   },
   {
-    "symbol": "^TOPX",
+    "symbol": "TOPIX100.T",
     "name": "TOPIX",
     "sector": "Index",
     "market": "IDX"
@@ -888,7 +888,7 @@
     "market": "IDX"
   },
   {
-    "symbol": "^SSEC",
+    "symbol": "000001.SS",
     "name": "Shanghai Composite",
     "sector": "Index",
     "market": "IDX"
