@@ -1,152 +1,152 @@
 {
   "AAPL": {
-    "last": 252.07,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 251.4993,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "MSFT": {
-    "last": 508.235,
-    "as_of": "2025-09-24T16:30:55Z",
+    "last": 507.815,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "NVDA": {
-    "last": 175.94,
-    "as_of": "2025-09-24T16:31:03Z",
+    "last": 176.165,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "AMZN": {
-    "last": 220.915,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 220.507,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "GOOGL": {
-    "last": 248.7,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 248.3601,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "GOOG": {
-    "last": 249.47,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 249.16,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "META": {
-    "last": 756.98,
-    "as_of": "2025-09-24T16:31:00Z",
+    "last": 753.72,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "AVGO": {
-    "last": 336.2024,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 336.7512,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "LLY": {
-    "last": 741.02,
-    "as_of": "2025-09-24T16:30:57Z",
+    "last": 740.045,
+    "as_of": "2025-09-24T16:51:05Z",
     "interval": "finnhub"
   },
   "TSLA": {
-    "last": 436.93,
-    "as_of": "2025-09-24T16:31:03Z",
+    "last": 438.18,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "JPM": {
-    "last": 313.32,
-    "as_of": "2025-09-24T16:30:55Z",
+    "last": 313.11,
+    "as_of": "2025-09-24T16:51:18Z",
     "interval": "finnhub"
   },
   "V": {
-    "last": 339.07,
-    "as_of": "2025-09-24T16:31:01Z",
+    "last": 339.12,
+    "as_of": "2025-09-24T16:51:18Z",
     "interval": "finnhub"
   },
   "XOM": {
-    "last": 115.465,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 115.4,
+    "as_of": "2025-09-24T16:51:18Z",
     "interval": "finnhub"
   },
   "UNH": {
-    "last": 351.08,
-    "as_of": "2025-09-24T16:31:00Z",
+    "last": 352.1645,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "JNJ": {
-    "last": 176.5054,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 176.575,
+    "as_of": "2025-09-24T16:51:13Z",
     "interval": "finnhub"
   },
   "WMT": {
-    "last": 102.745,
-    "as_of": "2025-09-24T16:31:01Z",
+    "last": 102.54,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "MA": {
-    "last": 567.2028,
-    "as_of": "2025-09-24T16:30:55Z",
+    "last": 567.3,
+    "as_of": "2025-09-24T16:51:03Z",
     "interval": "finnhub"
   },
   "PG": {
-    "last": 153.21,
-    "as_of": "2025-09-24T16:30:59Z",
+    "last": 152.99,
+    "as_of": "2025-09-24T16:50:58Z",
     "interval": "finnhub"
   },
   "ORCL": {
-    "last": 301.89,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 302.155,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "COST": {
-    "last": 946.73,
-    "as_of": "2025-09-24T16:30:56Z",
+    "last": 945.6757,
+    "as_of": "2025-09-24T16:51:18Z",
     "interval": "finnhub"
   },
   "MRK": {
-    "last": 79.705,
-    "as_of": "2025-09-24T16:31:02Z",
+    "last": 79.625,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "HD": {
-    "last": 409.64,
-    "as_of": "2025-09-24T16:30:37Z",
+    "last": 409.505,
+    "as_of": "2025-09-24T16:51:16Z",
     "interval": "finnhub"
   },
   "KO": {
-    "last": 66.535,
-    "as_of": "2025-09-24T16:30:55Z",
+    "last": 66.48,
+    "as_of": "2025-09-24T16:51:17Z",
     "interval": "finnhub"
   },
   "PEP": {
-    "last": 141.64,
-    "as_of": "2025-09-24T16:31:00Z",
+    "last": 141.695,
+    "as_of": "2025-09-24T16:51:00Z",
     "interval": "finnhub"
   },
   "BAC": {
-    "last": 51.705,
-    "as_of": "2025-09-24T16:31:00Z",
+    "last": 51.6701,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "ADBE": {
-    "last": 350.1985,
-    "as_of": "2025-09-24T16:30:48Z",
+    "last": 350.57,
+    "as_of": "2025-09-24T16:51:14Z",
     "interval": "finnhub"
   },
   "CRM": {
-    "last": 245.1,
-    "as_of": "2025-09-24T16:30:57Z",
+    "last": 244.42,
+    "as_of": "2025-09-24T16:51:09Z",
     "interval": "finnhub"
   },
   "NFLX": {
-    "last": 1199.13,
-    "as_of": "2025-09-24T16:31:01Z",
+    "last": 1200.49,
+    "as_of": "2025-09-24T16:51:06Z",
     "interval": "finnhub"
   },
   "CSCO": {
-    "last": 67.165,
-    "as_of": "2025-09-24T16:31:00Z",
+    "last": 67.145,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "AMD": {
-    "last": 159.93,
-    "as_of": "2025-09-24T16:31:03Z",
+    "last": 160.26,
+    "as_of": "2025-09-24T16:51:19Z",
     "interval": "finnhub"
   },
   "^GDAXI": {
@@ -155,7 +155,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-09-24T16:40:04Z",
+    "generated_at": "2025-09-24T17:00:36Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
