@@ -31,7 +31,7 @@
     "name": "Amazon.com, Inc.",
     "sector": "Consumer Discretionary",
     "profile": "companies/AMZN/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/amazon.png",
     "history": "history/AMZN.json",
     "market": "US"
   },
@@ -40,7 +40,7 @@
     "name": "Alphabet Inc. Class A",
     "sector": "Communication Services",
     "profile": "companies/GOOGL/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/google.webp",
     "history": "history/GOOGL.json",
     "market": "US"
   },
@@ -49,7 +49,7 @@
     "name": "Alphabet Inc. Class C",
     "sector": "Communication Services",
     "profile": "companies/GOOG/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/google.webp",
     "history": "history/GOOG.json",
     "market": "US"
   },
@@ -67,7 +67,7 @@
     "name": "Broadcom Inc.",
     "sector": "Information Technology",
     "profile": "companies/AVGO/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/broadcom.png",
     "history": "history/AVGO.json",
     "market": "US"
   },
@@ -94,7 +94,7 @@
     "name": "JPMorgan Chase & Co.",
     "sector": "Financials",
     "profile": "companies/JPM/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/jpmorgan.svg",
     "history": "history/JPM.json",
     "market": "US"
   },
@@ -130,7 +130,7 @@
     "name": "Johnson & Johnson",
     "sector": "Health Care",
     "profile": "companies/JNJ/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/johnson.png",
     "history": "history/JNJ.json",
     "market": "US"
   },
@@ -175,7 +175,7 @@
     "name": "Costco Wholesale Corporation",
     "sector": "Consumer Staples",
     "profile": "companies/COST/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/costco.png",
     "history": "history/COST.json",
     "market": "US"
   },
@@ -193,7 +193,7 @@
     "name": "The Home Depot, Inc.",
     "sector": "Consumer Discretionary",
     "profile": "companies/HD/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/home-depot.png",
     "history": "history/HD.json",
     "market": "US"
   },
@@ -202,7 +202,7 @@
     "name": "The Coca-Cola Company",
     "sector": "Consumer Staples",
     "profile": "companies/KO/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/coca-cola.png",
     "history": "history/KO.json",
     "market": "US"
   },
@@ -220,7 +220,7 @@
     "name": "Bank of America Corporation",
     "sector": "Financials",
     "profile": "companies/BAC/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/boa.png",
     "history": "history/BAC.json",
     "market": "US"
   },
@@ -229,7 +229,7 @@
     "name": "Adobe Inc.",
     "sector": "Information Technology",
     "profile": "companies/ADBE/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/adobe.png",
     "history": "history/ADBE.json",
     "market": "US"
   },
@@ -238,7 +238,7 @@
     "name": "Salesforce, Inc.",
     "sector": "Information Technology",
     "profile": "companies/CRM/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/salesforce.webp",
     "history": "history/CRM.json",
     "market": "US"
   },
@@ -256,7 +256,7 @@
     "name": "Cisco Systems, Inc.",
     "sector": "Information Technology",
     "profile": "companies/CSCO/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/cisco.png",
     "history": "history/CSCO.json",
     "market": "US"
   },
@@ -265,7 +265,7 @@
     "name": "Advanced Micro Devices, Inc.",
     "sector": "Information Technology",
     "profile": "companies/AMD/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/amd.webp",
     "history": "history/AMD.json",
     "market": "US"
   },
