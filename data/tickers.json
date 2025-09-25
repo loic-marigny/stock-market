@@ -355,7 +355,7 @@
   },
   {
     "symbol": "MC.PA",
-    "name": "LVMH Mo\u00c3\u0192\u00c2\u00abt Hennessy Louis Vuitton",
+    "name": "LVMH Moët Hennessy Louis Vuitton",
     "sector": "Consumer Discretionary",
     "market": "EU"
   },
@@ -367,7 +367,7 @@
   },
   {
     "symbol": "OR.PA",
-    "name": "L'Or\u00c3\u0192\u00c2\u00a9al S.A.",
+    "name": "L'Oréal S.A.",
     "sector": "Consumer Staples",
     "market": "EU"
   },
@@ -385,7 +385,7 @@
   },
   {
     "symbol": "RMS.PA",
-    "name": "Herm\u00c3\u0192\u00c2\u00a8s International SCA",
+    "name": "Hermès International SCA",
     "sector": "Consumer Discretionary",
     "market": "EU"
   },
@@ -499,7 +499,7 @@
   },
   {
     "symbol": "1211.SR",
-    "name": "Saudi Arabian Mining Company (Ma\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2aden)",
+    "name": "Saudi Arabian Mining Company",
     "sector": "Materials",
     "market": "SA"
   },
