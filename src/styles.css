@@ -261,7 +261,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
+  gap:8px;
   font-weight:700;
   font-size:0.95rem;
   cursor:pointer;
@@ -274,8 +274,8 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 }
 
 .explore-market-icon{
-  width:20px;
-  height:20px;
+  width:26px;
+  height:26px;
   object-fit:contain;
   flex-shrink:0;
 }
@@ -325,6 +325,10 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   height:28px;
   border-radius:8px;
   object-fit:contain;
+  background:transparent;
+}
+
+.explore-symbol img[src*'logo-placeholder']{
   background:#0f172a;
 }
 
