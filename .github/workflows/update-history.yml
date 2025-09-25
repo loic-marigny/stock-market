@@ -3,7 +3,7 @@ run-name: Update history (daily) #${{ github.run_number }}
 
 on:
   schedule:
-    # After regular US market close (approx) Mon–Fri
+    # After regular US market close (approx) Mon-Fri
     - cron: "30 21 * * 1-5"
   workflow_dispatch:
 
@@ -21,8 +21,21 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests==2.32.3 akshare pandas numpy lxml yfinance
+          python -m pip install requests==2.32.3 akshare pandas numpy lxml
+      - name: Detect history gaps
+        id: detect
+        run: |
+          symbols=$(python scripts/check_history.py)
+          echo "symbols=$symbols" >> "$GITHUB_OUTPUT"
+          if [ -n "$symbols" ]; then
+            echo "needs=true" >> "$GITHUB_OUTPUT"
+            echo "History gaps detected for: $symbols"
+          else
+            echo "needs=false" >> "$GITHUB_OUTPUT"
+            echo "No history gaps detected."
+          fi
       - name: Generate daily history JSON
+        if: steps.detect.outputs.needs == 'true'
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           FINNHUB_TOKEN: ${{ secrets.FINNHUB_TOKEN }}
@@ -31,23 +44,24 @@ jobs:
           YAHOO_WORKER_URL: ${{ secrets.YAHOO_WORKER_URL }}
           YAHOO_WORKER_TOKEN: ${{ secrets.YAHOO_WORKER_TOKEN }}
         run: |
-          python scripts/history.py
+          python scripts/history.py --symbols "${{ steps.detect.outputs.symbols }}"
           ls -l public/history || true
           head -n 5 public/history/AAPL.json || true
       - name: Build companies index
+        if: steps.detect.outputs.needs == 'true'
         run: |
           python scripts/build_companies_index.py
           test -f public/companies/index.json && head -n 40 public/companies/index.json || true
       - name: Run summary (UTC/NY time)
         run: |
           echo "### History run #${GITHUB_RUN_NUMBER}" >> $GITHUB_STEP_SUMMARY
-          echo "UTC: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_STEP_SUMMARY
-          echo "New York: $(TZ=America/New_York date +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_STEP_SUMMARY
+          echo "UTC: $(date -u +\"%Y-%m-%dT%H:%M:%SZ\")" >> $GITHUB_STEP_SUMMARY
+          echo "New York: $(TZ=America/New_York date +\"%Y-%m-%d %H:%M:%S %Z\")" >> $GITHUB_STEP_SUMMARY
       - name: Commit history/index if changed
+        if: steps.detect.outputs.needs == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
           git add public/history public/companies || true
           git commit -m "data(history): refresh daily history & companies index" || echo "no changes"
           git push
-

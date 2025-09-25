@@ -22,9 +22,9 @@ from pathlib import Path
 from typing import List, Dict
 import pandas as pd
 import akshare as ak
-import yfinance as yf
 import csv
 import random
+import numpy as np
 from urllib.parse import quote
 
 import requests
@@ -209,27 +209,6 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     
 
 
-def fetch_daily_yfinance(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
-    period_years = max(int(years), 1)
-    period = "max" if period_years > 10 else f"{period_years}y"
-    df = yf.Ticker(symbol).history(period=period, interval="1d", auto_adjust=False)
-    if df.empty:
-        return []
-    df = df.dropna(subset=["Close"])
-    cutoff = (datetime.now(timezone.utc).date() - timedelta(days=365 * years)).isoformat() if years > 0 else None
-    out: List[Dict[str, float]] = []
-    for index, close in df["Close"].items():
-        try:
-            dt = index.to_pydatetime()
-        except AttributeError:
-            dt = datetime.fromtimestamp(float(index), tz=timezone.utc)
-        out.append({"date": dt.date().isoformat(), "close": float(close)})
-    out.sort(key=lambda item: item["date"])
-    if cutoff:
-        out = [item for item in out if item["date"] >= cutoff]
-    return out
-
-
 def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
     """Alltick daily history (CN) â€” tries common kline endpoints, strips .SS.
 
@@ -375,14 +354,14 @@ def coverage_ok(data: List[Dict[str, float]], min_from_date: str) -> bool:
     data.sort(key=lambda x: x["date"])  # ensure sorted
     first = data[0]["date"]
     last = data[-1]["date"]
-    # need at least ~200 points and first date <= min_from_date
+    # require >= 1 year of history and latest point not older than one business day
     try:
         today = datetime.now(timezone.utc).date()
         last_d = datetime.fromisoformat(last).date()
-        gap = (today - last_d).days
+        business_gap = int(np.busday_count(last_d.isoformat(), today.isoformat()))
     except Exception:
-        gap = 999
-    return len(data) >= 200 and first <= min_from_date and gap <= 3
+        business_gap = 999
+    return len(data) >= 200 and first <= min_from_date and business_gap <= 1
 
 
 def merge_history(old: List[Dict[str, float]], new: List[Dict[str, float]]) -> List[Dict[str, float]]:
@@ -461,27 +440,20 @@ def main():
                 continue
             fresh: List[Dict[str, float]] = []
             source = ""
-            if not fresh:
-                try:
-                    fresh = fetch_daily_yfinance(sym, years=MIN_YEARS)
-                    if fresh:
-                        source = "yfinance"
-                except Exception as e:
-                    print(f"[warn] {sym} yfinance failed: {e}")
-            if not fresh:
-                try:
-                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
-                    if fresh:
-                        source = "yahoo"
-                except Exception as e:
-                    print(f"[warn] {sym} yahoo failed: {e}")
-            if not fresh and use_worker:
+            if use_worker:
                 try:
                     fresh = fetch_daily_worker(sym, years=MIN_YEARS)
-                    if fresh and not source:
+                    if fresh:
                         source = "yahoo_worker"
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
+            if not fresh:
+                try:
+                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
+                    if fresh and not source:
+                        source = "yahoo"
+                except Exception as e:
+                    print(f"[warn] {sym} yahoo failed: {e}")
             if not fresh and token and market not in {"CRYPTO", "FX", "COM", "IDX"} and not sym.endswith('.SS'):
                 try:
                     fresh = fetch_daily_finnhub(sym, token, years=MIN_YEARS)
