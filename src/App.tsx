@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "./firebase";
@@ -17,9 +17,9 @@ export default function App(){
   const uid = user?.uid ?? null;
   const { totalValue, loadingInitial, loadingPrices } = usePortfolioSnapshot(uid);
   const currencyFmt = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }), []);
-  const totalDisplay = loadingInitial || loadingPrices ? "Calcul..." : currencyFmt.format(totalValue);
+  const totalDisplay = loadingInitial || loadingPrices ? "Calculating..." : currencyFmt.format(totalValue);
 
-  if(!ready) return <p style={{color:"#fff",textAlign:"center",marginTop:40}}>Chargement...</p>;
+  if(!ready) return <p style={{color:"#fff",textAlign:"center",marginTop:40}}>Loading...</p>;
   if(!user) return <SignIn/>;
 
   return (
@@ -27,13 +27,13 @@ export default function App(){
       <header className="topbar">
         <Link to="/" className="brand-mini">Stock&nbsp;Market</Link>
         <nav className="nav">
-          <NavLink to="/" end className={({isActive})=> isActive?"active":""}>Explorer</NavLink>
-          <NavLink to="/portfolio" className={({isActive})=> isActive?"active":""}>Portefeuille</NavLink>
-          <NavLink to="/trade" className={({isActive})=> isActive?"active":""}>Trader</NavLink>
+          <NavLink to="/" end className={({isActive})=> isActive?"active":""}>Explore</NavLink>
+          <NavLink to="/portfolio" className={({isActive})=> isActive?"active":""}>Portfolio</NavLink>
+          <NavLink to="/trade" className={({isActive})=> isActive?"active":""}>Trade</NavLink>
         </nav>
         <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:"1rem"}}>
-          <div style={{color:"var(--text-muted)", fontSize:"0.9rem"}}>Valeur totale: {totalDisplay}</div>
-          <button className="btn" onClick={()=>signOut(auth)}>Deconnexion</button>
+          <div style={{color:"var(--text-muted)", fontSize:"0.9rem"}}>Total value: {totalDisplay}</div>
+          <button className="btn" onClick={()=>signOut(auth)}>Sign out</button>
         </div>
       </header>
 
@@ -45,3 +45,4 @@ export default function App(){
     </div>
   );
 }
+

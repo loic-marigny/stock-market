@@ -1,8 +1,8 @@
-// src/lib/prices.ts
+﻿// src/lib/prices.ts
 export type OHLC = { date: string; close: number };
 
 export interface PriceProvider {
-  getDailyHistory(symbol: string): Promise<OHLC[]>; // trié par date croissante
+  getDailyHistory(symbol: string): Promise<OHLC[]>; // sorted in ascending date order
   getLastPrice(symbol: string): Promise<number>;
 }
 
@@ -52,4 +52,3 @@ export const jsonProvider: PriceProvider = {
 };
 
 export default jsonProvider;
-

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import provider from "../lib/prices";
@@ -48,11 +48,11 @@ export default function Trade(){
 
   const validate = (side:"buy"|"sell", px:number) => {
     const q = mode === "qty" ? qty : round6(amount / px);
-    if (!q || q <= 0) return "Quantite ou montant invalide.";
-    if (side === "sell" && posQty < q - 1e-9) return "Position insuffisante pour cette vente.";
+    if (!q || q <= 0) return "Invalid quantity or amount.";
+    if (side === "sell" && posQty < q - 1e-9) return "Not enough position to sell that quantity.";
     if (side === "buy") {
       const needed = q * px;
-      if (cash + 1e-6 < needed) return "Credits insuffisants pour cet achat.";
+      if (cash + 1e-6 < needed) return "Insufficient credits for this purchase.";
     }
     return "";
   };
@@ -75,7 +75,7 @@ export default function Trade(){
         const cur = snap.exists() ? (snap.data() as any) : { qty: 0, avgPrice: 0 };
 
         if (side === "sell" && cur.qty < q - 1e-9) {
-          throw new Error("Position insuffisante.");
+          throw new Error("Insufficient position size.");
         }
 
         let newQty = cur.qty;
@@ -94,7 +94,7 @@ export default function Trade(){
         tx.set(posRef, { qty: newQty, avgPrice: newAvg });
       });
 
-      setMsg(side === "buy" ? "Achat execute." : "Vente executee.");
+      setMsg(side === "buy" ? "Buy order executed." : "Sell order executed.");
 
       if (mode === "qty") setQty(1);
       else setAmount(0);
@@ -109,11 +109,11 @@ export default function Trade(){
 
   return (
     <div className="container">
-      <h2 className="signin-title" style={{marginTop:0}}>Trader</h2>
+      <h2 className="signin-title" style={{marginTop:0}}>Trade</h2>
 
       <div className="trade-grid">
         <div className="field">
-          <label>Symbole</label>
+          <label>Symbol</label>
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
             {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
               <optgroup key={mkt} label={marketLabel(mkt)}>
@@ -123,56 +123,56 @@ export default function Trade(){
               </optgroup>
             ))}
           </select>
-          <div className="hint">En portefeuille : <strong>{fmtQty(posQty)}</strong></div>
+          <div className="hint">In portfolio: <strong>{fmtQty(posQty)}</strong></div>
         </div>
 
         <div className="field">
-          <label>Dernier prix</label>
+          <label>Last price</label>
           <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
         </div>
 
         <div className="field" style={{gridColumn:"1 / -1"}}>
           <div className="seg">
-            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>Entrer par quantite</button>
-            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>Entrer par montant</button>
+            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>Enter quantity</button>
+            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>Enter amount</button>
           </div>
         </div>
 
         {mode === "qty" ? (
           <div className="field">
-            <label>Quantite (unites)</label>
+            <label>Quantity (units)</label>
             <input className="input" type="number" min={0} step="any"
                    value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-            <div className="hint">Cout estime : <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
+            <div className="hint">Estimated cost: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
           </div>
         ) : (
           <div className="field">
-            <label>Montant (credits)</label>
+            <label>Amount (credits)</label>
             <input className="input" type="number" min={0} step="0.01"
                    value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
-            <div className="hint">Quantite estimee : <strong>{fmtQty(previewQty)}</strong></div>
+            <div className="hint">Estimated quantity: <strong>{fmtQty(previewQty)}</strong></div>
           </div>
         )}
 
         <div className="field">
-          <label>Credits dispo</label>
+          <label>Available credits</label>
           <div className="price-tile">{cash.toFixed(2)}</div>
         </div>
       </div>
 
       <div className="trade-actions">
         <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
-          Acheter
+          Buy
         </button>
         <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
-          Vendre
+          Sell
         </button>
       </div>
 
       <div className="hint">
         {mode === "qty"
-          ? "Execution: quantite x dernier prix au moment du clic."
-          : "Execution: quantite calculee = montant / dernier prix."}
+          ? "Execution: quantity x last price at the time of the click."
+          : "Execution: calculated quantity = amount / last price."}
       </div>
 
       {msg && <div className="trade-msg">{msg}</div>}
@@ -198,3 +198,7 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }
+
+
+
+

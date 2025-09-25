@@ -29,7 +29,7 @@ export default function Explore(){
     setData(hist);
   })() }, [symbol]);
 
-  // filtre timeframe
+  // timeframe filter
   const filtered = useMemo(()=>{
     if(!data.length) return [];
     const last = new Date(data[data.length-1].date);
@@ -82,12 +82,12 @@ export default function Explore(){
               className={`pill ${tf===x?'active':''}`} onClick={()=>setTf(x)}>{x}</button>
           ))}
         </div>
-        <div className="price">Dernier : <strong>{lastClose.toFixed(2)}</strong></div>
+        <div className="price">Last: <strong>{lastClose.toFixed(2)}</strong></div>
       </div>
       <div className="chart-card">
         <canvas ref={canvasRef} />
       </div>
-      <p className="hint">Source: JSON statiques (Finnhub/Akshare/Yahoo via CI).</p>
+      <p className="hint">Source: static JSON files (Finnhub/Akshare/Yahoo via CI).</p>
     </div>
   );
 }
@@ -111,3 +111,4 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }
+

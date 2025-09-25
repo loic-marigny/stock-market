@@ -1,4 +1,4 @@
-﻿// src/routes/Portfolio.tsx
+// src/routes/Portfolio.tsx
 import { useMemo } from "react";
 import { auth } from "../firebase";
 import type { Position } from "../lib/portfolio";
@@ -24,19 +24,19 @@ export default function Portfolio(){
 
   return (
     <div className="container">
-      <h2 className="signin-title" style={{marginTop: 0}}>Mon portefeuille</h2>
+      <h2 className="signin-title" style={{marginTop: 0}}>My portfolio</h2>
 
       <div className="grid-cards">
         <div className="kpi-card">
-          <div className="kpi-k">Liquidites (USD)</div>
+          <div className="kpi-k">Cash (USD)</div>
           <div className="kpi-v">{fmt(cash)}</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-k">Valeur des positions</div>
+          <div className="kpi-k">Position value</div>
           <div className="kpi-v">{fmt(marketValue)}</div>
         </div>
         <div className="kpi-card">
-          <div className="kpi-k">Valeur totale</div>
+          <div className="kpi-k">Total value</div>
           <div className="kpi-v">{fmt(totalValue)}</div>
         </div>
       </div>
@@ -45,13 +45,13 @@ export default function Portfolio(){
         <table className="table">
           <thead>
             <tr>
-              <th>Symbole</th><th>Qte</th><th>PA moyen</th><th>Dernier</th><th>Valeur</th><th>P&L</th>
+              <th>Symbol</th><th>Qty</th><th>Average price</th><th>Last</th><th>Value</th><th>P&L</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr><td colSpan={6} style={{textAlign:'center', color:'var(--text-muted)'}}>
-                {loadingPrices ? 'Calcul en cours...' : 'Pas encore de positions.'}
+                {loadingPrices ? 'Calculating...' : 'No positions yet.'}
               </td></tr>
             ) : rows.map(r => (
               <tr key={r.symbol}>
@@ -69,7 +69,7 @@ export default function Portfolio(){
         </table>
       </div>
 
-      <p className="hint">Les prix proviennent du provider <code>json</code> mis a jour par les scripts.</p>
+      <p className="hint">Prices are provided by the <code>json</code> provider kept up to date by the scripts.</p>
     </div>
   );
 }
@@ -90,3 +90,4 @@ function buildRows(positions: Record<string, Position>, prices: Record<string, n
 function fmt(n: number){
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+

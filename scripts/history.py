@@ -1,4 +1,4 @@
-﻿"""
+"""
 Generate/ensure daily history JSON for tickers via the Cloudflare Yahoo
 proxy when available, falling back to Finnhub candle data and other providers.
 
@@ -210,7 +210,7 @@ def fetch_daily_stooq(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
 
 
 def fetch_daily_alltick(symbol: str, api_key: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
-    """Alltick daily history (CN) â€” tries common kline endpoints, strips .SS.
+    """Alltick daily history (CN) -- tries common kline endpoints, strips .SS.
 
     Note: Without official docs here, we attempt a reasonable default
     and parse common field shapes. If your endpoint differs, set
@@ -504,3 +504,5 @@ def main():
             processed += 1
 if __name__ == "__main__":
     main()
+
+
