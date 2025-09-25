@@ -32,10 +32,10 @@ const resolveAsset = (path: string) => {
 };
 
 const LOCALE_OPTIONS: LocaleOption[] = [
-  { code: 'en', label: 'English', flag: resolveAsset('img/us.png'), dir: 'ltr' },
-  { code: 'fr', label: 'Français', flag: resolveAsset('img/fr.png'), dir: 'ltr' },
-  { code: 'ar', label: 'العربية', flag: resolveAsset('img/sa.png'), dir: 'rtl' },
-  { code: 'ru', label: 'Русский', flag: resolveAsset('img/ru.png'), dir: 'ltr' },
+  { code: 'en', label: 'English', flag: resolveAsset('img/flags/us.png'), dir: 'ltr' },
+  { code: 'fr', label: 'Fran\u00E7ais', flag: resolveAsset('img/flags/fr.png'), dir: 'ltr' },
+  { code: 'ar', label: '\u0627\u0644\u0639\u0631\u0628\u064A\u0629', flag: resolveAsset('img/flags/sa.png'), dir: 'rtl' },
+  { code: 'ru', label: '\u0420\u0443\u0441\u0441\u043A\u0438\u0439', flag: resolveAsset('img/flags/ru.png'), dir: 'ltr' },
 ];
 
 type I18nContextValue = {
