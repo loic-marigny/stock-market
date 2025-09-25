@@ -2,9 +2,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
+import { useI18n } from "../i18n/I18nProvider";
+
 type TF = "1M"|"6M"|"YTD"|"1Y"|"MAX";
 
 export default function Explore(){
+  const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
   const [tf, setTf] = useState<TF>("6M");
   const [data, setData] = useState<{date:string; close:number}[]>([]);
@@ -82,12 +85,12 @@ export default function Explore(){
               className={`pill ${tf===x?'active':''}`} onClick={()=>setTf(x)}>{x}</button>
           ))}
         </div>
-        <div className="price">Last: <strong>{lastClose.toFixed(2)}</strong></div>
+        <div className="price">{t('explore.lastLabel')} <strong>{lastClose.toFixed(2)}</strong></div>
       </div>
       <div className="chart-card">
         <canvas ref={canvasRef} />
       </div>
-      <p className="hint">Source: static JSON files (Finnhub/Akshare/Yahoo via CI).</p>
+      <p className="hint">{t('explore.sourceHint')}</p>
     </div>
   );
 }
@@ -111,4 +114,7 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }
+
+
+
 

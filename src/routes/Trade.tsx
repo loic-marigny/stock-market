@@ -4,10 +4,12 @@ import { collection, doc, runTransaction, serverTimestamp } from "firebase/fires
 import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
+import { useI18n } from "../i18n/I18nProvider";
 
 type EntryMode = "qty" | "amount";
 
 export default function Trade(){
+  const { t } = useI18n();
   const uid = auth.currentUser!.uid;
 
   const [symbol, setSymbol] = useState<string>("AAPL");
@@ -48,11 +50,11 @@ export default function Trade(){
 
   const validate = (side:"buy"|"sell", px:number) => {
     const q = mode === "qty" ? qty : round6(amount / px);
-    if (!q || q <= 0) return "Invalid quantity or amount.";
-    if (side === "sell" && posQty < q - 1e-9) return "Not enough position to sell that quantity.";
+    if (!q || q <= 0) return t('trade.validation.invalidQuantity');
+    if (side === "sell" && posQty < q - 1e-9) return t('trade.validation.insufficientPosition');
     if (side === "buy") {
       const needed = q * px;
-      if (cash + 1e-6 < needed) return "Insufficient credits for this purchase.";
+      if (cash + 1e-6 < needed) return t('trade.validation.insufficientCash');
     }
     return "";
   };
@@ -75,7 +77,7 @@ export default function Trade(){
         const cur = snap.exists() ? (snap.data() as any) : { qty: 0, avgPrice: 0 };
 
         if (side === "sell" && cur.qty < q - 1e-9) {
-          throw new Error("Insufficient position size.");
+          throw new Error(t('trade.validation.insufficientPosition'));
         }
 
         let newQty = cur.qty;
@@ -94,7 +96,7 @@ export default function Trade(){
         tx.set(posRef, { qty: newQty, avgPrice: newAvg });
       });
 
-      setMsg(side === "buy" ? "Buy order executed." : "Sell order executed.");
+      setMsg(side === "buy" ? t('trade.success.buy') : t('trade.success.sell'));
 
       if (mode === "qty") setQty(1);
       else setAmount(0);
@@ -109,11 +111,11 @@ export default function Trade(){
 
   return (
     <div className="container">
-      <h2 className="signin-title" style={{marginTop:0}}>Trade</h2>
+      <h2 className="signin-title" style={{marginTop:0}}>{t('trade.title')}</h2>
 
       <div className="trade-grid">
         <div className="field">
-          <label>Symbol</label>
+          <label>{t('trade.field.symbol')}</label>
           <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
             {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
               <optgroup key={mkt} label={marketLabel(mkt)}>
@@ -123,56 +125,56 @@ export default function Trade(){
               </optgroup>
             ))}
           </select>
-          <div className="hint">In portfolio: <strong>{fmtQty(posQty)}</strong></div>
+          <div className="hint">{t('trade.field.inPortfolio')} <strong>{fmtQty(posQty)}</strong></div>
         </div>
 
         <div className="field">
-          <label>Last price</label>
+          <label>{t('trade.field.lastPrice')}</label>
           <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
         </div>
 
         <div className="field" style={{gridColumn:"1 / -1"}}>
           <div className="seg">
-            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>Enter quantity</button>
-            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>Enter amount</button>
+            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>{t('trade.mode.enterQuantity')}</button>
+            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>{t('trade.mode.enterAmount')}</button>
           </div>
         </div>
 
         {mode === "qty" ? (
           <div className="field">
-            <label>Quantity (units)</label>
+            <label>{t('trade.field.quantityLabel')}</label>
             <input className="input" type="number" min={0} step="any"
                    value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-            <div className="hint">Estimated cost: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
+            <div className="hint">{t('trade.field.estimatedCost')}: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
           </div>
         ) : (
           <div className="field">
-            <label>Amount (credits)</label>
+            <label>{t('trade.field.amountLabel')}</label>
             <input className="input" type="number" min={0} step="0.01"
                    value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
-            <div className="hint">Estimated quantity: <strong>{fmtQty(previewQty)}</strong></div>
+            <div className="hint">{t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong></div>
           </div>
         )}
 
         <div className="field">
-          <label>Available credits</label>
+          <label>{t('trade.field.creditsLabel')}</label>
           <div className="price-tile">{cash.toFixed(2)}</div>
         </div>
       </div>
 
       <div className="trade-actions">
         <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
-          Buy
+          {t('trade.actions.buy')}
         </button>
         <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
-          Sell
+          {t('trade.actions.sell')}
         </button>
       </div>
 
       <div className="hint">
         {mode === "qty"
-          ? "Execution: quantity x last price at the time of the click."
-          : "Execution: calculated quantity = amount / last price."}
+          ? t('trade.hint.quantity')
+          : t('trade.hint.amount')}
       </div>
 
       {msg && <div className="trade-msg">{msg}</div>}
@@ -198,7 +200,4 @@ function groupByMarket(list: Company[]): Record<string, Company[]>{
   for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
   return ordered;
 }
-
-
-
 

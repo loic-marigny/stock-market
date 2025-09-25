@@ -174,3 +174,30 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   background: var(--primary-700); color:#fff;
 }
 
+.language-switcher{
+  display:flex;
+  align-items:center;
+  gap:0.35rem;
+  margin-right:0.75rem;
+}
+.language-switcher button{
+  border:0;
+  background:none;
+  padding:0;
+  cursor:pointer;
+  border-radius:999px;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.language-switcher button img{
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  display:block;
+}
+.language-switcher button.active{
+  box-shadow:0 0 0 2px var(--primary-700);
+  transform:translateY(-1px);
+}
+.language-switcher button:not(.active):hover{
+  transform:translateY(-1px);
+}

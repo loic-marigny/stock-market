@@ -2,22 +2,22 @@ import { useState } from 'react'
 import { auth, db } from './firebase'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { useI18n } from './i18n/I18nProvider'
+import type { TranslationKey } from './i18n/eng'
 
 type Mode = 'in' | 'up'
 
-function authMessage(code: string, fallback: string){
-  const map: Record<string, string> = {
-    'auth/invalid-email': 'Invalid email address.',
-    'auth/missing-password': 'Password required.',
-    'auth/weak-password': 'Password too short (min 6 characters).',
-    'auth/email-already-in-use': 'Email already in use.',
-    'auth/invalid-credential': 'Incorrect email or password.',
-    'auth/too-many-requests': 'Too many attempts. Try again later.',
-  }
-  return map[code] || fallback
-}
+const AUTH_ERROR_MAP: Partial<Record<string, TranslationKey>> = {
+  'auth/invalid-email': 'auth.errors.invalidEmail',
+  'auth/missing-password': 'auth.errors.missingPassword',
+  'auth/weak-password': 'auth.errors.weakPassword',
+  'auth/email-already-in-use': 'auth.errors.emailInUse',
+  'auth/invalid-credential': 'auth.errors.invalidCredential',
+  'auth/too-many-requests': 'auth.errors.tooManyRequests',
+};
 
 export default function SignIn(){
+  const { t } = useI18n();
   const [mode, setMode] = useState<Mode>('in')
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
@@ -36,10 +36,15 @@ export default function SignIn(){
     }
   }
 
+  const authMessage = (code: string, fallback: string) => {
+    const key = AUTH_ERROR_MAP[code]
+    return key ? t(key) : fallback
+  }
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErr('')
-    if (!email || !pw) { setErr('Please enter your email and password.'); return }
+    if (!email || !pw) { setErr(t('auth.validation.missingCredentials')); return }
     setLoading(true)
     try{
       if(mode === 'up'){
@@ -64,32 +69,32 @@ export default function SignIn(){
         <form className="card signin-card" onSubmit={submit} aria-busy={loading}>
           <div className="brand">
             <h1>Stock&nbsp;Market</h1>
-            <p>Practice investing with virtual credits</p>
+            <p>{t('auth.subtitle')}</p>
           </div>
 
-          <h2 className="signin-title">{mode === 'in' ? 'Sign in' : 'Create an account'}</h2>
+          <h2 className="signin-title">{t(mode === 'in' ? 'auth.title.signIn' : 'auth.title.createAccount')}</h2>
 
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t('auth.label.email')}</label>
           <input id="email" type="email" autoComplete="email"
             value={email} onChange={e=>setEmail(e.target.value)} />
 
-          <label htmlFor="pw">Password</label>
+          <label htmlFor="pw">{t('auth.label.password')}</label>
           <input id="pw" type="password" autoComplete={mode==='in'?'current-password':'new-password'}
             value={pw} onChange={e=>setPw(e.target.value)} />
 
           <div style={{marginTop:16}}>
             <button className="btn btn-accent" disabled={loading}>
-              {mode === 'in' ? 'Sign in' : 'Create my account'}
+              {mode === 'in' ? t('auth.actions.signIn') : t('auth.actions.createMyAccount')}
             </button>
           </div>
 
           <div className="actions">
             <span style={{color:'var(--text-muted)'}}>
-              {mode === 'in' ? 'New here?' : 'Already registered?'}
+              {mode === 'in' ? t('auth.toggle.newHere') : t('auth.toggle.alreadyRegistered')}
             </span>
             <button type="button" className="link"
               onClick={()=>setMode(mode==='in'?'up':'in')}>
-              {mode === 'in' ? 'Create an account' : 'Sign in'}
+              {mode === 'in' ? t('auth.toggle.createAccount') : t('auth.toggle.signIn')}
             </button>
           </div>
 
@@ -99,7 +104,7 @@ export default function SignIn(){
       {/* Footer dedicated to the sign-in page */}
       <footer className="signin-footer">
         <div className="inner">
-          <span className="copy">&copy; {year} Stock Market - all rights reserved</span>
+          <span className="copy">{t('auth.footer.note', { year })}</span>
           <div className="links">
             <a href="https://github.com/loic-marigny/stock-market" aria-label="GitHub" target="_blank" rel="noreferrer">
               {/* Minimal GitHub icon */}
@@ -113,5 +118,6 @@ export default function SignIn(){
     </div>
   )
 }
+
 
 
