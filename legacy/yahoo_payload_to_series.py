@@ -1,4 +1,11 @@
-﻿"""Convert raw Yahoo Finance chart payloads to our history format.
+"""Legacy helper: convert raw Yahoo chart payloads after manual copy/paste.
+
+We keep this script in legacy because normal history refresh now goes through
+scripts/history.py and the Cloudflare worker. Use it only if you captured a
+chart payload (e.g. via browser devtools) and need to produce the simplified
+[{"date", "close"}] JSON locally.
+"""
+"""Convert raw Yahoo Finance chart payloads to our history format.
 
 Usage examples:
   python scripts/yahoo_payload_to_series.py --input raw_gspc.json
@@ -126,3 +133,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

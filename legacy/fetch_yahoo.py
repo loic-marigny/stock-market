@@ -1,4 +1,11 @@
-﻿"""Quick Yahoo Finance fetcher for selected symbols.
+"""Legacy helper: direct Yahoo Finance fetcher kept for manual local recovery.
+
+This script bypasses our Cloudflare worker and hits query1/2/3.finance.yahoo.com
+from a developer machine. It is archived because the production pipeline now
+relies on scripts/history.py (worker + Finnhub fallback). Use it only for
+one-off troubleshooting when you need to grab a payload manually.
+"""
+"""Quick Yahoo Finance fetcher for selected symbols.
 
 Usage:
   python scripts/fetch_yahoo.py --symbols "^GSPC,^AEX" [--range 1y] [--interval 1d]
@@ -127,3 +134,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
