@@ -1075,7 +1075,7 @@
     "name": "Gold Futures",
     "sector": "Commodities",
     "profile": "companies/GC=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/gold.png",
     "history": "history/GC=F.json",
     "market": "COM"
   },
@@ -1084,7 +1084,7 @@
     "name": "Silver Futures",
     "sector": "Commodities",
     "profile": "companies/SI=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/silver.webp",
     "history": "history/SI=F.json",
     "market": "COM"
   },
@@ -1093,7 +1093,7 @@
     "name": "Platinum Futures",
     "sector": "Commodities",
     "profile": "companies/PL=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/platinum.webp",
     "history": "history/PL=F.json",
     "market": "COM"
   },
@@ -1102,7 +1102,7 @@
     "name": "Crude Oil WTI",
     "sector": "Energy",
     "profile": "companies/CL=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/oil1.png",
     "history": "history/CL=F.json",
     "market": "COM"
   },
@@ -1111,7 +1111,7 @@
     "name": "Brent Crude Oil",
     "sector": "Energy",
     "profile": "companies/BZ=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/oil2.png",
     "history": "history/BZ=F.json",
     "market": "COM"
   },
@@ -1120,7 +1120,7 @@
     "name": "Natural Gas",
     "sector": "Energy",
     "profile": "companies/NG=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/gas.png",
     "history": "history/NG=F.json",
     "market": "COM"
   },
@@ -1129,7 +1129,7 @@
     "name": "Corn Futures",
     "sector": "Agriculture",
     "profile": "companies/ZC=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/corn.png",
     "history": "history/ZC=F.json",
     "market": "COM"
   },
@@ -1138,7 +1138,7 @@
     "name": "Wheat Futures",
     "sector": "Agriculture",
     "profile": "companies/ZW=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/wheat.webp",
     "history": "history/ZW=F.json",
     "market": "COM"
   },
@@ -1147,7 +1147,7 @@
     "name": "Soybean Futures",
     "sector": "Agriculture",
     "profile": "companies/ZS=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/soybeans.webp",
     "history": "history/ZS=F.json",
     "market": "COM"
   },
@@ -1156,7 +1156,7 @@
     "name": "Coffee Futures",
     "sector": "Agriculture",
     "profile": "companies/KC=F/profile.json",
-    "logo": null,
+    "logo": "img/companies/commodities/coffee_bean.png",
     "history": "history/KC=F.json",
     "market": "COM"
   },
