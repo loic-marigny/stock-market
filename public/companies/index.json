@@ -1251,12 +1251,12 @@
     "market": "IDX"
   },
   {
-    "symbol": "^SMI",
+    "symbol": "SMIN.SW",
     "name": "Swiss Market Index",
     "sector": "Index",
-    "profile": "companies/^SMI/profile.json",
+    "profile": "companies/SMIN.SW/profile.json",
     "logo": null,
-    "history": "history/^SMI.json",
+    "history": "history/SMIN.SW.json",
     "market": "IDX"
   },
   {
@@ -1314,12 +1314,12 @@
     "market": "IDX"
   },
   {
-    "symbol": "^TOPX",
+    "symbol": "TOPIX100.T",
     "name": "TOPIX",
     "sector": "Index",
-    "profile": "companies/^TOPX/profile.json",
+    "profile": "companies/TOPIX100.T/profile.json",
     "logo": null,
-    "history": "history/^TOPX.json",
+    "history": "history/TOPIX100.T.json",
     "market": "IDX"
   },
   {
@@ -1332,12 +1332,12 @@
     "market": "IDX"
   },
   {
-    "symbol": "^SSEC",
+    "symbol": "000001.SS",
     "name": "Shanghai Composite",
     "sector": "Index",
-    "profile": "companies/^SSEC/profile.json",
+    "profile": "companies/000001.SS/profile.json",
     "logo": null,
-    "history": "history/^SSEC.json",
+    "history": "history/000001.SS.json",
     "market": "IDX"
   },
   {
