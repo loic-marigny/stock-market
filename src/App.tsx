@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "./firebase";
@@ -41,11 +41,14 @@ export default function App(){
         </div>
       </header>
 
-      <Routes>
-        <Route path="/" element={<Explore/>} />
-        <Route path="/portfolio" element={<Portfolio/>} />
-        <Route path="/trade" element={<Trade/>} />
-      </Routes>
+      <main className="app-main">
+        <Routes>
+          <Route path="/" element={<Explore/>} />
+          <Route path="/portfolio" element={<Portfolio/>} />
+          <Route path="/trade" element={<Trade/>} />
+        </Routes>
+      </main>
     </div>
   );
 }
+
