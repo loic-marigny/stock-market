@@ -715,7 +715,7 @@
     "name": "Saudi Arabian Oil Company (Aramco)",
     "sector": "Energy",
     "profile": "companies/2222.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/aramco.png",
     "history": "history/2222.SR.json",
     "market": "SA"
   },
@@ -724,7 +724,7 @@
     "name": "Al Rajhi Bank",
     "sector": "Financials",
     "profile": "companies/1120.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/alrahji.png",
     "history": "history/1120.SR.json",
     "market": "SA"
   },
@@ -733,7 +733,7 @@
     "name": "Saudi Basic Industries Corporation (SABIC)",
     "sector": "Materials",
     "profile": "companies/2010.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/sabic.png",
     "history": "history/2010.SR.json",
     "market": "SA"
   },
@@ -742,7 +742,7 @@
     "name": "The Saudi National Bank",
     "sector": "Financials",
     "profile": "companies/1180.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/snbank.png",
     "history": "history/1180.SR.json",
     "market": "SA"
   },
@@ -751,7 +751,7 @@
     "name": "Saudi Arabian Mining Company",
     "sector": "Materials",
     "profile": "companies/1211.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/saudi-mining.png",
     "history": "history/1211.SR.json",
     "market": "SA"
   },
@@ -760,7 +760,7 @@
     "name": "Saudi Telecom Company (stc)",
     "sector": "Communication Services",
     "profile": "companies/7010.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/stc.svg",
     "history": "history/7010.SR.json",
     "market": "SA"
   },
@@ -769,7 +769,7 @@
     "name": "Almarai Company",
     "sector": "Consumer Staples",
     "profile": "companies/2280.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/almarai.png",
     "history": "history/2280.SR.json",
     "market": "SA"
   },
@@ -778,7 +778,7 @@
     "name": "Saudi British Bank",
     "sector": "Financials",
     "profile": "companies/1050.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/sab-bank.png",
     "history": "history/1050.SR.json",
     "market": "SA"
   },
@@ -787,7 +787,7 @@
     "name": "Banque Saudi Fransi",
     "sector": "Financials",
     "profile": "companies/1060.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/bs_fransi.png",
     "history": "history/1060.SR.json",
     "market": "SA"
   },
@@ -796,7 +796,7 @@
     "name": "Dr. Sulaiman Al Habib Medical Services Group",
     "sector": "Health Care",
     "profile": "companies/4013.SR/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/riyadh/suleiman-habib.png",
     "history": "history/4013.SR.json",
     "market": "SA"
   },
