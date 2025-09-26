@@ -532,7 +532,7 @@
   },
   {
     "symbol": "MC.PA",
-    "name": "LVMH Mo\u00ebt Hennessy Louis Vuitton",
+    "name": "LVMH Moët Hennessy Louis Vuitton",
     "sector": "Consumer Discretionary",
     "profile": "companies/MC.PA/profile.json",
     "logo": null,
@@ -550,7 +550,7 @@
   },
   {
     "symbol": "OR.PA",
-    "name": "L'Or\u00e9al S.A.",
+    "name": "L'Oréal S.A.",
     "sector": "Consumer Staples",
     "profile": "companies/OR.PA/profile.json",
     "logo": null,
@@ -577,7 +577,7 @@
   },
   {
     "symbol": "RMS.PA",
-    "name": "Herm\u00e8s International SCA",
+    "name": "Hermès International SCA",
     "sector": "Consumer Discretionary",
     "profile": "companies/RMS.PA/profile.json",
     "logo": null,

@@ -268,8 +268,8 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 
 .explore-sidebar-toggle{
   border:0;
-  background:rgba(148,163,184,0.2);
-  color:#f8fafc;
+  background:none;
+  color:inherit;
   border-radius:50%;
   width:32px;
   height:32px;
@@ -283,31 +283,17 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   position:relative;
 }
 
-.explore-sidebar-toggle:hover{
-  background:rgba(148,163,184,0.35);
+.explore-sidebar-toggle .explore-toggle-icon{
+  width:10px;
+  height:10px;
+  border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;
+  transform: rotate(135deg);
+  transition:transform .2s ease;
 }
 
-.explore-sidebar-toggle::after{
-  content: attr(data-label);
-  position:absolute;
-  top:100%;
-  left:50%;
-  transform:translate(-50%, 6px);
-  background:rgba(15,23,42,0.92);
-  color:#f8fafc;
-  padding:4px 8px;
-  border-radius:8px;
-  font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  white-space:nowrap;
-  transition:opacity .15s ease, transform .15s ease;
-}
-
-.explore-sidebar-toggle:hover::after,
-.explore-sidebar-toggle:focus-visible::after{
-  opacity:1;
-  transform:translate(-50%, 10px);
+.explore-sidebar-toggle.open .explore-toggle-icon{
+  transform: rotate(-45deg);
 }
 
 .explore-sidebar-toggle.open{

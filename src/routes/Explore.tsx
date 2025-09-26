@@ -199,9 +199,9 @@ export default function Explore() {
               className="explore-sidebar-toggle"
               onClick={() => setSidebarOpen(false)}
               aria-label={t('explore.hideSidebar')}
-              data-label={t('explore.hideSidebar')}
+              title={t('explore.hideSidebar')}
             >
-              <span aria-hidden="true">‹</span>
+              <span className="explore-toggle-icon" aria-hidden="true" />
             </button>
           </div>
           <div className="explore-search">
@@ -295,9 +295,9 @@ export default function Explore() {
               className="explore-sidebar-toggle open"
               onClick={() => setSidebarOpen(true)}
               aria-label={t('explore.showSidebar')}
-              data-label={t('explore.showSidebar')}
+              title={t('explore.showSidebar')}
             >
-              <span aria-hidden="true">›</span>
+              <span className="explore-toggle-icon" aria-hidden="true" />
             </button>
           )}
           <div className="explore-toolbar">
