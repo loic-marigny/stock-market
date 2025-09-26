@@ -985,7 +985,7 @@
     "name": "EUR/USD",
     "sector": "Forex",
     "profile": "companies/EURUSD=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdeur.png",
     "history": "history/EURUSD=X.json",
     "market": "FX"
   },
@@ -994,7 +994,7 @@
     "name": "USD/JPY",
     "sector": "Forex",
     "profile": "companies/USDJPY=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdjpy.png",
     "history": "history/USDJPY=X.json",
     "market": "FX"
   },
@@ -1003,7 +1003,7 @@
     "name": "GBP/USD",
     "sector": "Forex",
     "profile": "companies/GBPUSD=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdgbp.png",
     "history": "history/GBPUSD=X.json",
     "market": "FX"
   },
@@ -1012,7 +1012,7 @@
     "name": "USD/CNY",
     "sector": "Forex",
     "profile": "companies/USDCNY=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdcny.png",
     "history": "history/USDCNY=X.json",
     "market": "FX"
   },
@@ -1021,7 +1021,7 @@
     "name": "USD/CHF",
     "sector": "Forex",
     "profile": "companies/USDCHF=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdchf.png",
     "history": "history/USDCHF=X.json",
     "market": "FX"
   },
@@ -1030,7 +1030,7 @@
     "name": "AUD/USD",
     "sector": "Forex",
     "profile": "companies/AUDUSD=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdaud.png",
     "history": "history/AUDUSD=X.json",
     "market": "FX"
   },
@@ -1039,7 +1039,7 @@
     "name": "USD/CAD",
     "sector": "Forex",
     "profile": "companies/USDCAD=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdcad.png",
     "history": "history/USDCAD=X.json",
     "market": "FX"
   },
@@ -1048,7 +1048,7 @@
     "name": "NZD/USD",
     "sector": "Forex",
     "profile": "companies/NZDUSD=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/usdnzd.png",
     "history": "history/NZDUSD=X.json",
     "market": "FX"
   },
@@ -1057,7 +1057,7 @@
     "name": "EUR/JPY",
     "sector": "Forex",
     "profile": "companies/EURJPY=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/eurjpy.png",
     "history": "history/EURJPY=X.json",
     "market": "FX"
   },
@@ -1066,7 +1066,7 @@
     "name": "GBP/JPY",
     "sector": "Forex",
     "profile": "companies/GBPJPY=X/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/forex/gbpjpy.png",
     "history": "history/GBPJPY=X.json",
     "market": "FX"
   },
