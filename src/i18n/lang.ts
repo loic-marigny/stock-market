@@ -62,6 +62,12 @@
   'trade.success.buy': 'Buy order executed.',
   'trade.success.sell': 'Sell order executed.',
   'explore.lastLabel': 'Last:',
+  'explore.markets': 'Markets',
+  'explore.hideSidebar': 'Hide list',
+  'explore.searchPlaceholder': 'Search symbol or name',
+  'explore.showSidebar': 'Show markets panel',
+  'explore.showList': 'Markets',
+  'explore.noResults': 'No results',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
 } as const;
 

@@ -1,4 +1,4 @@
-ï»¿const en = {
+const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -27,7 +27,7 @@
   'auth.errors.emailInUse': 'Email already in use.',
   'auth.errors.invalidCredential': 'Incorrect email or password.',
   'auth.errors.tooManyRequests': 'Too many attempts. Try again later.',
-  'auth.footer.note': 'Â© {{year}} Stock Market â€” all rights reserved',
+  'auth.footer.note': '© {{year}} Stock Market — all rights reserved',
   'portfolio.title': 'My portfolio',
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',
@@ -62,6 +62,12 @@
   'trade.success.buy': 'Buy order executed.',
   'trade.success.sell': 'Sell order executed.',
   'explore.lastLabel': 'Last:',
+  'explore.markets': 'Markets',
+  'explore.hideSidebar': 'Hide list',
+  'explore.searchPlaceholder': 'Search symbol or name',
+  'explore.showSidebar': 'Show markets panel',
+  'explore.showList': 'Markets',
+  'explore.noResults': 'No results',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
 } as const;
 
@@ -69,3 +75,4 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
+
