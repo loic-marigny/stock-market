@@ -1,4 +1,4 @@
-/* ===== Palette ===== */
+﻿/* ===== Palette ===== */
 :root{
   --primary-500:#C042BF; /* vibrant magenta */
   --primary-700:#9328C0; /* deep violet */
@@ -242,7 +242,40 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   scrollbar-width:thin;
   scrollbar-color:rgba(148,163,184,0.45) transparent;
   transition:transform .25s ease, opacity .25s ease;
+  direction:rtl;
 }
+
+.explore-sidebar > *{
+  direction:ltr;
+}
+
+.explore-sidebar::-webkit-scrollbar{
+  width:8px;
+}
+
+.explore-sidebar::-webkit-scrollbar-track{
+  background:transparent;
+  margin:14px 0;
+  border-radius:999px;
+}
+
+.explore-sidebar::-webkit-scrollbar-thumb{
+  background-color:rgba(148,163,184,0.55);
+  border-radius:999px;
+  border:2px solid transparent;
+  background-clip:content-box;
+}
+
+.explore-sidebar::-webkit-scrollbar-button{
+  height:14px;
+  background:transparent;
+}
+
+.explore-sidebar::-webkit-scrollbar-button:single-button:vertical:decrement,
+.explore-sidebar::-webkit-scrollbar-button:single-button:vertical:increment{
+  background:transparent;
+}
+
 .sidebar-collapsed{
   margin-left:-300px;
 }
