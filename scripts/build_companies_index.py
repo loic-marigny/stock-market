@@ -43,6 +43,25 @@ def load_tickers() -> List[Dict[str, Any]]:
     return out
 
 
+def load_existing_index() -> Dict[str, Any]:
+    file = COMP_DIR / "index.json"
+    if not file.exists():
+        return {}
+    try:
+        data = json.loads(file.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    if not isinstance(data, list):
+        return {}
+    mapping: Dict[str, Any] = {}
+    for entry in data:
+        if isinstance(entry, dict):
+            sym = str(entry.get("symbol", "")).upper()
+            if sym:
+                mapping[sym] = entry
+    return mapping
+
+
 def ensure_profile(sym: str, name: str, sector: str) -> None:
     d = COMP_DIR / sym
     d.mkdir(parents=True, exist_ok=True)
@@ -55,6 +74,7 @@ def ensure_profile(sym: str, name: str, sector: str) -> None:
 
 def build_index(rows: List[Dict[str, Any]]) -> None:
     COMP_DIR.mkdir(parents=True, exist_ok=True)
+    existing = load_existing_index()
     idx: List[Dict[str, Any]] = []
     for it in rows:
         sym = it["symbol"]
@@ -64,12 +84,21 @@ def build_index(rows: List[Dict[str, Any]]) -> None:
         ensure_profile(sym, name, sector)
         logo_rel = f"companies/{sym}/logo.svg"
         logo_path = COMP_DIR / sym / "logo.svg"
+        existing_logo = None
+        if sym in existing:
+            existing_logo = existing[sym].get("logo")
+        if existing_logo:
+            logo_value = existing_logo
+        elif logo_path.exists():
+            logo_value = logo_rel
+        else:
+            logo_value = None
         idx.append({
             "symbol": sym,
             "name": name,
             "sector": sector,
             "profile": f"companies/{sym}/profile.json",
-            "logo": (logo_rel if logo_path.exists() else None),
+            "logo": logo_value,
             "history": f"history/{sym}.json",
             "market": market,
         })

@@ -1165,7 +1165,7 @@
     "name": "S&P 500",
     "sector": "Index",
     "profile": "companies/^GSPC/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/us.png",
     "history": "history/^GSPC.json",
     "market": "IDX"
   },
@@ -1174,7 +1174,7 @@
     "name": "Dow Jones Industrial Average",
     "sector": "Index",
     "profile": "companies/^DJI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/us.png",
     "history": "history/^DJI.json",
     "market": "IDX"
   },
@@ -1183,7 +1183,7 @@
     "name": "NASDAQ Composite",
     "sector": "Index",
     "profile": "companies/^IXIC/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/us.png",
     "history": "history/^IXIC.json",
     "market": "IDX"
   },
@@ -1192,7 +1192,7 @@
     "name": "Russell 2000",
     "sector": "Index",
     "profile": "companies/^RUT/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/us.png",
     "history": "history/^RUT.json",
     "market": "IDX"
   },
@@ -1201,7 +1201,7 @@
     "name": "S&P/TSX Composite",
     "sector": "Index",
     "profile": "companies/^GSPTSE/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/us.png",
     "history": "history/^GSPTSE.json",
     "market": "IDX"
   },
@@ -1210,7 +1210,7 @@
     "name": "FTSE 100",
     "sector": "Index",
     "profile": "companies/^FTSE/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/ftse.png",
     "history": "history/^FTSE.json",
     "market": "IDX"
   },
@@ -1219,7 +1219,7 @@
     "name": "DAX",
     "sector": "Index",
     "profile": "companies/^GDAXI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/gdaxi.png",
     "history": "history/^GDAXI.json",
     "market": "IDX"
   },
@@ -1228,7 +1228,7 @@
     "name": "CAC 40",
     "sector": "Index",
     "profile": "companies/^FCHI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/fchi.png",
     "history": "history/^FCHI.json",
     "market": "IDX"
   },
@@ -1237,7 +1237,7 @@
     "name": "Euro STOXX 50",
     "sector": "Index",
     "profile": "companies/^STOXX50E/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/eurostoxx-50.png",
     "history": "history/^STOXX50E.json",
     "market": "IDX"
   },
@@ -1246,7 +1246,7 @@
     "name": "FTSE MIB",
     "sector": "Index",
     "profile": "companies/FTSEMIB.MI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/ftsemib.png",
     "history": "history/FTSEMIB.MI.json",
     "market": "IDX"
   },
@@ -1255,7 +1255,7 @@
     "name": "Swiss Market Index",
     "sector": "Index",
     "profile": "companies/SMIN.SW/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/smin.png",
     "history": "history/SMIN.SW.json",
     "market": "IDX"
   },
@@ -1264,7 +1264,7 @@
     "name": "IBEX 35",
     "sector": "Index",
     "profile": "companies/^IBEX/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/ibex.png",
     "history": "history/^IBEX.json",
     "market": "IDX"
   },
@@ -1273,7 +1273,7 @@
     "name": "AEX",
     "sector": "Index",
     "profile": "companies/^AEX/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/aex.png",
     "history": "history/^AEX.json",
     "market": "IDX"
   },
@@ -1282,7 +1282,7 @@
     "name": "BEL 20",
     "sector": "Index",
     "profile": "companies/^BFX/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/bfx.png",
     "history": "history/^BFX.json",
     "market": "IDX"
   },
@@ -1291,7 +1291,7 @@
     "name": "OMX Nordic All-Share",
     "sector": "Index",
     "profile": "companies/^OMX/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/omx.svg",
     "history": "history/^OMX.json",
     "market": "IDX"
   },
@@ -1300,7 +1300,7 @@
     "name": "Euronext 100",
     "sector": "Index",
     "profile": "companies/^N100/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/eu.png",
     "history": "history/^N100.json",
     "market": "IDX"
   },
@@ -1309,7 +1309,7 @@
     "name": "Nikkei 225",
     "sector": "Index",
     "profile": "companies/^N225/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/n225.png",
     "history": "history/^N225.json",
     "market": "IDX"
   },
@@ -1318,7 +1318,7 @@
     "name": "TOPIX",
     "sector": "Index",
     "profile": "companies/TOPIX100.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/n225.png",
     "history": "history/TOPIX100.T.json",
     "market": "IDX"
   },
@@ -1327,7 +1327,7 @@
     "name": "Hang Seng Index",
     "sector": "Index",
     "profile": "companies/^HSI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/hsi.png",
     "history": "history/^HSI.json",
     "market": "IDX"
   },
@@ -1336,7 +1336,7 @@
     "name": "Shanghai Composite",
     "sector": "Index",
     "profile": "companies/000001.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/cn.png",
     "history": "history/000001.SS.json",
     "market": "IDX"
   },
@@ -1345,7 +1345,7 @@
     "name": "SZSE Component",
     "sector": "Index",
     "profile": "companies/399001.SZ/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/cn.png",
     "history": "history/399001.SZ.json",
     "market": "IDX"
   },
@@ -1354,7 +1354,7 @@
     "name": "KOSPI",
     "sector": "Index",
     "profile": "companies/^KS11/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/ks11.png",
     "history": "history/^KS11.json",
     "market": "IDX"
   },
@@ -1363,7 +1363,7 @@
     "name": "TAIEX",
     "sector": "Index",
     "profile": "companies/^TWII/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/twii.png",
     "history": "history/^TWII.json",
     "market": "IDX"
   },
@@ -1372,7 +1372,7 @@
     "name": "Straits Times Index",
     "sector": "Index",
     "profile": "companies/^STI/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/sti.png",
     "history": "history/^STI.json",
     "market": "IDX"
   },
@@ -1381,7 +1381,7 @@
     "name": "BSE Sensex",
     "sector": "Index",
     "profile": "companies/^BSESN/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/bse.png",
     "history": "history/^BSESN.json",
     "market": "IDX"
   },
@@ -1390,7 +1390,7 @@
     "name": "S&P/ASX 200",
     "sector": "Index",
     "profile": "companies/^AXJO/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/axjo.png",
     "history": "history/^AXJO.json",
     "market": "IDX"
   },
@@ -1399,7 +1399,7 @@
     "name": "NZX 50",
     "sector": "Index",
     "profile": "companies/^NZ50/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/nz50.png",
     "history": "history/^NZ50.json",
     "market": "IDX"
   },
@@ -1408,7 +1408,7 @@
     "name": "Jakarta Composite",
     "sector": "Index",
     "profile": "companies/^JKSE/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/jkse.png",
     "history": "history/^JKSE.json",
     "market": "IDX"
   },
@@ -1417,7 +1417,7 @@
     "name": "FTSE Bursa Malaysia KLCI",
     "sector": "Index",
     "profile": "companies/^KLSE/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/klse.png",
     "history": "history/^KLSE.json",
     "market": "IDX"
   },
@@ -1426,7 +1426,7 @@
     "name": "Bovespa Index",
     "sector": "Index",
     "profile": "companies/^BVSP/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/indices/bovespa.png",
     "history": "history/^BVSP.json",
     "market": "IDX"
   }
