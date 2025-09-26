@@ -4,7 +4,7 @@
     "name": "Apple Inc.",
     "sector": "Information Technology",
     "profile": "companies/AAPL/profile.json",
-    "logo": null,
+    "logo": "img/companies/ny/apple.png",
     "history": "history/AAPL.json",
     "market": "US"
   },
