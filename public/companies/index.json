@@ -625,7 +625,7 @@
     "name": "Toyota Motor Corporation",
     "sector": "Consumer Discretionary",
     "profile": "companies/7203.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/toyota.png",
     "history": "history/7203.T.json",
     "market": "JP"
   },
@@ -634,7 +634,7 @@
     "name": "Sony Group Corporation",
     "sector": "Communication Services",
     "profile": "companies/6758.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/sony.png",
     "history": "history/6758.T.json",
     "market": "JP"
   },
@@ -643,7 +643,7 @@
     "name": "SoftBank Group Corp.",
     "sector": "Communication Services",
     "profile": "companies/9984.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/softbank.png",
     "history": "history/9984.T.json",
     "market": "JP"
   },
@@ -652,7 +652,7 @@
     "name": "Keyence Corporation",
     "sector": "Information Technology",
     "profile": "companies/6861.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/keyence.png",
     "history": "history/6861.T.json",
     "market": "JP"
   },
@@ -661,7 +661,7 @@
     "name": "Tokyo Electron Ltd.",
     "sector": "Information Technology",
     "profile": "companies/8035.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/tokyo-electron.png",
     "history": "history/8035.T.json",
     "market": "JP"
   },
@@ -670,7 +670,7 @@
     "name": "Fast Retailing Co., Ltd.",
     "sector": "Consumer Discretionary",
     "profile": "companies/9983.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/fast-retailing.png",
     "history": "history/9983.T.json",
     "market": "JP"
   },
@@ -679,7 +679,7 @@
     "name": "Nippon Telegraph and Telephone Corp.",
     "sector": "Communication Services",
     "profile": "companies/9432.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/ntt.svg",
     "history": "history/9432.T.json",
     "market": "JP"
   },
@@ -688,7 +688,7 @@
     "name": "Recruit Holdings Co., Ltd.",
     "sector": "Industrials",
     "profile": "companies/6098.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/recruit.png",
     "history": "history/6098.T.json",
     "market": "JP"
   },
@@ -697,7 +697,7 @@
     "name": "Takeda Pharmaceutical Co., Ltd.",
     "sector": "Health Care",
     "profile": "companies/4502.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/takeda.png",
     "history": "history/4502.T.json",
     "market": "JP"
   },
@@ -706,7 +706,7 @@
     "name": "Sumitomo Mitsui Financial Group, Inc.",
     "sector": "Financials",
     "profile": "companies/8316.T/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/tokyo/sumimoto.png",
     "history": "history/8316.T.json",
     "market": "JP"
   },
