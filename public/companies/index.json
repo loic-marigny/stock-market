@@ -274,7 +274,7 @@
     "name": "Kweichow Moutai Co., Ltd.",
     "sector": "Consumer Staples",
     "profile": "companies/600519.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/moutai.png",
     "history": "history/600519.SS.json",
     "market": "CN"
   },
@@ -283,7 +283,7 @@
     "name": "Ping An Insurance (Group) Co. of China",
     "sector": "Financials",
     "profile": "companies/601318.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/ping-an.png",
     "history": "history/601318.SS.json",
     "market": "CN"
   },
@@ -292,7 +292,7 @@
     "name": "Industrial and Commercial Bank of China",
     "sector": "Financials",
     "profile": "companies/601398.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/industrial-bank.svg",
     "history": "history/601398.SS.json",
     "market": "CN"
   },
@@ -301,7 +301,7 @@
     "name": "Agricultural Bank of China",
     "sector": "Financials",
     "profile": "companies/601288.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/agri-bank-of-china.png",
     "history": "history/601288.SS.json",
     "market": "CN"
   },
@@ -310,7 +310,7 @@
     "name": "Bank of China",
     "sector": "Financials",
     "profile": "companies/601988.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/bank-of-china.png",
     "history": "history/601988.SS.json",
     "market": "CN"
   },
@@ -319,7 +319,7 @@
     "name": "PetroChina Company Limited",
     "sector": "Energy",
     "profile": "companies/601857.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/petrochina.svg",
     "history": "history/601857.SS.json",
     "market": "CN"
   },
@@ -328,7 +328,7 @@
     "name": "China Petroleum & Chemical (Sinopec)",
     "sector": "Energy",
     "profile": "companies/600028.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/sinopec.svg",
     "history": "history/600028.SS.json",
     "market": "CN"
   },
@@ -337,7 +337,7 @@
     "name": "China Merchants Bank",
     "sector": "Financials",
     "profile": "companies/600036.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/china-merchants-bank.svg",
     "history": "history/600036.SS.json",
     "market": "CN"
   },
@@ -346,7 +346,7 @@
     "name": "Industrial Bank Co., Ltd.",
     "sector": "Financials",
     "profile": "companies/601166.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/industrial-bank.svg",
     "history": "history/601166.SS.json",
     "market": "CN"
   },
@@ -355,7 +355,7 @@
     "name": "China Yangtze Power Co., Ltd.",
     "sector": "Utilities",
     "profile": "companies/600900.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/yangtse-power.png",
     "history": "history/600900.SS.json",
     "market": "CN"
   },
@@ -364,7 +364,7 @@
     "name": "China Tourism Group Duty Free",
     "sector": "Consumer Discretionary",
     "profile": "companies/601888.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/china-tourism-group.png",
     "history": "history/601888.SS.json",
     "market": "CN"
   },
@@ -373,7 +373,7 @@
     "name": "LONGi Green Energy Technology",
     "sector": "Information Technology",
     "profile": "companies/601012.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/longi.png",
     "history": "history/601012.SS.json",
     "market": "CN"
   },
@@ -382,7 +382,7 @@
     "name": "SAIC Motor Corporation Limited",
     "sector": "Consumer Discretionary",
     "profile": "companies/600104.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/saic.png",
     "history": "history/600104.SS.json",
     "market": "CN"
   },
@@ -391,7 +391,7 @@
     "name": "CITIC Securities Co., Ltd.",
     "sector": "Financials",
     "profile": "companies/600030.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/citic.png",
     "history": "history/600030.SS.json",
     "market": "CN"
   },
@@ -400,7 +400,7 @@
     "name": "Anhui Conch Cement Company Limited",
     "sector": "Materials",
     "profile": "companies/600585.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/conch.png",
     "history": "history/600585.SS.json",
     "market": "CN"
   },
@@ -409,7 +409,7 @@
     "name": "Shanghai Pudong Development Bank",
     "sector": "Financials",
     "profile": "companies/600000.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/spd.png",
     "history": "history/600000.SS.json",
     "market": "CN"
   },
@@ -418,7 +418,7 @@
     "name": "China Pacific Insurance (Group)",
     "sector": "Financials",
     "profile": "companies/601601.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/China_Pacific_Insurance.png",
     "history": "history/601601.SS.json",
     "market": "CN"
   },
@@ -427,7 +427,7 @@
     "name": "China Construction Bank",
     "sector": "Financials",
     "profile": "companies/601939.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/China_Construction_Bank.png",
     "history": "history/601939.SS.json",
     "market": "CN"
   },
@@ -436,7 +436,7 @@
     "name": "Baoshan Iron & Steel Co., Ltd.",
     "sector": "Materials",
     "profile": "companies/600019.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/baoshan.webp",
     "history": "history/600019.SS.json",
     "market": "CN"
   },
@@ -445,7 +445,7 @@
     "name": "Jiangsu Hengrui Pharmaceuticals",
     "sector": "Health Care",
     "profile": "companies/600276.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/Jiangsu_Hengrui.png",
     "history": "history/600276.SS.json",
     "market": "CN"
   },
@@ -454,7 +454,7 @@
     "name": "CRRC Corporation Limited",
     "sector": "Industrials",
     "profile": "companies/601766.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/crrc.png",
     "history": "history/601766.SS.json",
     "market": "CN"
   },
@@ -463,7 +463,7 @@
     "name": "Wanhua Chemical Group Co., Ltd.",
     "sector": "Materials",
     "profile": "companies/600309.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/wanhua-chemical.png",
     "history": "history/600309.SS.json",
     "market": "CN"
   },
@@ -472,7 +472,7 @@
     "name": "Great Wall Motor Company Limited",
     "sector": "Consumer Discretionary",
     "profile": "companies/601633.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/gwm.png",
     "history": "history/601633.SS.json",
     "market": "CN"
   },
@@ -481,7 +481,7 @@
     "name": "Inner Mongolia Yili Industrial Group",
     "sector": "Consumer Staples",
     "profile": "companies/600887.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/yili.png",
     "history": "history/600887.SS.json",
     "market": "CN"
   },
@@ -490,7 +490,7 @@
     "name": "China State Construction Engineering",
     "sector": "Industrials",
     "profile": "companies/601668.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/cscec.png",
     "history": "history/601668.SS.json",
     "market": "CN"
   },
@@ -499,7 +499,7 @@
     "name": "Postal Savings Bank of China",
     "sector": "Financials",
     "profile": "companies/601658.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/postal-savings-bank-of-china.png",
     "history": "history/601658.SS.json",
     "market": "CN"
   },
@@ -508,7 +508,7 @@
     "name": "China Telecom Corporation Limited",
     "sector": "Communication Services",
     "profile": "companies/601728.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/China-Telecom.png",
     "history": "history/601728.SS.json",
     "market": "CN"
   },
@@ -517,7 +517,7 @@
     "name": "China Life Insurance Company Limited",
     "sector": "Financials",
     "profile": "companies/601628.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/china-life-insurance.svg",
     "history": "history/601628.SS.json",
     "market": "CN"
   },
@@ -526,7 +526,7 @@
     "name": "Semiconductor Manufacturing International (SMIC)",
     "sector": "Information Technology",
     "profile": "companies/688981.SS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/shanghai/SMIC.png",
     "history": "history/688981.SS.json",
     "market": "CN"
   },
@@ -535,7 +535,7 @@
     "name": "LVMH Moët Hennessy Louis Vuitton",
     "sector": "Consumer Discretionary",
     "profile": "companies/MC.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/lvmh.png",
     "history": "history/MC.PA.json",
     "market": "EU"
   },
@@ -544,7 +544,7 @@
     "name": "ASML Holding N.V.",
     "sector": "Information Technology",
     "profile": "companies/ASML.AS/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/asml.png",
     "history": "history/ASML.AS.json",
     "market": "EU"
   },
