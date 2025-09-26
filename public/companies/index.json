@@ -553,7 +553,7 @@
     "name": "L'Oréal S.A.",
     "sector": "Consumer Staples",
     "profile": "companies/OR.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/loreal.png",
     "history": "history/OR.PA.json",
     "market": "EU"
   },
@@ -562,7 +562,7 @@
     "name": "TotalEnergies SE",
     "sector": "Energy",
     "profile": "companies/TTE.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/total.png",
     "history": "history/TTE.PA.json",
     "market": "EU"
   },
@@ -571,7 +571,7 @@
     "name": "Sanofi",
     "sector": "Health Care",
     "profile": "companies/SAN.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/sanofi.png",
     "history": "history/SAN.PA.json",
     "market": "EU"
   },
@@ -580,7 +580,7 @@
     "name": "Hermès International SCA",
     "sector": "Consumer Discretionary",
     "profile": "companies/RMS.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/hermes.png",
     "history": "history/RMS.PA.json",
     "market": "EU"
   },
@@ -589,7 +589,7 @@
     "name": "Airbus SE",
     "sector": "Industrials",
     "profile": "companies/AIR.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/airbus.png",
     "history": "history/AIR.PA.json",
     "market": "EU"
   },
@@ -598,7 +598,7 @@
     "name": "BNP Paribas",
     "sector": "Financials",
     "profile": "companies/BNP.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/bnp.png",
     "history": "history/BNP.PA.json",
     "market": "EU"
   },
@@ -607,7 +607,7 @@
     "name": "Schneider Electric SE",
     "sector": "Industrials",
     "profile": "companies/SU.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/schneider.png",
     "history": "history/SU.PA.json",
     "market": "EU"
   },
@@ -616,7 +616,7 @@
     "name": "Kering",
     "sector": "Consumer Discretionary",
     "profile": "companies/KER.PA/profile.json",
-    "logo": null,
+    "logo": "public/img/companies/euro/kering.jpg",
     "history": "history/KER.PA.json",
     "market": "EU"
   },
