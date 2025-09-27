@@ -25,6 +25,17 @@ function normalizePrice(value: unknown): number | undefined {
   return value;
 }
 
+
+async function fetchFallbackClose(symbol: string): Promise<number | undefined> {
+  try {
+    const hist = await provider.getDailyHistory(symbol);
+    const last = hist.at(-1)?.close;
+    return normalizePrice(last);
+  } catch {
+    return undefined;
+  }
+}
+
 export function usePortfolioSnapshot(uid: string | null | undefined): PortfolioSnapshot {
   const [orders, setOrders] = useState<Order[]>([]);
   const [initialCredits, setInitialCredits] = useState<number>(DEFAULT_INITIAL);
@@ -93,14 +104,21 @@ export function usePortfolioSnapshot(uid: string | null | undefined): PortfolioS
     (async () => {
       const fetched: Record<string, number> = {};
       for (const sym of heldSymbols) {
+        let valid: number | undefined;
         try {
           const px = await provider.getLastPrice(sym);
-          const valid = normalizePrice(px);
-          if (typeof valid === "number") fetched[sym] = valid;
+          valid = normalizePrice(px);
         } catch {
-          // ignore individual failures; we will fallback to previous value if any
+          valid = undefined;
         }
         if (cancelled) return;
+        if (typeof valid !== "number") {
+          valid = await fetchFallbackClose(sym);
+        }
+        if (cancelled) return;
+        if (typeof valid === "number") {
+          fetched[sym] = valid;
+        }
       }
       if (cancelled) return;
       setPrices(prev => {

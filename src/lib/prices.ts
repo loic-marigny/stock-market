@@ -19,6 +19,44 @@ async function fetchJSON<T>(url: string): Promise<T> {
   return res.json();
 }
 
+const QUOTES_TTL_MS = 60_000;
+let cachedQuotes: Record<string, { last: number }> | null = null;
+let quotesFetchedAt = 0;
+let quotesPromise: Promise<Record<string, { last: number }>> | null = null;
+
+async function loadQuotes(): Promise<Record<string, { last: number }>> {
+  const now = Date.now();
+  if (cachedQuotes && now - quotesFetchedAt < QUOTES_TTL_MS) {
+    return cachedQuotes;
+  }
+  if (!quotesPromise) {
+    const qurl = fromBase(`quotes.json`);
+    quotesPromise = fetchJSON<Record<string, { last: number }>>(qurl)
+      .then(data => {
+        cachedQuotes = data;
+        quotesFetchedAt = Date.now();
+        return data;
+      })
+      .finally(() => {
+        quotesPromise = null;
+      });
+  }
+  const currentPromise = quotesPromise;
+  if (!currentPromise) {
+    if (cachedQuotes) return cachedQuotes;
+    return {};
+  }
+  try {
+    return await currentPromise;
+  } catch (err) {
+    if (cachedQuotes) {
+      return cachedQuotes;
+    }
+    throw err;
+  }
+}
+
+
 export const jsonProvider: PriceProvider = {
   async getDailyHistory(symbol: string): Promise<OHLC[]> {
     const tryFetch = async (pathSymbol: string) => {
@@ -41,10 +79,10 @@ export const jsonProvider: PriceProvider = {
   },
   async getLastPrice(symbol: string): Promise<number> {
     try {
-      const qurl = fromBase(`quotes.json`);
-      const q = await fetchJSON<Record<string,{last:number}>>(qurl);
-      const v = (q as any)?.[symbol]?.last;
-      if (typeof v === 'number' && Number.isFinite(v)) return v;
+      const quotes = await loadQuotes();
+      const entry = (quotes as any)?.[symbol];
+      const v = entry?.last;
+      if (typeof v === "number" && Number.isFinite(v)) return v;
     } catch {}
     const hist = await this.getDailyHistory(symbol);
     return hist.at(-1)?.close ?? 0;

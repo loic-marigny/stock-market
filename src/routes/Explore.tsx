@@ -192,99 +192,101 @@ export default function Explore() {
     <main className="explore-page">
       <div className={`explore-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
         <aside className={`explore-sidebar${sidebarOpen ? "" : " hidden"}`}>
-          <div className="explore-sidebar-header">
-            <h3>{t('explore.markets')}</h3>
-            <button
-              type="button"
-              className="explore-sidebar-toggle"
-              onClick={() => setSidebarOpen(false)}
-              aria-label={t('explore.hideSidebar')}
-              title={t('explore.hideSidebar')}
-            >
-              <span className="explore-toggle-icon" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="explore-search">
-            <input
-              type="search"
-              placeholder={t('explore.searchPlaceholder')}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </div>
-          <div className="explore-groups">
-            {searchMode ? (
-              searchResults.length === 0 ? (
-                <p className="explore-no-results">{t('explore.noResults')}</p>
+          <button
+            type="button"
+            className="explore-sidebar-toggle"
+            onClick={() => setSidebarOpen(false)}
+            aria-label={t('explore.hideSidebar')}
+            title={t('explore.hideSidebar')}
+          >
+            <span className="explore-toggle-icon" aria-hidden="true" />
+          </button>
+          <div className="explore-sidebar-content">
+            <div className="explore-sidebar-header">
+              <h3>{t('explore.markets')}</h3>
+            </div>
+            <div className="explore-search">
+              <input
+                type="search"
+                placeholder={t('explore.searchPlaceholder')}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
+            <div className="explore-groups">
+              {searchMode ? (
+                searchResults.length === 0 ? (
+                  <p className="explore-no-results">{t('explore.noResults')}</p>
+                ) : (
+                  <ul className="explore-symbols search-results">
+                    {searchResults.map((company) => {
+                      const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
+                      const isActive = company.symbol === symbol;
+                      return (
+                        <li key={company.symbol}>
+                          <button
+                            type="button"
+                            className={`explore-symbol${isActive ? " active" : ""}`}
+                            onClick={() => {
+                              setSymbol(company.symbol);
+                              if (!sidebarOpen) setSidebarOpen(true);
+                            }}
+                          >
+                            <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
+                            <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )
               ) : (
-                <ul className="explore-symbols search-results">
-                  {searchResults.map((company) => {
-                    const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
-                    const isActive = company.symbol === symbol;
-                    return (
-                      <li key={company.symbol}>
-                        <button
-                          type="button"
-                          className={`explore-symbol${isActive ? " active" : ""}`}
-                          onClick={() => {
-                            setSymbol(company.symbol);
-                            if (!sidebarOpen) setSidebarOpen(true);
-                          }}
-                        >
-                          <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                          <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )
-            ) : (
-              grouped.map((group) => {
-                const expanded = !!expandedMarkets[group.code];
-                const panelId = `market-${group.code}`;
-                const iconSrc = asset(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
-                if (!group.companies.length) return null;
-                return (
-                  <div key={group.code} className="explore-group">
-                    <button
-                      type="button"
-                      className="explore-group-header"
-                      onClick={() => toggleMarket(group.code)}
-                      aria-expanded={expanded}
-                      aria-controls={panelId}
-                    >
-                      <img src={iconSrc} alt="" className="explore-market-icon" aria-hidden="true" />
-                      <span>{group.label}</span>
-                      <span
-                        className={`explore-chevron${expanded ? " open" : ""}`}
-                        aria-hidden="true"
-                      />
-                    </button>
-                    {expanded && (
-                      <ul className="explore-symbols" id={panelId}>
-                        {group.companies.map((company) => {
-                          const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
-                          const isActive = company.symbol === symbol;
-                          return (
-                            <li key={company.symbol}>
-                              <button
-                                type="button"
-                                className={`explore-symbol${isActive ? " active" : ""}`}
-                                onClick={() => setSymbol(company.symbol)}
-                              >
-                                <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                                <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </div>
-                );
-              })
-            )}
+                grouped.map((group) => {
+                  const expanded = !!expandedMarkets[group.code];
+                  const panelId = `market-${group.code}`;
+                  const iconSrc = asset(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
+                  if (!group.companies.length) return null;
+                  return (
+                    <div key={group.code} className="explore-group">
+                      <button
+                        type="button"
+                        className="explore-group-header"
+                        onClick={() => toggleMarket(group.code)}
+                        aria-expanded={expanded}
+                        aria-controls={panelId}
+                      >
+                        <img src={iconSrc} alt="" className="explore-market-icon" aria-hidden="true" />
+                        <span>{group.label}</span>
+                        <span
+                          className={`explore-chevron${expanded ? " open" : ""}`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                      {expanded && (
+                        <ul className="explore-symbols" id={panelId}>
+                          {group.companies.map((company) => {
+                            const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
+                            const isActive = company.symbol === symbol;
+                            return (
+                              <li key={company.symbol}>
+                                <button
+                                  type="button"
+                                  className={`explore-symbol${isActive ? " active" : ""}`}
+                                  onClick={() => setSymbol(company.symbol)}
+                                >
+                                  <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
+                                  <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </aside>
 
