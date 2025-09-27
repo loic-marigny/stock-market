@@ -302,38 +302,39 @@ export default function Explore() {
           >
             <span className="explore-toggle-icon" aria-hidden="true" />
           </button>
-          <div className="explore-toolbar">
-            <div className="explore-selected">
-              <h2>{selectedCompany?.symbol ?? symbol}</h2>
-              <p>{selectedCompany?.name ?? symbol}</p>
+          <div className="explore-main-content">
+            <div className="explore-toolbar">
+              <div className="explore-selected">
+                <h2>{selectedCompany?.symbol ?? symbol}</h2>
+                <p>{selectedCompany?.name ?? symbol}</p>
+              </div>
+              <div className="tf">
+                {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    className={`pill${tf === x ? " active" : ""}`}
+                    onClick={() => setTf(x as TF)}
+                  >
+                    {x}
+                  </button>
+                ))}
+              </div>
+              <div className="price">
+                {t("explore.lastLabel")} <strong>{lastClose.toFixed(2)}</strong>
+              </div>
             </div>
-            <div className="tf">
-              {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
-                <button
-                  key={x}
-                  type="button"
-                  className={`pill${tf === x ? " active" : ""}`}
-                  onClick={() => setTf(x as TF)}
-                >
-                  {x}
-                </button>
-              ))}
-            </div>
-            <div className="price">
-              {t("explore.lastLabel")} <strong>{lastClose.toFixed(2)}</strong>
-            </div>
-          </div>
 
-          <div className="chart-card">
-            <canvas ref={canvasRef} />
+            <div className="chart-card">
+              <canvas ref={canvasRef} />
+            </div>
+            <p className="hint">{t("explore.sourceHint")}</p>
           </div>
-          <p className="hint">{t("explore.sourceHint")}</p>
         </div>
       </div>
     </main>
   );
 }
-
 function shiftDays(d: Date, delta: number) {
   const x = new Date(d);
   x.setDate(x.getDate() + delta);
@@ -358,3 +359,4 @@ function groupByMarket(list: Company[]): Record<string, Company[]> {
   }
   return ordered;
 }
+
