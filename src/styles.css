@@ -218,6 +218,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   display:flex;
   gap:24px;
   align-items:stretch;
+  position:relative;
   min-height:0;
   height:100%;
   overflow:hidden;
@@ -228,6 +229,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   width:280px;
   flex:0 0 280px;
   background:#1f2937;
+  pointer-events:auto;
   color:#f8fafc;
   border-radius:0 18px 18px 0;
   box-shadow:0 12px 24px rgba(15,23,42,0.35);
@@ -248,7 +250,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   gap:12px;
   min-height:0;
   height:100%;
-  max-height:100%;
+  max-height:100vh;
   overflow:auto;
   scrollbar-width:thin;
   scrollbar-color:rgba(148,163,184,0.45) transparent;
@@ -286,8 +288,21 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   background:transparent;
 }
 
-.sidebar-collapsed{
+.explore-layout.sidebar-collapsed{
   margin-left:-300px;
+}
+
+.explore-layout.sidebar-collapsed::before{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:300px;
+  width:4px;
+  background:#1f2937;
+  border-radius:0 8px 8px 0;
+  pointer-events:none;
+  z-index:0;
 }
 
 .explore-sidebar.hidden{
@@ -312,21 +327,22 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 .explore-sidebar-toggle{
   border:0;
   background:#1f2937;
+  pointer-events:auto;
   color:#f8fafc;
-  width:40px;
-  height:80px;
+  width:20px;
+  height:120px;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  border-radius:0 20px 20px 0;
-  box-shadow:0 12px 24px rgba(15,23,42,0.4);
+  border-radius:0 18px 18px 0;
+  box-shadow:0 10px 22px rgba(15,23,42,0.45);
   position:absolute;
   top:50%;
   right:-20px;
   transform:translateY(-50%);
   transition:background .2s ease, color .2s ease, transform .2s ease;
-  z-index:5;
+  z-index:0;
 }
 
 .explore-sidebar-toggle:hover{
@@ -348,10 +364,10 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
 }
 
 .explore-sidebar-toggle.open{
-  left:0;
+  left:0px;
   right:auto;
   transform:translateY(-50%);
-  border-radius:0 20px 20px 0;
+  border-radius:0 18px 18px 0;
   background:#1f2937;
 }
 
@@ -363,8 +379,9 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   position:sticky;
   top:0;
   background:#1f2937;
+  pointer-events:none;
   padding-bottom:10px;
-  z-index:1;
+  z-index:0;
 }
 
 .explore-search input{
