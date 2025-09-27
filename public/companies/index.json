@@ -4,7 +4,7 @@
     "name": "Apple Inc.",
     "sector": "Information Technology",
     "profile": "companies/AAPL/profile.json",
-    "logo": "public/img/companies/ny/apple.png",
+    "logo": "img/companies/ny/apple.png",
     "history": "history/AAPL.json",
     "market": "US"
   },
@@ -13,7 +13,7 @@
     "name": "Microsoft Corporation",
     "sector": "Information Technology",
     "profile": "companies/MSFT/profile.json",
-    "logo": "public/img/companies/ny/microsoft.png",
+    "logo": "img/companies/ny/microsoft.png",
     "history": "history/MSFT.json",
     "market": "US"
   },
@@ -22,7 +22,7 @@
     "name": "NVIDIA Corporation",
     "sector": "Information Technology",
     "profile": "companies/NVDA/profile.json",
-    "logo": "public/img/companies/ny/nvidia.png",
+    "logo": "img/companies/ny/nvidia.png",
     "history": "history/NVDA.json",
     "market": "US"
   },
@@ -31,7 +31,7 @@
     "name": "Amazon.com, Inc.",
     "sector": "Consumer Discretionary",
     "profile": "companies/AMZN/profile.json",
-    "logo": "public/img/companies/ny/amazon.png",
+    "logo": "img/companies/ny/amazon.png",
     "history": "history/AMZN.json",
     "market": "US"
   },
@@ -40,7 +40,7 @@
     "name": "Alphabet Inc. Class A",
     "sector": "Communication Services",
     "profile": "companies/GOOGL/profile.json",
-    "logo": "public/img/companies/ny/google.webp",
+    "logo": "img/companies/ny/google.webp",
     "history": "history/GOOGL.json",
     "market": "US"
   },
@@ -49,7 +49,7 @@
     "name": "Alphabet Inc. Class C",
     "sector": "Communication Services",
     "profile": "companies/GOOG/profile.json",
-    "logo": "public/img/companies/ny/google.webp",
+    "logo": "img/companies/ny/google.webp",
     "history": "history/GOOG.json",
     "market": "US"
   },
@@ -58,7 +58,7 @@
     "name": "Meta Platforms, Inc.",
     "sector": "Communication Services",
     "profile": "companies/META/profile.json",
-    "logo": "public/img/companies/ny/meta.png",
+    "logo": "img/companies/ny/meta.png",
     "history": "history/META.json",
     "market": "US"
   },
@@ -67,7 +67,7 @@
     "name": "Broadcom Inc.",
     "sector": "Information Technology",
     "profile": "companies/AVGO/profile.json",
-    "logo": "public/img/companies/ny/broadcom.png",
+    "logo": "img/companies/ny/broadcom.png",
     "history": "history/AVGO.json",
     "market": "US"
   },
@@ -76,7 +76,7 @@
     "name": "Eli Lilly and Company",
     "sector": "Health Care",
     "profile": "companies/LLY/profile.json",
-    "logo": "public/img/companies/ny/lilly.png",
+    "logo": "img/companies/ny/lilly.png",
     "history": "history/LLY.json",
     "market": "US"
   },
@@ -85,7 +85,7 @@
     "name": "Tesla, Inc.",
     "sector": "Consumer Discretionary",
     "profile": "companies/TSLA/profile.json",
-    "logo": "public/img/companies/ny/tesla.png",
+    "logo": "img/companies/ny/tesla.png",
     "history": "history/TSLA.json",
     "market": "US"
   },
@@ -94,7 +94,7 @@
     "name": "JPMorgan Chase & Co.",
     "sector": "Financials",
     "profile": "companies/JPM/profile.json",
-    "logo": "public/img/companies/ny/jpmorgan.svg",
+    "logo": "img/companies/ny/jpmorgan.svg",
     "history": "history/JPM.json",
     "market": "US"
   },
@@ -103,7 +103,7 @@
     "name": "Visa Inc.",
     "sector": "Financials",
     "profile": "companies/V/profile.json",
-    "logo": "public/img/companies/ny/visa.png",
+    "logo": "img/companies/ny/visa.png",
     "history": "history/V.json",
     "market": "US"
   },
@@ -112,7 +112,7 @@
     "name": "Exxon Mobil Corporation",
     "sector": "Energy",
     "profile": "companies/XOM/profile.json",
-    "logo": "public/img/companies/ny/exxon.png",
+    "logo": "img/companies/ny/exxon.png",
     "history": "history/XOM.json",
     "market": "US"
   },
@@ -121,7 +121,7 @@
     "name": "UnitedHealth Group Incorporated",
     "sector": "Health Care",
     "profile": "companies/UNH/profile.json",
-    "logo": "public/img/companies/ny/unitedhealthcare.png",
+    "logo": "img/companies/ny/unitedhealthcare.png",
     "history": "history/UNH.json",
     "market": "US"
   },
@@ -130,7 +130,7 @@
     "name": "Johnson & Johnson",
     "sector": "Health Care",
     "profile": "companies/JNJ/profile.json",
-    "logo": "public/img/companies/ny/johnson.png",
+    "logo": "img/companies/ny/johnson.png",
     "history": "history/JNJ.json",
     "market": "US"
   },
@@ -139,7 +139,7 @@
     "name": "Walmart Inc.",
     "sector": "Consumer Staples",
     "profile": "companies/WMT/profile.json",
-    "logo": "public/img/companies/ny/walmart.png",
+    "logo": "img/companies/ny/walmart.png",
     "history": "history/WMT.json",
     "market": "US"
   },
@@ -148,7 +148,7 @@
     "name": "Mastercard Incorporated",
     "sector": "Financials",
     "profile": "companies/MA/profile.json",
-    "logo": "public/img/companies/ny/mastercard.png",
+    "logo": "img/companies/ny/mastercard.png",
     "history": "history/MA.json",
     "market": "US"
   },
@@ -157,7 +157,7 @@
     "name": "Procter & Gamble Company",
     "sector": "Consumer Staples",
     "profile": "companies/PG/profile.json",
-    "logo": "public/img/companies/ny/pg.png",
+    "logo": "img/companies/ny/pg.png",
     "history": "history/PG.json",
     "market": "US"
   },
@@ -166,7 +166,7 @@
     "name": "Oracle Corporation",
     "sector": "Information Technology",
     "profile": "companies/ORCL/profile.json",
-    "logo": "public/img/companies/ny/oracle.png",
+    "logo": "img/companies/ny/oracle.png",
     "history": "history/ORCL.json",
     "market": "US"
   },
@@ -175,7 +175,7 @@
     "name": "Costco Wholesale Corporation",
     "sector": "Consumer Staples",
     "profile": "companies/COST/profile.json",
-    "logo": "public/img/companies/ny/costco.png",
+    "logo": "img/companies/ny/costco.png",
     "history": "history/COST.json",
     "market": "US"
   },
@@ -184,7 +184,7 @@
     "name": "Merck & Co., Inc.",
     "sector": "Health Care",
     "profile": "companies/MRK/profile.json",
-    "logo": "public/img/companies/ny/merck.png",
+    "logo": "img/companies/ny/merck.png",
     "history": "history/MRK.json",
     "market": "US"
   },
@@ -193,7 +193,7 @@
     "name": "The Home Depot, Inc.",
     "sector": "Consumer Discretionary",
     "profile": "companies/HD/profile.json",
-    "logo": "public/img/companies/ny/home-depot.png",
+    "logo": "img/companies/ny/home-depot.png",
     "history": "history/HD.json",
     "market": "US"
   },
@@ -202,7 +202,7 @@
     "name": "The Coca-Cola Company",
     "sector": "Consumer Staples",
     "profile": "companies/KO/profile.json",
-    "logo": "public/img/companies/ny/coca-cola.png",
+    "logo": "img/companies/ny/coca-cola.png",
     "history": "history/KO.json",
     "market": "US"
   },
@@ -211,7 +211,7 @@
     "name": "PepsiCo, Inc.",
     "sector": "Consumer Staples",
     "profile": "companies/PEP/profile.json",
-    "logo": "public/img/companies/ny/pepsico.png",
+    "logo": "img/companies/ny/pepsico.png",
     "history": "history/PEP.json",
     "market": "US"
   },
@@ -220,7 +220,7 @@
     "name": "Bank of America Corporation",
     "sector": "Financials",
     "profile": "companies/BAC/profile.json",
-    "logo": "public/img/companies/ny/boa.png",
+    "logo": "img/companies/ny/boa.png",
     "history": "history/BAC.json",
     "market": "US"
   },
@@ -229,7 +229,7 @@
     "name": "Adobe Inc.",
     "sector": "Information Technology",
     "profile": "companies/ADBE/profile.json",
-    "logo": "public/img/companies/ny/adobe.png",
+    "logo": "img/companies/ny/adobe.png",
     "history": "history/ADBE.json",
     "market": "US"
   },
@@ -238,7 +238,7 @@
     "name": "Salesforce, Inc.",
     "sector": "Information Technology",
     "profile": "companies/CRM/profile.json",
-    "logo": "public/img/companies/ny/salesforce.webp",
+    "logo": "img/companies/ny/salesforce.webp",
     "history": "history/CRM.json",
     "market": "US"
   },
@@ -247,7 +247,7 @@
     "name": "Netflix, Inc.",
     "sector": "Communication Services",
     "profile": "companies/NFLX/profile.json",
-    "logo": "public/img/companies/ny/netflix.png",
+    "logo": "img/companies/ny/netflix.png",
     "history": "history/NFLX.json",
     "market": "US"
   },
@@ -256,7 +256,7 @@
     "name": "Cisco Systems, Inc.",
     "sector": "Information Technology",
     "profile": "companies/CSCO/profile.json",
-    "logo": "public/img/companies/ny/cisco.png",
+    "logo": "img/companies/ny/cisco.png",
     "history": "history/CSCO.json",
     "market": "US"
   },
@@ -265,7 +265,7 @@
     "name": "Advanced Micro Devices, Inc.",
     "sector": "Information Technology",
     "profile": "companies/AMD/profile.json",
-    "logo": "public/img/companies/ny/amd.webp",
+    "logo": "img/companies/ny/amd.webp",
     "history": "history/AMD.json",
     "market": "US"
   },
@@ -274,7 +274,7 @@
     "name": "Kweichow Moutai Co., Ltd.",
     "sector": "Consumer Staples",
     "profile": "companies/600519.SS/profile.json",
-    "logo": "public/img/companies/shanghai/moutai.png",
+    "logo": "img/companies/shanghai/moutai.png",
     "history": "history/600519.SS.json",
     "market": "CN"
   },
@@ -283,7 +283,7 @@
     "name": "Ping An Insurance (Group) Co. of China",
     "sector": "Financials",
     "profile": "companies/601318.SS/profile.json",
-    "logo": "public/img/companies/shanghai/ping-an.png",
+    "logo": "img/companies/shanghai/ping-an.png",
     "history": "history/601318.SS.json",
     "market": "CN"
   },
@@ -292,7 +292,7 @@
     "name": "Industrial and Commercial Bank of China",
     "sector": "Financials",
     "profile": "companies/601398.SS/profile.json",
-    "logo": "public/img/companies/shanghai/industrial-bank.svg",
+    "logo": "img/companies/shanghai/industrial-bank.svg",
     "history": "history/601398.SS.json",
     "market": "CN"
   },
@@ -301,7 +301,7 @@
     "name": "Agricultural Bank of China",
     "sector": "Financials",
     "profile": "companies/601288.SS/profile.json",
-    "logo": "public/img/companies/shanghai/agri-bank-of-china.png",
+    "logo": "img/companies/shanghai/agri-bank-of-china.png",
     "history": "history/601288.SS.json",
     "market": "CN"
   },
@@ -310,7 +310,7 @@
     "name": "Bank of China",
     "sector": "Financials",
     "profile": "companies/601988.SS/profile.json",
-    "logo": "public/img/companies/shanghai/bank-of-china.png",
+    "logo": "img/companies/shanghai/bank-of-china.png",
     "history": "history/601988.SS.json",
     "market": "CN"
   },
@@ -319,7 +319,7 @@
     "name": "PetroChina Company Limited",
     "sector": "Energy",
     "profile": "companies/601857.SS/profile.json",
-    "logo": "public/img/companies/shanghai/petrochina.svg",
+    "logo": "img/companies/shanghai/petrochina.svg",
     "history": "history/601857.SS.json",
     "market": "CN"
   },
@@ -328,7 +328,7 @@
     "name": "China Petroleum & Chemical (Sinopec)",
     "sector": "Energy",
     "profile": "companies/600028.SS/profile.json",
-    "logo": "public/img/companies/shanghai/sinopec.svg",
+    "logo": "img/companies/shanghai/sinopec.svg",
     "history": "history/600028.SS.json",
     "market": "CN"
   },
@@ -337,7 +337,7 @@
     "name": "China Merchants Bank",
     "sector": "Financials",
     "profile": "companies/600036.SS/profile.json",
-    "logo": "public/img/companies/shanghai/china-merchants-bank.svg",
+    "logo": "img/companies/shanghai/china-merchants-bank.svg",
     "history": "history/600036.SS.json",
     "market": "CN"
   },
@@ -346,7 +346,7 @@
     "name": "Industrial Bank Co., Ltd.",
     "sector": "Financials",
     "profile": "companies/601166.SS/profile.json",
-    "logo": "public/img/companies/shanghai/industrial-bank.svg",
+    "logo": "img/companies/shanghai/industrial-bank.svg",
     "history": "history/601166.SS.json",
     "market": "CN"
   },
@@ -355,7 +355,7 @@
     "name": "China Yangtze Power Co., Ltd.",
     "sector": "Utilities",
     "profile": "companies/600900.SS/profile.json",
-    "logo": "public/img/companies/shanghai/yangtse-power.png",
+    "logo": "img/companies/shanghai/yangtse-power.png",
     "history": "history/600900.SS.json",
     "market": "CN"
   },
@@ -364,7 +364,7 @@
     "name": "China Tourism Group Duty Free",
     "sector": "Consumer Discretionary",
     "profile": "companies/601888.SS/profile.json",
-    "logo": "public/img/companies/shanghai/china-tourism-group.png",
+    "logo": "img/companies/shanghai/china-tourism-group.png",
     "history": "history/601888.SS.json",
     "market": "CN"
   },
@@ -373,7 +373,7 @@
     "name": "LONGi Green Energy Technology",
     "sector": "Information Technology",
     "profile": "companies/601012.SS/profile.json",
-    "logo": "public/img/companies/shanghai/longi.png",
+    "logo": "img/companies/shanghai/longi.png",
     "history": "history/601012.SS.json",
     "market": "CN"
   },
@@ -382,7 +382,7 @@
     "name": "SAIC Motor Corporation Limited",
     "sector": "Consumer Discretionary",
     "profile": "companies/600104.SS/profile.json",
-    "logo": "public/img/companies/shanghai/saic.png",
+    "logo": "img/companies/shanghai/saic.png",
     "history": "history/600104.SS.json",
     "market": "CN"
   },
@@ -391,7 +391,7 @@
     "name": "CITIC Securities Co., Ltd.",
     "sector": "Financials",
     "profile": "companies/600030.SS/profile.json",
-    "logo": "public/img/companies/shanghai/citic.png",
+    "logo": "img/companies/shanghai/citic.png",
     "history": "history/600030.SS.json",
     "market": "CN"
   },
@@ -400,7 +400,7 @@
     "name": "Anhui Conch Cement Company Limited",
     "sector": "Materials",
     "profile": "companies/600585.SS/profile.json",
-    "logo": "public/img/companies/shanghai/conch.png",
+    "logo": "img/companies/shanghai/conch.png",
     "history": "history/600585.SS.json",
     "market": "CN"
   },
@@ -409,7 +409,7 @@
     "name": "Shanghai Pudong Development Bank",
     "sector": "Financials",
     "profile": "companies/600000.SS/profile.json",
-    "logo": "public/img/companies/shanghai/spd.png",
+    "logo": "img/companies/shanghai/spd.png",
     "history": "history/600000.SS.json",
     "market": "CN"
   },
@@ -418,7 +418,7 @@
     "name": "China Pacific Insurance (Group)",
     "sector": "Financials",
     "profile": "companies/601601.SS/profile.json",
-    "logo": "public/img/companies/shanghai/China_Pacific_Insurance.png",
+    "logo": "img/companies/shanghai/China_Pacific_Insurance.png",
     "history": "history/601601.SS.json",
     "market": "CN"
   },
@@ -427,7 +427,7 @@
     "name": "China Construction Bank",
     "sector": "Financials",
     "profile": "companies/601939.SS/profile.json",
-    "logo": "public/img/companies/shanghai/China_Construction_Bank.png",
+    "logo": "img/companies/shanghai/China_Construction_Bank.png",
     "history": "history/601939.SS.json",
     "market": "CN"
   },
@@ -436,7 +436,7 @@
     "name": "Baoshan Iron & Steel Co., Ltd.",
     "sector": "Materials",
     "profile": "companies/600019.SS/profile.json",
-    "logo": "public/img/companies/shanghai/baoshan.webp",
+    "logo": "img/companies/shanghai/baoshan.webp",
     "history": "history/600019.SS.json",
     "market": "CN"
   },
@@ -445,7 +445,7 @@
     "name": "Jiangsu Hengrui Pharmaceuticals",
     "sector": "Health Care",
     "profile": "companies/600276.SS/profile.json",
-    "logo": "public/img/companies/shanghai/Jiangsu_Hengrui.png",
+    "logo": "img/companies/shanghai/Jiangsu_Hengrui.png",
     "history": "history/600276.SS.json",
     "market": "CN"
   },
@@ -454,7 +454,7 @@
     "name": "CRRC Corporation Limited",
     "sector": "Industrials",
     "profile": "companies/601766.SS/profile.json",
-    "logo": "public/img/companies/shanghai/crrc.png",
+    "logo": "img/companies/shanghai/crrc.png",
     "history": "history/601766.SS.json",
     "market": "CN"
   },
@@ -463,7 +463,7 @@
     "name": "Wanhua Chemical Group Co., Ltd.",
     "sector": "Materials",
     "profile": "companies/600309.SS/profile.json",
-    "logo": "public/img/companies/shanghai/wanhua-chemical.png",
+    "logo": "img/companies/shanghai/wanhua-chemical.png",
     "history": "history/600309.SS.json",
     "market": "CN"
   },
@@ -472,7 +472,7 @@
     "name": "Great Wall Motor Company Limited",
     "sector": "Consumer Discretionary",
     "profile": "companies/601633.SS/profile.json",
-    "logo": "public/img/companies/shanghai/gwm.png",
+    "logo": "img/companies/shanghai/gwm.png",
     "history": "history/601633.SS.json",
     "market": "CN"
   },
@@ -481,7 +481,7 @@
     "name": "Inner Mongolia Yili Industrial Group",
     "sector": "Consumer Staples",
     "profile": "companies/600887.SS/profile.json",
-    "logo": "public/img/companies/shanghai/yili.png",
+    "logo": "img/companies/shanghai/yili.png",
     "history": "history/600887.SS.json",
     "market": "CN"
   },
@@ -490,7 +490,7 @@
     "name": "China State Construction Engineering",
     "sector": "Industrials",
     "profile": "companies/601668.SS/profile.json",
-    "logo": "public/img/companies/shanghai/cscec.png",
+    "logo": "img/companies/shanghai/cscec.png",
     "history": "history/601668.SS.json",
     "market": "CN"
   },
@@ -499,7 +499,7 @@
     "name": "Postal Savings Bank of China",
     "sector": "Financials",
     "profile": "companies/601658.SS/profile.json",
-    "logo": "public/img/companies/shanghai/postal-savings-bank-of-china.png",
+    "logo": "img/companies/shanghai/postal-savings-bank-of-china.png",
     "history": "history/601658.SS.json",
     "market": "CN"
   },
@@ -508,7 +508,7 @@
     "name": "China Telecom Corporation Limited",
     "sector": "Communication Services",
     "profile": "companies/601728.SS/profile.json",
-    "logo": "public/img/companies/shanghai/China-Telecom.png",
+    "logo": "img/companies/shanghai/China-Telecom.png",
     "history": "history/601728.SS.json",
     "market": "CN"
   },
@@ -517,7 +517,7 @@
     "name": "China Life Insurance Company Limited",
     "sector": "Financials",
     "profile": "companies/601628.SS/profile.json",
-    "logo": "public/img/companies/shanghai/china-life-insurance.svg",
+    "logo": "img/companies/shanghai/china-life-insurance.svg",
     "history": "history/601628.SS.json",
     "market": "CN"
   },
@@ -526,7 +526,7 @@
     "name": "Semiconductor Manufacturing International (SMIC)",
     "sector": "Information Technology",
     "profile": "companies/688981.SS/profile.json",
-    "logo": "public/img/companies/shanghai/SMIC.png",
+    "logo": "img/companies/shanghai/SMIC.png",
     "history": "history/688981.SS.json",
     "market": "CN"
   },
@@ -535,7 +535,7 @@
     "name": "LVMH Moët Hennessy Louis Vuitton",
     "sector": "Consumer Discretionary",
     "profile": "companies/MC.PA/profile.json",
-    "logo": "public/img/companies/euro/lvmh.png",
+    "logo": "img/companies/euro/lvmh.png",
     "history": "history/MC.PA.json",
     "market": "EU"
   },
@@ -544,7 +544,7 @@
     "name": "ASML Holding N.V.",
     "sector": "Information Technology",
     "profile": "companies/ASML.AS/profile.json",
-    "logo": "public/img/companies/euro/asml.png",
+    "logo": "img/companies/euro/asml.png",
     "history": "history/ASML.AS.json",
     "market": "EU"
   },
@@ -553,7 +553,7 @@
     "name": "L'Oréal S.A.",
     "sector": "Consumer Staples",
     "profile": "companies/OR.PA/profile.json",
-    "logo": "public/img/companies/euro/loreal.png",
+    "logo": "img/companies/euro/loreal.png",
     "history": "history/OR.PA.json",
     "market": "EU"
   },
@@ -562,7 +562,7 @@
     "name": "TotalEnergies SE",
     "sector": "Energy",
     "profile": "companies/TTE.PA/profile.json",
-    "logo": "public/img/companies/euro/total.png",
+    "logo": "img/companies/euro/total.png",
     "history": "history/TTE.PA.json",
     "market": "EU"
   },
@@ -571,7 +571,7 @@
     "name": "Sanofi",
     "sector": "Health Care",
     "profile": "companies/SAN.PA/profile.json",
-    "logo": "public/img/companies/euro/sanofi.png",
+    "logo": "img/companies/euro/sanofi.png",
     "history": "history/SAN.PA.json",
     "market": "EU"
   },
@@ -580,7 +580,7 @@
     "name": "Hermès International SCA",
     "sector": "Consumer Discretionary",
     "profile": "companies/RMS.PA/profile.json",
-    "logo": "public/img/companies/euro/hermes.png",
+    "logo": "img/companies/euro/hermes.png",
     "history": "history/RMS.PA.json",
     "market": "EU"
   },
@@ -589,7 +589,7 @@
     "name": "Airbus SE",
     "sector": "Industrials",
     "profile": "companies/AIR.PA/profile.json",
-    "logo": "public/img/companies/euro/airbus.png",
+    "logo": "img/companies/euro/airbus.png",
     "history": "history/AIR.PA.json",
     "market": "EU"
   },
@@ -598,7 +598,7 @@
     "name": "BNP Paribas",
     "sector": "Financials",
     "profile": "companies/BNP.PA/profile.json",
-    "logo": "public/img/companies/euro/bnp.png",
+    "logo": "img/companies/euro/bnp.png",
     "history": "history/BNP.PA.json",
     "market": "EU"
   },
@@ -607,7 +607,7 @@
     "name": "Schneider Electric SE",
     "sector": "Industrials",
     "profile": "companies/SU.PA/profile.json",
-    "logo": "public/img/companies/euro/schneider.png",
+    "logo": "img/companies/euro/schneider.png",
     "history": "history/SU.PA.json",
     "market": "EU"
   },
@@ -616,7 +616,7 @@
     "name": "Kering",
     "sector": "Consumer Discretionary",
     "profile": "companies/KER.PA/profile.json",
-    "logo": "public/img/companies/euro/kering.jpg",
+    "logo": "img/companies/euro/kering.jpg",
     "history": "history/KER.PA.json",
     "market": "EU"
   },
@@ -625,7 +625,7 @@
     "name": "Toyota Motor Corporation",
     "sector": "Consumer Discretionary",
     "profile": "companies/7203.T/profile.json",
-    "logo": "public/img/companies/tokyo/toyota.png",
+    "logo": "img/companies/tokyo/toyota.png",
     "history": "history/7203.T.json",
     "market": "JP"
   },
@@ -634,7 +634,7 @@
     "name": "Sony Group Corporation",
     "sector": "Communication Services",
     "profile": "companies/6758.T/profile.json",
-    "logo": "public/img/companies/tokyo/sony.png",
+    "logo": "img/companies/tokyo/sony.png",
     "history": "history/6758.T.json",
     "market": "JP"
   },
@@ -643,7 +643,7 @@
     "name": "SoftBank Group Corp.",
     "sector": "Communication Services",
     "profile": "companies/9984.T/profile.json",
-    "logo": "public/img/companies/tokyo/softbank.png",
+    "logo": "img/companies/tokyo/softbank.png",
     "history": "history/9984.T.json",
     "market": "JP"
   },
@@ -652,7 +652,7 @@
     "name": "Keyence Corporation",
     "sector": "Information Technology",
     "profile": "companies/6861.T/profile.json",
-    "logo": "public/img/companies/tokyo/keyence.png",
+    "logo": "img/companies/tokyo/keyence.png",
     "history": "history/6861.T.json",
     "market": "JP"
   },
@@ -661,7 +661,7 @@
     "name": "Tokyo Electron Ltd.",
     "sector": "Information Technology",
     "profile": "companies/8035.T/profile.json",
-    "logo": "public/img/companies/tokyo/tokyo-electron.png",
+    "logo": "img/companies/tokyo/tokyo-electron.png",
     "history": "history/8035.T.json",
     "market": "JP"
   },
@@ -670,7 +670,7 @@
     "name": "Fast Retailing Co., Ltd.",
     "sector": "Consumer Discretionary",
     "profile": "companies/9983.T/profile.json",
-    "logo": "public/img/companies/tokyo/fast-retailing.png",
+    "logo": "img/companies/tokyo/fast-retailing.png",
     "history": "history/9983.T.json",
     "market": "JP"
   },
@@ -679,7 +679,7 @@
     "name": "Nippon Telegraph and Telephone Corp.",
     "sector": "Communication Services",
     "profile": "companies/9432.T/profile.json",
-    "logo": "public/img/companies/tokyo/ntt.svg",
+    "logo": "img/companies/tokyo/ntt.svg",
     "history": "history/9432.T.json",
     "market": "JP"
   },
@@ -688,7 +688,7 @@
     "name": "Recruit Holdings Co., Ltd.",
     "sector": "Industrials",
     "profile": "companies/6098.T/profile.json",
-    "logo": "public/img/companies/tokyo/recruit.png",
+    "logo": "img/companies/tokyo/recruit.png",
     "history": "history/6098.T.json",
     "market": "JP"
   },
@@ -697,7 +697,7 @@
     "name": "Takeda Pharmaceutical Co., Ltd.",
     "sector": "Health Care",
     "profile": "companies/4502.T/profile.json",
-    "logo": "public/img/companies/tokyo/takeda.png",
+    "logo": "img/companies/tokyo/takeda.png",
     "history": "history/4502.T.json",
     "market": "JP"
   },
@@ -706,7 +706,7 @@
     "name": "Sumitomo Mitsui Financial Group, Inc.",
     "sector": "Financials",
     "profile": "companies/8316.T/profile.json",
-    "logo": "public/img/companies/tokyo/sumimoto.png",
+    "logo": "img/companies/tokyo/sumimoto.png",
     "history": "history/8316.T.json",
     "market": "JP"
   },
@@ -715,7 +715,7 @@
     "name": "Saudi Arabian Oil Company (Aramco)",
     "sector": "Energy",
     "profile": "companies/2222.SR/profile.json",
-    "logo": "public/img/companies/riyadh/aramco.png",
+    "logo": "img/companies/riyadh/aramco.png",
     "history": "history/2222.SR.json",
     "market": "SA"
   },
@@ -724,7 +724,7 @@
     "name": "Al Rajhi Bank",
     "sector": "Financials",
     "profile": "companies/1120.SR/profile.json",
-    "logo": "public/img/companies/riyadh/alrahji.png",
+    "logo": "img/companies/riyadh/alrahji.png",
     "history": "history/1120.SR.json",
     "market": "SA"
   },
@@ -733,7 +733,7 @@
     "name": "Saudi Basic Industries Corporation (SABIC)",
     "sector": "Materials",
     "profile": "companies/2010.SR/profile.json",
-    "logo": "public/img/companies/riyadh/sabic.png",
+    "logo": "img/companies/riyadh/sabic.png",
     "history": "history/2010.SR.json",
     "market": "SA"
   },
@@ -742,7 +742,7 @@
     "name": "The Saudi National Bank",
     "sector": "Financials",
     "profile": "companies/1180.SR/profile.json",
-    "logo": "public/img/companies/riyadh/snbank.png",
+    "logo": "img/companies/riyadh/snbank.png",
     "history": "history/1180.SR.json",
     "market": "SA"
   },
@@ -751,7 +751,7 @@
     "name": "Saudi Arabian Mining Company",
     "sector": "Materials",
     "profile": "companies/1211.SR/profile.json",
-    "logo": "public/img/companies/riyadh/saudi-mining.png",
+    "logo": "img/companies/riyadh/saudi-mining.png",
     "history": "history/1211.SR.json",
     "market": "SA"
   },
@@ -760,7 +760,7 @@
     "name": "Saudi Telecom Company (stc)",
     "sector": "Communication Services",
     "profile": "companies/7010.SR/profile.json",
-    "logo": "public/img/companies/riyadh/stc.svg",
+    "logo": "img/companies/riyadh/stc.svg",
     "history": "history/7010.SR.json",
     "market": "SA"
   },
@@ -769,7 +769,7 @@
     "name": "Almarai Company",
     "sector": "Consumer Staples",
     "profile": "companies/2280.SR/profile.json",
-    "logo": "public/img/companies/riyadh/almarai.png",
+    "logo": "img/companies/riyadh/almarai.png",
     "history": "history/2280.SR.json",
     "market": "SA"
   },
@@ -778,7 +778,7 @@
     "name": "Saudi British Bank",
     "sector": "Financials",
     "profile": "companies/1050.SR/profile.json",
-    "logo": "public/img/companies/riyadh/sab-bank.png",
+    "logo": "img/companies/riyadh/sab-bank.png",
     "history": "history/1050.SR.json",
     "market": "SA"
   },
@@ -787,7 +787,7 @@
     "name": "Banque Saudi Fransi",
     "sector": "Financials",
     "profile": "companies/1060.SR/profile.json",
-    "logo": "public/img/companies/riyadh/bs_fransi.png",
+    "logo": "img/companies/riyadh/bs_fransi.png",
     "history": "history/1060.SR.json",
     "market": "SA"
   },
@@ -796,7 +796,7 @@
     "name": "Dr. Sulaiman Al Habib Medical Services Group",
     "sector": "Health Care",
     "profile": "companies/4013.SR/profile.json",
-    "logo": "public/img/companies/riyadh/suleiman-habib.png",
+    "logo": "img/companies/riyadh/suleiman-habib.png",
     "history": "history/4013.SR.json",
     "market": "SA"
   },
@@ -805,7 +805,7 @@
     "name": "Bitcoin",
     "sector": "Cryptocurrency",
     "profile": "companies/BTC-USD/profile.json",
-    "logo": "public/img/companies/crypto/bitcoin.webp",
+    "logo": "img/companies/crypto/bitcoin.webp",
     "history": "history/BTC-USD.json",
     "market": "CRYPTO"
   },
@@ -814,7 +814,7 @@
     "name": "Ethereum",
     "sector": "Cryptocurrency",
     "profile": "companies/ETH-USD/profile.json",
-    "logo": "public/img/companies/crypto/ethereum.png",
+    "logo": "img/companies/crypto/ethereum.png",
     "history": "history/ETH-USD.json",
     "market": "CRYPTO"
   },
@@ -823,7 +823,7 @@
     "name": "Tether (USDT)",
     "sector": "Cryptocurrency",
     "profile": "companies/USDT-USD/profile.json",
-    "logo": "public/img/companies/crypto/tether.png",
+    "logo": "img/companies/crypto/tether.png",
     "history": "history/USDT-USD.json",
     "market": "CRYPTO"
   },
@@ -832,7 +832,7 @@
     "name": "BNB",
     "sector": "Cryptocurrency",
     "profile": "companies/BNB-USD/profile.json",
-    "logo": "public/img/companies/crypto/bnb.png",
+    "logo": "img/companies/crypto/bnb.png",
     "history": "history/BNB-USD.json",
     "market": "CRYPTO"
   },
@@ -841,7 +841,7 @@
     "name": "Solana",
     "sector": "Cryptocurrency",
     "profile": "companies/SOL-USD/profile.json",
-    "logo": "public/img/companies/crypto/solana.png",
+    "logo": "img/companies/crypto/solana.png",
     "history": "history/SOL-USD.json",
     "market": "CRYPTO"
   },
@@ -850,7 +850,7 @@
     "name": "Ripple (XRP)",
     "sector": "Cryptocurrency",
     "profile": "companies/XRP-USD/profile.json",
-    "logo": "public/img/companies/crypto/xrp.png",
+    "logo": "img/companies/crypto/xrp.png",
     "history": "history/XRP-USD.json",
     "market": "CRYPTO"
   },
@@ -859,7 +859,7 @@
     "name": "USD Coin",
     "sector": "Cryptocurrency",
     "profile": "companies/USDC-USD/profile.json",
-    "logo": "public/img/companies/crypto/usdcoin.png",
+    "logo": "img/companies/crypto/usdcoin.png",
     "history": "history/USDC-USD.json",
     "market": "CRYPTO"
   },
@@ -868,7 +868,7 @@
     "name": "Dogecoin",
     "sector": "Cryptocurrency",
     "profile": "companies/DOGE-USD/profile.json",
-    "logo": "public/img/companies/crypto/dogecoin.png",
+    "logo": "img/companies/crypto/dogecoin.png",
     "history": "history/DOGE-USD.json",
     "market": "CRYPTO"
   },
@@ -877,7 +877,7 @@
     "name": "Cardano",
     "sector": "Cryptocurrency",
     "profile": "companies/ADA-USD/profile.json",
-    "logo": "public/img/companies/crypto/cardano.png",
+    "logo": "img/companies/crypto/cardano.png",
     "history": "history/ADA-USD.json",
     "market": "CRYPTO"
   },
@@ -886,7 +886,7 @@
     "name": "TRON",
     "sector": "Cryptocurrency",
     "profile": "companies/TRX-USD/profile.json",
-    "logo": "public/img/companies/crypto/tron.png",
+    "logo": "img/companies/crypto/tron.png",
     "history": "history/TRX-USD.json",
     "market": "CRYPTO"
   },
@@ -895,7 +895,7 @@
     "name": "Toncoin",
     "sector": "Cryptocurrency",
     "profile": "companies/TON-USD/profile.json",
-    "logo": "public/img/companies/crypto/toncoin.png",
+    "logo": "img/companies/crypto/toncoin.png",
     "history": "history/TON-USD.json",
     "market": "CRYPTO"
   },
@@ -904,7 +904,7 @@
     "name": "Avalanche",
     "sector": "Cryptocurrency",
     "profile": "companies/AVAX-USD/profile.json",
-    "logo": "public/img/companies/crypto/avalanche.png",
+    "logo": "img/companies/crypto/avalanche.png",
     "history": "history/AVAX-USD.json",
     "market": "CRYPTO"
   },
@@ -913,7 +913,7 @@
     "name": "Shiba Inu",
     "sector": "Cryptocurrency",
     "profile": "companies/SHIB-USD/profile.json",
-    "logo": "public/img/companies/crypto/shiba.png",
+    "logo": "img/companies/crypto/shiba.png",
     "history": "history/SHIB-USD.json",
     "market": "CRYPTO"
   },
@@ -922,7 +922,7 @@
     "name": "Polkadot",
     "sector": "Cryptocurrency",
     "profile": "companies/DOT-USD/profile.json",
-    "logo": "public/img/companies/crypto/polkadot.png",
+    "logo": "img/companies/crypto/polkadot.png",
     "history": "history/DOT-USD.json",
     "market": "CRYPTO"
   },
@@ -931,7 +931,7 @@
     "name": "Dai",
     "sector": "Cryptocurrency",
     "profile": "companies/DAI-USD/profile.json",
-    "logo": "public/img/companies/crypto/dai.png",
+    "logo": "img/companies/crypto/dai.png",
     "history": "history/DAI-USD.json",
     "market": "CRYPTO"
   },
@@ -940,7 +940,7 @@
     "name": "Litecoin",
     "sector": "Cryptocurrency",
     "profile": "companies/LTC-USD/profile.json",
-    "logo": "public/img/companies/crypto/litecoin.png",
+    "logo": "img/companies/crypto/litecoin.png",
     "history": "history/LTC-USD.json",
     "market": "CRYPTO"
   },
@@ -949,7 +949,7 @@
     "name": "Wrapped Bitcoin",
     "sector": "Cryptocurrency",
     "profile": "companies/WBTC-USD/profile.json",
-    "logo": "public/img/companies/crypto/wrappedbitcoin.webp",
+    "logo": "img/companies/crypto/wrappedbitcoin.webp",
     "history": "history/WBTC-USD.json",
     "market": "CRYPTO"
   },
@@ -958,7 +958,7 @@
     "name": "Bitcoin Cash",
     "sector": "Cryptocurrency",
     "profile": "companies/BCH-USD/profile.json",
-    "logo": "public/img/companies/crypto/bcash.webp",
+    "logo": "img/companies/crypto/bcash.webp",
     "history": "history/BCH-USD.json",
     "market": "CRYPTO"
   },
@@ -967,7 +967,7 @@
     "name": "Chainlink",
     "sector": "Cryptocurrency",
     "profile": "companies/LINK-USD/profile.json",
-    "logo": "public/img/companies/crypto/chainlink.png",
+    "logo": "img/companies/crypto/chainlink.png",
     "history": "history/LINK-USD.json",
     "market": "CRYPTO"
   },
@@ -976,7 +976,7 @@
     "name": "NEAR Protocol",
     "sector": "Cryptocurrency",
     "profile": "companies/NEAR-USD/profile.json",
-    "logo": "public/img/companies/crypto/near.png",
+    "logo": "img/companies/crypto/near.png",
     "history": "history/NEAR-USD.json",
     "market": "CRYPTO"
   },
@@ -985,7 +985,7 @@
     "name": "EUR/USD",
     "sector": "Forex",
     "profile": "companies/EURUSD=X/profile.json",
-    "logo": "public/img/companies/forex/usdeur.png",
+    "logo": "img/companies/forex/usdeur.png",
     "history": "history/EURUSD=X.json",
     "market": "FX"
   },
@@ -994,7 +994,7 @@
     "name": "USD/JPY",
     "sector": "Forex",
     "profile": "companies/USDJPY=X/profile.json",
-    "logo": "public/img/companies/forex/usdjpy.png",
+    "logo": "img/companies/forex/usdjpy.png",
     "history": "history/USDJPY=X.json",
     "market": "FX"
   },
@@ -1003,7 +1003,7 @@
     "name": "GBP/USD",
     "sector": "Forex",
     "profile": "companies/GBPUSD=X/profile.json",
-    "logo": "public/img/companies/forex/usdgbp.png",
+    "logo": "img/companies/forex/usdgbp.png",
     "history": "history/GBPUSD=X.json",
     "market": "FX"
   },
@@ -1012,7 +1012,7 @@
     "name": "USD/CNY",
     "sector": "Forex",
     "profile": "companies/USDCNY=X/profile.json",
-    "logo": "public/img/companies/forex/usdcny.png",
+    "logo": "img/companies/forex/usdcny.png",
     "history": "history/USDCNY=X.json",
     "market": "FX"
   },
@@ -1021,7 +1021,7 @@
     "name": "USD/CHF",
     "sector": "Forex",
     "profile": "companies/USDCHF=X/profile.json",
-    "logo": "public/img/companies/forex/usdchf.png",
+    "logo": "img/companies/forex/usdchf.png",
     "history": "history/USDCHF=X.json",
     "market": "FX"
   },
@@ -1030,7 +1030,7 @@
     "name": "AUD/USD",
     "sector": "Forex",
     "profile": "companies/AUDUSD=X/profile.json",
-    "logo": "public/img/companies/forex/usdaud.png",
+    "logo": "img/companies/forex/usdaud.png",
     "history": "history/AUDUSD=X.json",
     "market": "FX"
   },
@@ -1039,7 +1039,7 @@
     "name": "USD/CAD",
     "sector": "Forex",
     "profile": "companies/USDCAD=X/profile.json",
-    "logo": "public/img/companies/forex/usdcad.png",
+    "logo": "img/companies/forex/usdcad.png",
     "history": "history/USDCAD=X.json",
     "market": "FX"
   },
@@ -1048,7 +1048,7 @@
     "name": "NZD/USD",
     "sector": "Forex",
     "profile": "companies/NZDUSD=X/profile.json",
-    "logo": "public/img/companies/forex/usdnzd.png",
+    "logo": "img/companies/forex/usdnzd.png",
     "history": "history/NZDUSD=X.json",
     "market": "FX"
   },
@@ -1057,7 +1057,7 @@
     "name": "EUR/JPY",
     "sector": "Forex",
     "profile": "companies/EURJPY=X/profile.json",
-    "logo": "public/img/companies/forex/eurjpy.png",
+    "logo": "img/companies/forex/eurjpy.png",
     "history": "history/EURJPY=X.json",
     "market": "FX"
   },
@@ -1066,7 +1066,7 @@
     "name": "GBP/JPY",
     "sector": "Forex",
     "profile": "companies/GBPJPY=X/profile.json",
-    "logo": "public/img/companies/forex/gbpjpy.png",
+    "logo": "img/companies/forex/gbpjpy.png",
     "history": "history/GBPJPY=X.json",
     "market": "FX"
   },
@@ -1075,7 +1075,7 @@
     "name": "Gold Futures",
     "sector": "Commodities",
     "profile": "companies/GC=F/profile.json",
-    "logo": "public/img/companies/commodities/gold.png",
+    "logo": "img/companies/commodities/gold.png",
     "history": "history/GC=F.json",
     "market": "COM"
   },
@@ -1084,7 +1084,7 @@
     "name": "Silver Futures",
     "sector": "Commodities",
     "profile": "companies/SI=F/profile.json",
-    "logo": "public/img/companies/commodities/silver.webp",
+    "logo": "img/companies/commodities/silver.webp",
     "history": "history/SI=F.json",
     "market": "COM"
   },
@@ -1093,7 +1093,7 @@
     "name": "Platinum Futures",
     "sector": "Commodities",
     "profile": "companies/PL=F/profile.json",
-    "logo": "public/img/companies/commodities/platinum.webp",
+    "logo": "img/companies/commodities/platinum.webp",
     "history": "history/PL=F.json",
     "market": "COM"
   },
@@ -1102,7 +1102,7 @@
     "name": "Crude Oil WTI",
     "sector": "Energy",
     "profile": "companies/CL=F/profile.json",
-    "logo": "public/img/companies/commodities/oil1.png",
+    "logo": "img/companies/commodities/oil1.png",
     "history": "history/CL=F.json",
     "market": "COM"
   },
@@ -1111,7 +1111,7 @@
     "name": "Brent Crude Oil",
     "sector": "Energy",
     "profile": "companies/BZ=F/profile.json",
-    "logo": "public/img/companies/commodities/oil2.png",
+    "logo": "img/companies/commodities/oil2.png",
     "history": "history/BZ=F.json",
     "market": "COM"
   },
@@ -1120,7 +1120,7 @@
     "name": "Natural Gas",
     "sector": "Energy",
     "profile": "companies/NG=F/profile.json",
-    "logo": "public/img/companies/commodities/gas.png",
+    "logo": "img/companies/commodities/gas.png",
     "history": "history/NG=F.json",
     "market": "COM"
   },
@@ -1129,7 +1129,7 @@
     "name": "Corn Futures",
     "sector": "Agriculture",
     "profile": "companies/ZC=F/profile.json",
-    "logo": "public/img/companies/commodities/corn.png",
+    "logo": "img/companies/commodities/corn.png",
     "history": "history/ZC=F.json",
     "market": "COM"
   },
@@ -1138,7 +1138,7 @@
     "name": "Wheat Futures",
     "sector": "Agriculture",
     "profile": "companies/ZW=F/profile.json",
-    "logo": "public/img/companies/commodities/wheat.webp",
+    "logo": "img/companies/commodities/wheat.webp",
     "history": "history/ZW=F.json",
     "market": "COM"
   },
@@ -1147,7 +1147,7 @@
     "name": "Soybean Futures",
     "sector": "Agriculture",
     "profile": "companies/ZS=F/profile.json",
-    "logo": "public/img/companies/commodities/soybeans.webp",
+    "logo": "img/companies/commodities/soybeans.webp",
     "history": "history/ZS=F.json",
     "market": "COM"
   },
@@ -1156,7 +1156,7 @@
     "name": "Coffee Futures",
     "sector": "Agriculture",
     "profile": "companies/KC=F/profile.json",
-    "logo": "public/img/companies/commodities/coffee_bean.png",
+    "logo": "img/companies/commodities/coffee_bean.png",
     "history": "history/KC=F.json",
     "market": "COM"
   },
@@ -1165,7 +1165,7 @@
     "name": "S&P 500",
     "sector": "Index",
     "profile": "companies/^GSPC/profile.json",
-    "logo": "public/img/companies/indices/us.png",
+    "logo": "img/companies/indices/us.png",
     "history": "history/^GSPC.json",
     "market": "IDX"
   },
@@ -1174,7 +1174,7 @@
     "name": "Dow Jones Industrial Average",
     "sector": "Index",
     "profile": "companies/^DJI/profile.json",
-    "logo": "public/img/companies/indices/us.png",
+    "logo": "img/companies/indices/us.png",
     "history": "history/^DJI.json",
     "market": "IDX"
   },
@@ -1183,7 +1183,7 @@
     "name": "NASDAQ Composite",
     "sector": "Index",
     "profile": "companies/^IXIC/profile.json",
-    "logo": "public/img/companies/indices/us.png",
+    "logo": "img/companies/indices/us.png",
     "history": "history/^IXIC.json",
     "market": "IDX"
   },
@@ -1192,7 +1192,7 @@
     "name": "Russell 2000",
     "sector": "Index",
     "profile": "companies/^RUT/profile.json",
-    "logo": "public/img/companies/indices/us.png",
+    "logo": "img/companies/indices/us.png",
     "history": "history/^RUT.json",
     "market": "IDX"
   },
@@ -1201,7 +1201,7 @@
     "name": "S&P/TSX Composite",
     "sector": "Index",
     "profile": "companies/^GSPTSE/profile.json",
-    "logo": "public/img/companies/indices/us.png",
+    "logo": "img/companies/indices/us.png",
     "history": "history/^GSPTSE.json",
     "market": "IDX"
   },
@@ -1210,7 +1210,7 @@
     "name": "FTSE 100",
     "sector": "Index",
     "profile": "companies/^FTSE/profile.json",
-    "logo": "public/img/companies/indices/ftse.png",
+    "logo": "img/companies/indices/ftse.png",
     "history": "history/^FTSE.json",
     "market": "IDX"
   },
@@ -1219,7 +1219,7 @@
     "name": "DAX",
     "sector": "Index",
     "profile": "companies/^GDAXI/profile.json",
-    "logo": "public/img/companies/indices/gdaxi.png",
+    "logo": "img/companies/indices/gdaxi.png",
     "history": "history/^GDAXI.json",
     "market": "IDX"
   },
@@ -1228,7 +1228,7 @@
     "name": "CAC 40",
     "sector": "Index",
     "profile": "companies/^FCHI/profile.json",
-    "logo": "public/img/companies/indices/fchi.png",
+    "logo": "img/companies/indices/fchi.png",
     "history": "history/^FCHI.json",
     "market": "IDX"
   },
@@ -1237,7 +1237,7 @@
     "name": "Euro STOXX 50",
     "sector": "Index",
     "profile": "companies/^STOXX50E/profile.json",
-    "logo": "public/img/companies/indices/eurostoxx-50.png",
+    "logo": "img/companies/indices/eurostoxx-50.png",
     "history": "history/^STOXX50E.json",
     "market": "IDX"
   },
@@ -1246,7 +1246,7 @@
     "name": "FTSE MIB",
     "sector": "Index",
     "profile": "companies/FTSEMIB.MI/profile.json",
-    "logo": "public/img/companies/indices/ftsemib.png",
+    "logo": "img/companies/indices/ftsemib.png",
     "history": "history/FTSEMIB.MI.json",
     "market": "IDX"
   },
@@ -1255,7 +1255,7 @@
     "name": "Swiss Market Index",
     "sector": "Index",
     "profile": "companies/SMIN.SW/profile.json",
-    "logo": "public/img/companies/indices/smin.png",
+    "logo": "img/companies/indices/smin.png",
     "history": "history/SMIN.SW.json",
     "market": "IDX"
   },
@@ -1264,7 +1264,7 @@
     "name": "IBEX 35",
     "sector": "Index",
     "profile": "companies/^IBEX/profile.json",
-    "logo": "public/img/companies/indices/ibex.png",
+    "logo": "img/companies/indices/ibex.png",
     "history": "history/^IBEX.json",
     "market": "IDX"
   },
@@ -1273,7 +1273,7 @@
     "name": "AEX",
     "sector": "Index",
     "profile": "companies/^AEX/profile.json",
-    "logo": "public/img/companies/indices/aex.png",
+    "logo": "img/companies/indices/aex.png",
     "history": "history/^AEX.json",
     "market": "IDX"
   },
@@ -1282,7 +1282,7 @@
     "name": "BEL 20",
     "sector": "Index",
     "profile": "companies/^BFX/profile.json",
-    "logo": "public/img/companies/indices/bfx.png",
+    "logo": "img/companies/indices/bfx.png",
     "history": "history/^BFX.json",
     "market": "IDX"
   },
@@ -1291,7 +1291,7 @@
     "name": "OMX Nordic All-Share",
     "sector": "Index",
     "profile": "companies/^OMX/profile.json",
-    "logo": "public/img/companies/indices/omx.svg",
+    "logo": "img/companies/indices/omx.svg",
     "history": "history/^OMX.json",
     "market": "IDX"
   },
@@ -1300,7 +1300,7 @@
     "name": "Euronext 100",
     "sector": "Index",
     "profile": "companies/^N100/profile.json",
-    "logo": "public/img/companies/indices/eu.png",
+    "logo": "img/companies/indices/eu.png",
     "history": "history/^N100.json",
     "market": "IDX"
   },
@@ -1309,7 +1309,7 @@
     "name": "Nikkei 225",
     "sector": "Index",
     "profile": "companies/^N225/profile.json",
-    "logo": "public/img/companies/indices/n225.png",
+    "logo": "img/companies/indices/n225.png",
     "history": "history/^N225.json",
     "market": "IDX"
   },
@@ -1318,7 +1318,7 @@
     "name": "TOPIX",
     "sector": "Index",
     "profile": "companies/TOPIX100.T/profile.json",
-    "logo": "public/img/companies/indices/n225.png",
+    "logo": "img/companies/indices/n225.png",
     "history": "history/TOPIX100.T.json",
     "market": "IDX"
   },
@@ -1327,7 +1327,7 @@
     "name": "Hang Seng Index",
     "sector": "Index",
     "profile": "companies/^HSI/profile.json",
-    "logo": "public/img/companies/indices/hsi.png",
+    "logo": "img/companies/indices/hsi.png",
     "history": "history/^HSI.json",
     "market": "IDX"
   },
@@ -1336,7 +1336,7 @@
     "name": "Shanghai Composite",
     "sector": "Index",
     "profile": "companies/000001.SS/profile.json",
-    "logo": "public/img/companies/indices/cn.png",
+    "logo": "img/companies/indices/cn.png",
     "history": "history/000001.SS.json",
     "market": "IDX"
   },
@@ -1345,7 +1345,7 @@
     "name": "SZSE Component",
     "sector": "Index",
     "profile": "companies/399001.SZ/profile.json",
-    "logo": "public/img/companies/indices/cn.png",
+    "logo": "img/companies/indices/cn.png",
     "history": "history/399001.SZ.json",
     "market": "IDX"
   },
@@ -1354,7 +1354,7 @@
     "name": "KOSPI",
     "sector": "Index",
     "profile": "companies/^KS11/profile.json",
-    "logo": "public/img/companies/indices/ks11.png",
+    "logo": "img/companies/indices/ks11.png",
     "history": "history/^KS11.json",
     "market": "IDX"
   },
@@ -1363,7 +1363,7 @@
     "name": "TAIEX",
     "sector": "Index",
     "profile": "companies/^TWII/profile.json",
-    "logo": "public/img/companies/indices/twii.png",
+    "logo": "img/companies/indices/twii.png",
     "history": "history/^TWII.json",
     "market": "IDX"
   },
@@ -1372,7 +1372,7 @@
     "name": "Straits Times Index",
     "sector": "Index",
     "profile": "companies/^STI/profile.json",
-    "logo": "public/img/companies/indices/sti.png",
+    "logo": "img/companies/indices/sti.png",
     "history": "history/^STI.json",
     "market": "IDX"
   },
@@ -1381,7 +1381,7 @@
     "name": "BSE Sensex",
     "sector": "Index",
     "profile": "companies/^BSESN/profile.json",
-    "logo": "public/img/companies/indices/bse.png",
+    "logo": "img/companies/indices/bse.png",
     "history": "history/^BSESN.json",
     "market": "IDX"
   },
@@ -1390,7 +1390,7 @@
     "name": "S&P/ASX 200",
     "sector": "Index",
     "profile": "companies/^AXJO/profile.json",
-    "logo": "public/img/companies/indices/axjo.png",
+    "logo": "img/companies/indices/axjo.png",
     "history": "history/^AXJO.json",
     "market": "IDX"
   },
@@ -1399,7 +1399,7 @@
     "name": "NZX 50",
     "sector": "Index",
     "profile": "companies/^NZ50/profile.json",
-    "logo": "public/img/companies/indices/nz50.png",
+    "logo": "img/companies/indices/nz50.png",
     "history": "history/^NZ50.json",
     "market": "IDX"
   },
@@ -1408,7 +1408,7 @@
     "name": "Jakarta Composite",
     "sector": "Index",
     "profile": "companies/^JKSE/profile.json",
-    "logo": "public/img/companies/indices/jkse.png",
+    "logo": "img/companies/indices/jkse.png",
     "history": "history/^JKSE.json",
     "market": "IDX"
   },
@@ -1417,7 +1417,7 @@
     "name": "FTSE Bursa Malaysia KLCI",
     "sector": "Index",
     "profile": "companies/^KLSE/profile.json",
-    "logo": "public/img/companies/indices/klse.png",
+    "logo": "img/companies/indices/klse.png",
     "history": "history/^KLSE.json",
     "market": "IDX"
   },
@@ -1426,7 +1426,7 @@
     "name": "Bovespa Index",
     "sector": "Index",
     "profile": "companies/^BVSP/profile.json",
-    "logo": "public/img/companies/indices/bovespa.png",
+    "logo": "img/companies/indices/bovespa.png",
     "history": "history/^BVSP.json",
     "market": "IDX"
   }

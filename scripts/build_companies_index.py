@@ -62,6 +62,18 @@ def load_existing_index() -> Dict[str, Any]:
     return mapping
 
 
+def normalize_logo_value(value: str | None) -> str | None:
+    if not value:
+        return None
+    norm = value.strip().replace('\\', '/')
+    if norm.startswith('public/'):
+        norm = norm[len('public/'): ]
+    if norm.startswith('./'):
+        norm = norm[2:]
+    return norm or None
+
+
+
 def ensure_profile(sym: str, name: str, sector: str) -> None:
     d = COMP_DIR / sym
     d.mkdir(parents=True, exist_ok=True)
@@ -84,13 +96,11 @@ def build_index(rows: List[Dict[str, Any]]) -> None:
         ensure_profile(sym, name, sector)
         logo_rel = f"companies/{sym}/logo.svg"
         logo_path = COMP_DIR / sym / "logo.svg"
-        existing_logo = None
-        if sym in existing:
-            existing_logo = existing[sym].get("logo")
+        existing_logo = normalize_logo_value(existing[sym].get("logo")) if sym in existing else None
         if existing_logo:
             logo_value = existing_logo
         elif logo_path.exists():
-            logo_value = logo_rel
+            logo_value = normalize_logo_value(logo_rel)
         else:
             logo_value = None
         idx.append({
