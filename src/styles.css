@@ -302,7 +302,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   background:#1f2937;
   border-radius:0 8px 8px 0;
   pointer-events:none;
-  z-index:0;
+  z-index:4;
 }
 
 .explore-sidebar.hidden{
@@ -341,8 +341,8 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   top:50%;
   right:-20px;
   transform:translateY(-50%);
-  transition:background .2s ease, color .2s ease, transform .2s ease;
-  z-index:0;
+  transition:background .2s ease, color .2s ease, transform .25s ease;
+  z-index:4;
 }
 
 .explore-sidebar-toggle:hover{
@@ -363,15 +363,25 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   transition:transform .2s ease;
 }
 
-.explore-sidebar-toggle.open{
-  left:0px;
+.explore-sidebar-toggle.reopen{
+  left:0;
   right:auto;
-  transform:translateY(-50%);
+  transform:translate(-120%, -50%);
   border-radius:0 18px 18px 0;
   background:#1f2937;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:6;
 }
 
-.explore-sidebar-toggle.open .explore-toggle-icon{
+.explore-sidebar-toggle.reopen.visible{
+  transform:translate(0, -50%);
+  opacity:1;
+  pointer-events:auto;
+}
+
+.explore-sidebar-toggle.reopen .explore-toggle-icon{
   transform:rotate(-45deg);
 }
 
@@ -381,7 +391,7 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   background:#1f2937;
   pointer-events:none;
   padding-bottom:10px;
-  z-index:0;
+  z-index:1;
 }
 
 .explore-search input{

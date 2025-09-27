@@ -291,17 +291,17 @@ export default function Explore() {
         </aside>
 
         <div className="explore-main">
-          {!sidebarOpen && (
-            <button
-              type="button"
-              className="explore-sidebar-toggle open"
-              onClick={() => setSidebarOpen(true)}
-              aria-label={t('explore.showSidebar')}
-              title={t('explore.showSidebar')}
-            >
-              <span className="explore-toggle-icon" aria-hidden="true" />
-            </button>
-          )}
+          <button
+            type="button"
+            className={`explore-sidebar-toggle reopen${sidebarOpen ? '' : ' visible'}`}
+            onClick={() => setSidebarOpen(true)}
+            aria-label={t('explore.showSidebar')}
+            title={t('explore.showSidebar')}
+            aria-hidden={sidebarOpen}
+            tabIndex={sidebarOpen ? -1 : 0}
+          >
+            <span className="explore-toggle-icon" aria-hidden="true" />
+          </button>
           <div className="explore-toolbar">
             <div className="explore-selected">
               <h2>{selectedCompany?.symbol ?? symbol}</h2>
