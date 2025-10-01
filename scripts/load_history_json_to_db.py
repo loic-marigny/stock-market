@@ -38,7 +38,7 @@ for filename in os.listdir(FOLDER_PATH):
 
         values = []
 
-        if (empty_file):
+        if empty_file:
             values = [(filename, None, None)]
         else:
             # Prepare data for insertion
