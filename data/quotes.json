@@ -1,7 +1,7 @@
 {
   "600519.SS": {
     "last": 1443.99,
-    "as_of": "2025-10-06T03:15:36Z",
+    "as_of": "2025-10-06T03:31:02Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
@@ -160,7 +160,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-06T03:25:40Z",
+    "generated_at": "2025-10-06T03:40:26Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
