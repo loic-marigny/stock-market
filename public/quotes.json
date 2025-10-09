@@ -1,81 +1,81 @@
 {
   "600519.SS": {
-    "last": 1428.3,
-    "as_of": "2025-10-09T02:56:44Z",
+    "last": 1427.01,
+    "as_of": "2025-10-09T03:29:20Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 55.06,
-    "as_of": "2025-10-09T02:58:15Z",
+    "last": 54.84,
+    "as_of": "2025-10-09T03:31:15Z",
     "interval": "akshare_spot"
   },
   "601398.SS": {
-    "last": 7.25,
-    "as_of": "2025-10-09T02:59:39Z",
+    "last": 7.28,
+    "as_of": "2025-10-09T03:32:41Z",
     "interval": "akshare_spot"
   },
   "601288.SS": {
-    "last": 6.66,
-    "as_of": "2025-10-09T03:01:10Z",
+    "last": 6.68,
+    "as_of": "2025-10-09T03:34:26Z",
     "interval": "akshare_spot"
   },
   "601988.SS": {
-    "last": 5.17,
-    "as_of": "2025-10-09T03:02:37Z",
+    "last": 5.21,
+    "as_of": "2025-10-09T03:35:55Z",
     "interval": "akshare_spot"
   },
   "601857.SS": {
-    "last": 8.14,
-    "as_of": "2025-10-09T03:04:11Z",
+    "last": 8.19,
+    "as_of": "2025-10-09T03:37:24Z",
     "interval": "akshare_spot"
   },
   "600028.SS": {
-    "last": 5.32,
-    "as_of": "2025-10-09T03:05:56Z",
+    "last": 5.33,
+    "as_of": "2025-10-09T03:38:49Z",
     "interval": "akshare_spot"
   },
   "600036.SS": {
-    "last": 40.16,
-    "as_of": "2025-10-09T03:07:23Z",
-    "interval": "akshare_spot"
+    "last": 40.09,
+    "as_of": "2025-10-09T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 19.84,
-    "as_of": "2025-10-09T03:08:55Z",
-    "interval": "akshare_spot"
+    "last": 19.77,
+    "as_of": "2025-10-09T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 27.43,
+    "last": 27.42,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.86,
+    "last": 69.89,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.89,
+    "last": 18.85,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 17.35,
+    "last": 17.38,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.9,
+    "last": 29.76,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.39,
+    "last": 23.37,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 11.78,
+    "last": 11.76,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -85,32 +85,32 @@
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 8.54,
+    "last": 8.56,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.13,
+    "last": 7.18,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 70.42,
+    "last": 70.59,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.74,
+    "last": 7.71,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 66.75,
+    "last": 66.98,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 24.54,
+    "last": 24.51,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -130,12 +130,12 @@
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.71,
+    "last": 6.73,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 39.27,
+    "last": 39.31,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-09T03:19:11Z",
+    "generated_at": "2025-10-09T03:48:46Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
