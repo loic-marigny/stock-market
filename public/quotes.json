@@ -1,32 +1,32 @@
 {
   "600519.SS": {
-    "last": 1430.94,
-    "as_of": "2025-10-09T05:14:05Z",
+    "last": 1438.5,
+    "as_of": "2025-10-09T05:41:55Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 54.84,
-    "as_of": "2025-10-09T05:16:09Z",
+    "last": 55.14,
+    "as_of": "2025-10-09T05:44:04Z",
     "interval": "akshare_spot"
   },
   "601398.SS": {
-    "last": 7.28,
-    "as_of": "2025-10-09T05:18:13Z",
+    "last": 7.31,
+    "as_of": "2025-10-09T05:45:58Z",
     "interval": "akshare_spot"
   },
   "601288.SS": {
-    "last": 6.73,
-    "as_of": "2025-10-09T05:20:09Z",
+    "last": 6.7,
+    "as_of": "2025-10-09T05:47:38Z",
     "interval": "akshare_spot"
   },
   "601988.SS": {
-    "last": 5.21,
-    "as_of": "2025-10-09T05:22:10Z",
+    "last": 5.22,
+    "as_of": "2025-10-09T05:49:15Z",
     "interval": "akshare_spot"
   },
   "601857.SS": {
-    "last": 8.24,
-    "as_of": "2025-10-09T05:24:21Z",
+    "last": 8.21,
+    "as_of": "2025-10-09T05:51:18Z",
     "interval": "akshare_spot"
   },
   "600028.SS": {
@@ -35,57 +35,57 @@
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 40.23,
+    "last": 40.28,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 19.72,
+    "last": 19.66,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 27.48,
+    "last": 27.57,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.72,
+    "last": 69.73,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.76,
+    "last": 18.81,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 17.35,
+    "last": 17.39,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.86,
+    "last": 29.74,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.41,
+    "last": 23.48,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 11.81,
+    "last": 11.77,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 34.93,
+    "last": 34.81,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 8.6,
+    "last": 8.63,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -95,27 +95,27 @@
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 70.36,
+    "last": 70.73,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.74,
+    "last": 7.75,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 67.29,
+    "last": 67.18,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 24.48,
+    "last": 24.55,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.4,
+    "last": 27.53,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -130,17 +130,17 @@
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.73,
+    "last": 6.74,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 39.43,
+    "last": 39.49,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 150.0,
+    "last": 146.09,
     "as_of": "2025-10-09T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-09T05:35:59Z",
+    "generated_at": "2025-10-09T06:02:40Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
