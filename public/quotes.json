@@ -1,21 +1,21 @@
 {
   "600519.SS": {
-    "last": 1454.44,
-    "as_of": "2025-10-15T05:13:34Z",
+    "last": 1453.01,
+    "as_of": "2025-10-15T05:41:24Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 56.93,
+    "last": 57.06,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 7.46,
+    "last": 7.44,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 7.24,
+    "last": 7.22,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -30,117 +30,117 @@
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.38,
+    "last": 5.37,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 41.22,
+    "last": 41.23,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.17,
+    "last": 20.13,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 27.83,
+    "last": 27.8,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.25,
+    "last": 69.53,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 19.59,
+    "last": 19.66,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.73,
+    "last": 16.75,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.14,
+    "last": 29.2,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 24.26,
+    "last": 24.31,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 12.96,
+    "last": 12.99,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 36.41,
+    "last": 36.5,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 8.92,
+    "last": 8.91,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.2,
+    "last": 7.21,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 65.44,
+    "last": 65.88,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.77,
+    "last": 7.79,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 64.18,
+    "last": 64.22,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 23.44,
+    "last": 23.52,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.66,
+    "last": 27.6,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.58,
+    "last": 5.57,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 5.65,
+    "last": 5.64,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.79,
+    "last": 6.78,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 40.11,
+    "last": 40.18,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 127.3,
+    "last": 128.35,
     "as_of": "2025-10-15T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-15T05:25:09Z",
+    "generated_at": "2025-10-15T05:53:37Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
