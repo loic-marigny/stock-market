@@ -56,6 +56,7 @@
   'trade.actions.sell': 'Sell',
   'trade.hint.quantity': 'Execution: quantity x last price at the time of the click.',
   'trade.hint.amount': 'Execution: calculated quantity = amount / last price.',
+  'trade.validation.invalidPrice': 'Price unavailable right now. Please try again later.',
   'trade.validation.invalidQuantity': 'Invalid quantity or amount.',
   'trade.validation.insufficientPosition': 'Not enough position to sell that quantity.',
   'trade.validation.insufficientCash': 'Insufficient credits for this purchase.',

@@ -58,6 +58,7 @@ const fr: Translations = {
   'trade.actions.sell': 'Vendre',
   'trade.hint.quantity': 'Ex\u00E9cution : quantit\u00E9 x dernier prix au moment du clic.',
   'trade.hint.amount': 'Ex\u00E9cution : quantit\u00E9 calcul\u00E9e = montant / dernier prix.',
+  'trade.validation.invalidPrice': 'Prix indisponible pour le moment. Veuillez r\u00E9essayer.',
   'trade.validation.invalidQuantity': 'Quantit\u00E9 ou montant invalide.',
   'trade.validation.insufficientPosition': 'Position insuffisante pour vendre cette quantit\u00E9.',
   'trade.validation.insufficientCash': 'Cr\u00E9dits insuffisants pour cet achat.',

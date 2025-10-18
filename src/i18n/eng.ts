@@ -1,4 +1,4 @@
-const en = {
+ï»¿const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -27,7 +27,7 @@ const en = {
   'auth.errors.emailInUse': 'Email already in use.',
   'auth.errors.invalidCredential': 'Incorrect email or password.',
   'auth.errors.tooManyRequests': 'Too many attempts. Try again later.',
-  'auth.footer.note': '© {{year}} Stock Market — all rights reserved',
+  'auth.footer.note': '\u00A9 {{year}} Stock Market - all rights reserved',
   'portfolio.title': 'My portfolio',
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',
@@ -56,6 +56,7 @@ const en = {
   'trade.actions.sell': 'Sell',
   'trade.hint.quantity': 'Execution: quantity x last price at the time of the click.',
   'trade.hint.amount': 'Execution: calculated quantity = amount / last price.',
+  'trade.validation.invalidPrice': 'Price unavailable right now. Please try again later.',
   'trade.validation.invalidQuantity': 'Invalid quantity or amount.',
   'trade.validation.insufficientPosition': 'Not enough position to sell that quantity.',
   'trade.validation.insufficientCash': 'Insufficient credits for this purchase.',
@@ -75,4 +76,3 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
-

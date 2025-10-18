@@ -39,7 +39,8 @@ export default function Trade(){
 
   useEffect(()=>{
     (async()=>{
-      setLast(await provider.getLastPrice(symbol));
+      const fetched = await provider.getLastPrice(symbol);
+      setLast(Number.isFinite(fetched) && fetched > 0 ? fetched : 0);
     })();
   }, [symbol]);
 
@@ -49,6 +50,9 @@ export default function Trade(){
     : (last ? round6((amount || 0) / last) : 0);
 
   const validate = (side:"buy"|"sell", px:number) => {
+    if (!Number.isFinite(px) || px <= 0) {
+      return t('trade.validation.invalidPrice');
+    }
     const q = mode === "qty" ? qty : round6(amount / px);
     if (!q || q <= 0) return t('trade.validation.invalidQuantity');
     if (side === "sell" && posQty < q - 1e-9) return t('trade.validation.insufficientPosition');
@@ -63,7 +67,13 @@ export default function Trade(){
     setMsg("");
     setLoading(true);
     try{
-      const fillPrice = await provider.getLastPrice(symbol);
+      const fetchedPrice = await provider.getLastPrice(symbol);
+      if (!Number.isFinite(fetchedPrice) || fetchedPrice <= 0) {
+        setMsg(t('trade.validation.invalidPrice'));
+        setLoading(false);
+        return;
+      }
+      const fillPrice = fetchedPrice;
       const q = mode === "qty" ? Number(qty) : round6(Number(amount) / fillPrice);
 
       const err = validate(side, fillPrice);
