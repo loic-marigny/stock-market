@@ -1,111 +1,111 @@
 {
   "600519.SS": {
-    "last": 1451.25,
-    "as_of": "2025-10-23T02:49:09Z",
-    "interval": "akshare_spot"
+    "last": 1453.44,
+    "as_of": "2025-10-23T00:00:00Z",
+    "interval": "akshare_daily"
   },
   "601318.SS": {
-    "last": 58.17,
+    "last": 58.39,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 7.75,
+    "last": 7.77,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.0,
+    "last": 7.98,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.44,
+    "last": 5.46,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 8.98,
+    "last": 9.02,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.53,
+    "last": 5.54,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 41.8,
+    "last": 41.97,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.59,
+    "last": 20.7,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.17,
+    "last": 28.19,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.55,
+    "last": 69.68,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.99,
+    "last": 18.79,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.43,
+    "last": 16.45,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 28.97,
+    "last": 29.16,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.26,
+    "last": 23.44,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 12.86,
+    "last": 12.94,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 36.8,
+    "last": 37.01,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.32,
+    "last": 9.34,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.17,
+    "last": 7.23,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 64.39,
+    "last": 64.73,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.96,
+    "last": 7.97,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 61.36,
+    "last": 62.34,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -115,32 +115,32 @@
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.2,
+    "last": 27.22,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.68,
+    "last": 5.69,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 5.95,
+    "last": 5.97,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.87,
+    "last": 6.86,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 43.75,
+    "last": 44.07,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 126.16,
+    "last": 127.6,
     "as_of": "2025-10-23T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-23T02:59:26Z",
+    "generated_at": "2025-10-23T03:34:58Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
