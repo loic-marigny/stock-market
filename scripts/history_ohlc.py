@@ -125,6 +125,12 @@ def fetch_daily_finnhub(symbol: str, token: str, years: int = MIN_YEARS) -> List
     return out
 
 
+def map_symbol_for_market(symbol: str, market: str) -> str:
+    if market.upper() in {"FX", "FOREX"} and not symbol.endswith("=X"):
+        return f"{symbol}=X"
+    return symbol
+
+
 def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, float]]:
     """Fetch daily candles via Cloudflare Yahoo proxy if configured."""
 
@@ -482,6 +488,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Fetch daily history JSON files")
     parser.add_argument('--symbols', type=str, help='Comma-separated list of symbols to refresh')
     parser.add_argument('--limit', type=int, help='Limit number of symbols processed')
+    parser.add_argument('--batch-index', type=int, help='Zero-based batch index when splitting the ticker list')
+    parser.add_argument('--batch-size', type=int, default=80, help='Batch size when using --batch-index (default 80)')
     return parser.parse_args()
 
 
@@ -520,6 +528,18 @@ def main():
     if symbol_filter is not None:
         tickers = [(sym, mkt) for sym, mkt in tickers if sym in symbol_filter]
 
+    if args.batch_index is not None:
+        batch_size = args.batch_size if args.batch_size and args.batch_size > 0 else 80
+        original_total = len(tickers)
+        start = args.batch_index * batch_size
+        end = start + batch_size
+        if start >= original_total:
+            print(f"[history] batch index {args.batch_index} out of range for {original_total} symbols")
+            tickers = []
+        else:
+            tickers = tickers[start:end]
+            print(f"[history] processing batch {args.batch_index} (symbols {start + 1} to {min(end, original_total)} of {original_total})")
+
     use_worker = bool(os.environ.get("YAHOO_WORKER_URL"))
 
     total = len(tickers)
@@ -543,14 +563,14 @@ def main():
             source = ""
             if use_worker:
                 try:
-                    fresh = fetch_daily_worker(sym, years=MIN_YEARS)
+                    fresh = fetch_daily_worker(map_symbol_for_market(sym, market), years=MIN_YEARS)
                     if fresh:
                         source = "yahoo_worker"
                 except Exception as e:
                     print(f"[warn] {sym} worker failed: {e}")
             if not fresh:
                 try:
-                    fresh = fetch_daily_yahoo(sym, years=MIN_YEARS)
+                    fresh = fetch_daily_yahoo(map_symbol_for_market(sym, market), years=MIN_YEARS)
                     if fresh and not source:
                         source = "yahoo"
                 except Exception as e:

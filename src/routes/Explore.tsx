@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import Chart from "chart.js/auto";
-import provider from "../lib/prices";
+import { CandlestickSeries, createChart, type CandlestickData, type Time } from "lightweight-charts";
+import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
 
@@ -30,15 +30,18 @@ export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
   const [tf, setTf] = useState<TF>("6M");
-  const [data, setData] = useState<{ date: string; close: number }[]>([]);
+  const [data, setData] = useState<OHLC[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [expandedMarkets, setExpandedMarkets] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [query, setQuery] = useState("");
   const trimmedQuery = query.trim();
   const searchMode = trimmedQuery.length > 0;
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const chartRef = useRef<Chart | null>(null);
+  const chartContainerRef = useRef<HTMLDivElement | null>(null);
+  type ChartApi = ReturnType<typeof createChart>;
+  type CandlestickSeriesApi = ReturnType<ChartApi["addSeries"]>;
+  const chartRef = useRef<ChartApi | null>(null);
+  const seriesRef = useRef<CandlestickSeriesApi | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -153,24 +156,57 @@ export default function Explore() {
   }, [data, tf]);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
-    chartRef.current?.destroy();
-    chartRef.current = new Chart(canvasRef.current, {
-      type: "line",
-      data: {
-        labels: filtered.map((d) => d.date),
-        datasets: [{ label: symbol, data: filtered.map((d) => d.close) }],
+    if (!chartContainerRef.current) return;
+    const element = chartContainerRef.current;
+    const chart = createChart(element, {
+      width: element.clientWidth,
+      height: element.clientHeight,
+      layout: { background: { color: "transparent" }, textColor: "#0f172a" },
+      grid: {
+        vertLines: { color: "rgba(15,23,42,0.08)" },
+        horzLines: { color: "rgba(15,23,42,0.05)" },
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        elements: { line: { tension: 0.25 }, point: { radius: 0 } },
-        plugins: { legend: { display: false } },
-        scales: { x: { ticks: { maxTicksLimit: 6 } } },
-      },
+      rightPriceScale: { borderColor: "rgba(15,23,42,0.08)" },
+      timeScale: { borderColor: "rgba(15,23,42,0.08)" },
+      crosshair: { mode: 1 },
     });
-    return () => chartRef.current?.destroy();
-  }, [filtered, symbol]);
+    const series = chart.addSeries(CandlestickSeries, {
+      upColor: "#16a34a",
+      downColor: "#dc2626",
+      wickUpColor: "#16a34a",
+      wickDownColor: "#dc2626",
+      borderUpColor: "#16a34a",
+      borderDownColor: "#dc2626",
+    });
+    chartRef.current = chart;
+    seriesRef.current = series;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      chart.applyOptions({ width, height });
+    });
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+      chart.remove();
+      chartRef.current = null;
+      seriesRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!seriesRef.current) return;
+    const formatted: CandlestickData[] = filtered.map((d) => ({
+      time: d.date as Time,
+      open: d.open,
+      high: d.high,
+      low: d.low,
+      close: d.close,
+    }));
+    seriesRef.current.setData(formatted);
+    chartRef.current?.timeScale().fitContent();
+  }, [filtered]);
 
   const lastClose = filtered.at(-1)?.close ?? data.at(-1)?.close ?? 0;
 
@@ -326,7 +362,7 @@ export default function Explore() {
             </div>
 
             <div className="chart-card">
-              <canvas ref={canvasRef} />
+              <div ref={chartContainerRef} className="chart-container" />
             </div>
             <p className="hint">{t("explore.sourceHint")}</p>
           </div>
