@@ -1,21 +1,21 @@
 {
   "600519.SS": {
-    "last": 1456.99,
-    "as_of": "2025-10-24T03:14:03Z",
+    "last": 1454.98,
+    "as_of": "2025-10-24T03:29:35Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 58.17,
+    "last": 58.06,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 7.87,
+    "last": 7.84,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.02,
+    "last": 8.01,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -25,77 +25,77 @@
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.08,
+    "last": 9.06,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.54,
+    "last": 5.53,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 42.1,
+    "last": 42.02,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.7,
+    "last": 20.65,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.21,
+    "last": 28.17,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 70.49,
+    "last": 70.45,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.89,
+    "last": 18.81,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.54,
+    "last": 16.55,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.58,
+    "last": 29.54,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.43,
+    "last": 23.38,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 12.98,
+    "last": 13.0,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 37.28,
+    "last": 37.23,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.39,
+    "last": 9.37,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.13,
+    "last": 7.14,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 65.12,
+    "last": 65.15,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -105,42 +105,42 @@
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 61.36,
+    "last": 61.31,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 23.18,
+    "last": 23.2,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.27,
+    "last": 27.26,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.73,
+    "last": 5.72,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 6.0,
+    "last": 5.98,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.88,
+    "last": 6.87,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 44.48,
+    "last": 44.36,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 132.14,
+    "last": 132.51,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-24T03:24:16Z",
+    "generated_at": "2025-10-24T03:39:07Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
