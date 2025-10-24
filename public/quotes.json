@@ -1,101 +1,101 @@
 {
   "600519.SS": {
-    "last": 1460.11,
-    "as_of": "2025-10-24T00:00:00Z",
-    "interval": "akshare_daily"
+    "last": 1456.99,
+    "as_of": "2025-10-24T03:14:03Z",
+    "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 58.31,
+    "last": 58.17,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 7.88,
+    "last": 7.87,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.03,
+    "last": 8.02,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.53,
+    "last": 5.54,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.1,
+    "last": 9.08,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.56,
+    "last": 5.54,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 42.16,
+    "last": 42.1,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.77,
+    "last": 20.7,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.23,
+    "last": 28.21,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 70.45,
+    "last": 70.49,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.94,
+    "last": 18.89,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.55,
+    "last": 16.54,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.6,
+    "last": 29.58,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.45,
+    "last": 23.43,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 13.04,
+    "last": 12.98,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 37.34,
+    "last": 37.28,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.41,
+    "last": 9.39,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.14,
+    "last": 7.13,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 65.16,
+    "last": 65.12,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -105,12 +105,12 @@
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 61.25,
+    "last": 61.36,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 23.1,
+    "last": 23.18,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -120,7 +120,7 @@
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.72,
+    "last": 5.73,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -130,17 +130,17 @@
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.87,
+    "last": 6.88,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 44.45,
+    "last": 44.48,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 130.88,
+    "last": 132.14,
     "as_of": "2025-10-24T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-24T02:55:11Z",
+    "generated_at": "2025-10-24T03:24:16Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
