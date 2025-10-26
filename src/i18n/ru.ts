@@ -1,4 +1,4 @@
-﻿import type { Translations } from './lang';
+import type { Translations } from './lang';
 
 const ru: Translations = {
   'app.loading': '????????...',
@@ -71,6 +71,14 @@ const ru: Translations = {
   'explore.showSidebar': '???????? ???? ?????????',
   'explore.showList': '?????',
   'explore.noResults': 'No results',
+  'explore.metrics.title': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u043f\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u0438',
+  'explore.metrics.beta': '\u0411\u0435\u0442\u0430',
+  'explore.metrics.auditRisk': '\u0420\u0438\u0441\u043a \u0430\u0443\u0434\u0438\u0442\u0430',
+  'explore.metrics.recommendationMean': '\u0421\u0440\u0435\u0434\u043d\u044f\u044f \u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f',
+  'explore.metrics.industry': '\u041e\u0442\u0440\u0430\u0441\u043b\u044c',
+  'explore.metrics.website': '\u0421\u0430\u0439\u0442',
+  'explore.metrics.irWebsite': '\u0421\u0430\u0439\u0442 \u0434\u043b\u044f \u0438\u043d\u0432\u0435\u0441\u0442\u043e\u0440\u043e\u0432',
+  'explore.aboutTitle': '\u041e\u0431\u0437\u043e\u0440 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438',
   'explore.sourceHint': '????????: ??????????? JSON-????? (Finnhub/Akshare/Yahoo ????? CI).'
 };
 
