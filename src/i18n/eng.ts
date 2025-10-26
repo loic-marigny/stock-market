@@ -1,4 +1,4 @@
-﻿const en = {
+const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -69,6 +69,14 @@
   'explore.showSidebar': 'Show markets panel',
   'explore.showList': 'Markets',
   'explore.noResults': 'No results',
+  'explore.metrics.title': 'Key indicators',
+  'explore.metrics.beta': 'Beta',
+  'explore.metrics.auditRisk': 'Audit risk',
+  'explore.metrics.recommendationMean': 'Recommendation mean',
+  'explore.metrics.industry': 'Industry',
+  'explore.metrics.website': 'Website',
+  'explore.metrics.irWebsite': 'Investor relations',
+  'explore.aboutTitle': 'Company overview',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
 } as const;
 

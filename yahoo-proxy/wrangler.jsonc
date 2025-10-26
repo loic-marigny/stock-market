@@ -7,6 +7,7 @@
 	"name": "yahoo-proxy",
 	"main": "src/index.js",
 	"compatibility_date": "2025-10-22",
+	"compatibility_flags": ["nodejs_compat"],
 	"observability": {
 		"enabled": true
 	}

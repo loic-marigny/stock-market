@@ -151,7 +151,7 @@ def fetch_daily_worker(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, fl
         range_value = "10y"
 
     params = {"range": range_value, "interval": "1d"}
-    encoded = quote(symbol, safe='')
+    encoded = quote(symbol, safe='=')
     url = f"{base_url.rstrip('/')}/history/{encoded}"
 
     headers: Dict[str, str] = {}
@@ -389,7 +389,7 @@ def fetch_daily_yahoo(symbol: str, years: int = MIN_YEARS) -> List[Dict[str, flo
     # Use Yahoo Chart API v8 for daily candles
     rng = "1y" if years <= 1 else "2y"
     hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com", "query3.finance.yahoo.com", "query2.finance.yahoo.com"]
-    encoded = quote(symbol, safe='')
+    encoded = quote(symbol, safe='=')
     for host in hosts:
         for attempt in range(1, 33):
             query_host = host.replace('HOST', str(((attempt - 1) % len(hosts)) + 1)) if 'HOST' in host else host

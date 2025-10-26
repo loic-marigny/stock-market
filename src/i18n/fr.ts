@@ -71,6 +71,14 @@ const fr: Translations = {
   'explore.showSidebar': 'Afficher le panneau des march\u00E9s',
   'explore.showList': 'March\u00E9s',
   'explore.noResults': 'Aucun r\u00E9sultat',
+  'explore.metrics.title': 'Indicateurs cl\u00E9s',
+  'explore.metrics.beta': 'B\u00EAta',
+  'explore.metrics.auditRisk': 'Risque d\'audit',
+  'explore.metrics.recommendationMean': 'Moyenne des recommandations',
+  'explore.metrics.industry': 'Industrie',
+  'explore.metrics.website': 'Site web',
+  'explore.metrics.irWebsite': 'Relations investisseurs',
+  'explore.aboutTitle': 'Pr\u00E9sentation de l\'entreprise',
   'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).'
 };
 

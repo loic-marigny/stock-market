@@ -8,8 +8,12 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-const DEFAULT_UPSTREAM = 'https://query1.finance.yahoo.com';
+const CHART_HOST = 'https://query1.finance.yahoo.com';
+const SUMMARY_HOST = 'https://query2.finance.yahoo.com';
 const CHART_ENDPOINT = '/v8/finance/chart/';
+const SUMMARY_ENDPOINT = '/v10/finance/quoteSummary/';
+const CRUMB_URL = 'https://query2.finance.yahoo.com/v1/test/getcrumb';
+const DEFAULT_SUMMARY_MODULES = 'assetProfile,summaryProfile,summaryDetail,financialData,price,defaultKeyStatistics';
 
 const USER_AGENT =
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
@@ -90,6 +94,153 @@ function extractCandles(payload) {
 	return candles;
 }
 
+const extractNumeric = (value) => {
+	if (value === null || value === undefined) return null;
+	if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+	if (typeof value === 'object') {
+		if (value === null) return null;
+		if (typeof value.raw === 'number') return Number.isFinite(value.raw) ? value.raw : null;
+		if (typeof value.fmt === 'number') return Number.isFinite(value.fmt) ? value.fmt : null;
+		if (typeof value.fmt === 'string') {
+			const parsed = Number(value.fmt.replace(/[^\d.-]/g, ''));
+			return Number.isFinite(parsed) ? parsed : null;
+		}
+	}
+	if (typeof value === 'string' && value.trim()) {
+		const parsed = Number(value.replace(/[^\d.-]/g, ''));
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+	return null;
+};
+
+const sanitizeSummary = (rawSymbol, result) => {
+	const summaryProfile = result?.summaryProfile || result?.assetProfile || {};
+	const assetProfile = result?.assetProfile || {};
+
+	const cleaned = {
+		symbol: rawSymbol,
+		longName: result?.price?.longName || result?.price?.shortName || null,
+		longBusinessSummary: summaryProfile.longBusinessSummary || assetProfile.longBusinessSummary || null,
+		website: summaryProfile.website || null,
+		irWebsite: summaryProfile.irWebsite || null,
+		industryDisp: summaryProfile.industryDisp || summaryProfile.industry || null,
+		auditRisk: extractNumeric(assetProfile.auditRisk),
+		beta: extractNumeric(result?.summaryDetail?.beta ?? result?.defaultKeyStatistics?.beta),
+		recommendationMean: extractNumeric(result?.financialData?.recommendationMean),
+	};
+
+	return Object.fromEntries(
+		Object.entries(cleaned).filter(([, value]) => value !== null && value !== undefined && value !== '')
+	);
+};
+
+let crumbCache = null;
+let cookieCache = '';
+let crumbFetchedAt = 0;
+
+const splitSetCookie = (header) => {
+	if (!header) return [];
+	return header.split(/,(?=[^;=]+=)/);
+};
+
+const createCookieJar = (initial) => {
+	const store = new Map();
+	const apply = (header) => {
+		if (!header) return;
+		for (const segment of splitSetCookie(header)) {
+			const pair = segment.split(';')[0]?.trim();
+			if (!pair) continue;
+			const [name, ...rest] = pair.split('=');
+			if (!name) continue;
+			store.set(name.trim(), rest.join('=').trim());
+		}
+	};
+	if (initial) apply(initial);
+	return {
+		apply,
+		header: () =>
+			Array.from(store.entries())
+				.map(([k, v]) => `${k}=${v}`)
+				.join('; '),
+	};
+};
+
+async function fetchCrumb(cookieJar) {
+	const headers = {
+		'User-Agent': USER_AGENT,
+		Referer: 'https://finance.yahoo.com/',
+		Accept: 'text/plain',
+	};
+	const cookieHeader = cookieJar.header();
+	if (cookieHeader) headers.Cookie = cookieHeader;
+
+	const response = await fetch(CRUMB_URL, {
+		headers,
+		cf: { cacheTtl: 300, cacheEverything: true },
+	});
+	if (!response.ok) {
+		throw new Error(`crumb fetch failed: ${response.status}`);
+	}
+	const text = (await response.text()).trim();
+	if (!text) {
+		throw new Error('crumb payload missing');
+	}
+	const setCookieHeader = response.headers.get('set-cookie');
+	if (setCookieHeader) {
+		cookieJar.apply(setCookieHeader);
+	}
+	return { crumb: text, cookie: cookieJar.header() };
+}
+
+async function ensureCrumb() {
+	const now = Date.now();
+	if (crumbCache && cookieCache && now - crumbFetchedAt < 5 * 60 * 1000) {
+		return { crumb: crumbCache, cookie: cookieCache };
+	}
+
+	let lastError = null;
+	for (const seedUrl of [
+		'https://finance.yahoo.com',
+		SUMMARY_HOST,
+		CHART_HOST,
+		'https://fc.yahoo.com',
+		null,
+	]) {
+		const jar = createCookieJar(cookieCache);
+		if (seedUrl) {
+			try {
+				const seedResp = await fetch(seedUrl, {
+					headers: {
+						'User-Agent': USER_AGENT,
+						'Accept-Language': 'en-US,en;q=0.9',
+					},
+					cf: { cacheTtl: 300, cacheEverything: true },
+				});
+				if (seedResp.status === 429) {
+					lastError = new Error(`seed throttle ${seedUrl}`);
+					continue;
+				}
+				jar.apply(seedResp.headers.get('set-cookie'));
+			} catch (seedError) {
+				lastError = seedError;
+				continue;
+			}
+		}
+
+		try {
+			const { crumb, cookie } = await fetchCrumb(jar);
+			crumbCache = crumb;
+			cookieCache = cookie;
+			crumbFetchedAt = now;
+			return { crumb, cookie };
+		} catch (error) {
+			lastError = error;
+		}
+	}
+
+	throw lastError ?? new Error('crumb resolution failed');
+}
+
 export default {
 	async fetch(request, env) {
 		try {
@@ -110,12 +261,8 @@ export default {
 
 			if (segments.length === 0) {
 				return jsonResponse(200, {
-					message: 'Usage: GET /history/{SYMBOL}?range=1y&interval=1d',
+					message: 'Usage: GET /history/{SYMBOL}?range=1y&interval=1d or GET /summary/{SYMBOL}',
 				});
-			}
-
-			if (segments[0] !== 'history') {
-				return jsonResponse(404, { error: 'Not found' });
 			}
 
 			const symbolSegments = segments.slice(1);
@@ -123,40 +270,111 @@ export default {
 				return jsonResponse(400, { error: 'Missing symbol in path.' });
 			}
 
-			const rawSymbol = symbolSegments.join('/');
-			const encodedSymbol = encodeURIComponent(rawSymbol);
+			const rawSymbol = decodeURIComponent(symbolSegments.join('/'));
+			const encodedSymbol = encodeURIComponent(rawSymbol).replace(/%3D/gi, '=');
 
-			const search = new URLSearchParams(url.search);
-			if (!search.has('interval')) search.set('interval', '1d');
-			if (!search.has('range')) search.set('range', '1y');
-
-			const upstreamUrl = `${DEFAULT_UPSTREAM}${CHART_ENDPOINT}${encodedSymbol}?${search.toString()}`;
-
-			const cfOptions = { cacheEverything: true };
 			const ttl = Number(env.CACHE_TTL);
 			const cacheTtl = Number.isFinite(ttl) && ttl > 0 ? ttl : 600;
-			cfOptions.cacheTtl = cacheTtl;
+			const cfOptions = { cacheEverything: true, cacheTtl };
 
-			const upstreamResponse = await fetch(upstreamUrl, {
-				headers: {
-					'User-Agent': USER_AGENT,
-					Accept: 'application/json,text/plain,*/*',
-				},
-				cf: cfOptions,
-			});
+			const resource = segments[0];
 
-			if (upstreamResponse.ok) {
-				try {
-					const parsed = await upstreamResponse.clone().json();
-					const candles = extractCandles(parsed);
-					if (candles.length) {
-						return jsonResponse(200, candles, { 'Cache-Control': `public, max-age=${cacheTtl}` });
+			if (resource === 'history') {
+				const search = new URLSearchParams(url.search);
+				if (!search.has('interval')) search.set('interval', '1d');
+				if (!search.has('range')) search.set('range', '1y');
+
+				const upstreamUrl = `${CHART_HOST}${CHART_ENDPOINT}${encodedSymbol}?${search.toString()}`;
+
+				const upstreamResponse = await fetch(upstreamUrl, {
+					headers: {
+						'User-Agent': USER_AGENT,
+						Accept: 'application/json,text/plain,*/*',
+					},
+					cf: cfOptions,
+				});
+
+				if (upstreamResponse.ok) {
+					try {
+						const parsed = await upstreamResponse.clone().json();
+						const candles = extractCandles(parsed);
+						if (candles.length) {
+							return jsonResponse(200, candles, { 'Cache-Control': `public, max-age=${cacheTtl}` });
+						}
+						return jsonResponse(
+							502,
+							{ error: 'Upstream payload empty or invalid.' },
+							{ 'Cache-Control': `public, max-age=${cacheTtl}` },
+						);
+					} catch (error) {
+						return jsonResponse(
+							502,
+							{ error: 'Failed to parse upstream payload.', detail: `${error}` },
+							{ 'Cache-Control': `public, max-age=${cacheTtl}` },
+						);
 					}
-					return jsonResponse(
-						502,
-						{ error: 'Upstream payload empty or invalid.' },
-						{ 'Cache-Control': `public, max-age=${cacheTtl}` },
-					);
+				}
+
+				const headers = new Headers(upstreamResponse.headers);
+				headers.set('Access-Control-Allow-Origin', '*');
+				headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+				headers.set('Access-Control-Allow-Headers', '*');
+				headers.set('Cache-Control', `public, max-age=${cacheTtl}`);
+				headers.delete('content-security-policy');
+				headers.delete('content-security-policy-report-only');
+
+				return new Response(upstreamResponse.body, {
+					status: upstreamResponse.status,
+					statusText: upstreamResponse.statusText,
+					headers,
+				});
+			}
+
+			if (resource === 'summary') {
+				const search = new URLSearchParams(url.search);
+				const modulesParam = search.get('modules');
+				const modules = modulesParam && modulesParam.trim() ? modulesParam.trim() : DEFAULT_SUMMARY_MODULES;
+
+				const { crumb, cookie } = await ensureCrumb();
+				const upstreamUrl = `${SUMMARY_HOST}${SUMMARY_ENDPOINT}${encodedSymbol}?modules=${encodeURIComponent(modules)}&crumb=${encodeURIComponent(crumb)}`;
+
+				const upstreamResponse = await fetch(upstreamUrl, {
+					headers: {
+						'User-Agent': USER_AGENT,
+						Accept: 'application/json,text/plain,*/*',
+						Cookie: cookie,
+					},
+					cf: cfOptions,
+				});
+
+				if (!upstreamResponse.ok) {
+					const headers = new Headers(upstreamResponse.headers);
+					headers.set('Access-Control-Allow-Origin', '*');
+					headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+					headers.set('Access-Control-Allow-Headers', '*');
+					headers.set('Cache-Control', `public, max-age=${cacheTtl}`);
+					headers.delete('content-security-policy');
+					headers.delete('content-security-policy-report-only');
+
+					return new Response(upstreamResponse.body, {
+						status: upstreamResponse.status,
+						statusText: upstreamResponse.statusText,
+						headers,
+					});
+				}
+
+				try {
+					const parsed = await upstreamResponse.json();
+					const result = parsed?.quoteSummary?.result?.[0];
+					if (!result) {
+						return jsonResponse(
+							404,
+							{ error: `Summary unavailable for ${rawSymbol}` },
+							{ 'Cache-Control': `public, max-age=${cacheTtl}` },
+						);
+					}
+					const summary = sanitizeSummary(rawSymbol, result);
+					return jsonResponse(200, summary, { 'Cache-Control': `public, max-age=${cacheTtl}` });
 				} catch (error) {
 					return jsonResponse(
 						502,
@@ -166,19 +384,7 @@ export default {
 				}
 			}
 
-			const headers = new Headers(upstreamResponse.headers);
-			headers.set('Access-Control-Allow-Origin', '*');
-			headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-			headers.set('Access-Control-Allow-Headers', '*');
-			headers.set('Cache-Control', `public, max-age=${cacheTtl}`);
-			headers.delete('content-security-policy');
-			headers.delete('content-security-policy-report-only');
-
-			return new Response(upstreamResponse.body, {
-				status: upstreamResponse.status,
-				statusText: upstreamResponse.statusText,
-				headers,
-			});
+			return jsonResponse(404, { error: 'Not found' });
 		} catch (error) {
 			return jsonResponse(502, {
 				error: 'Upstream request failed',

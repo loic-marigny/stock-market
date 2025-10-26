@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CandlestickSeries, createChart, type CandlestickData, type Time } from "lightweight-charts";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
@@ -26,12 +26,80 @@ const MARKET_ICONS: Record<string, string> = {
 
 const DEFAULT_MARKET_ICON = 'img/companies/categories/world.png';
 
+type CompanyProfile = {
+  symbol: string;
+  name?: string;
+  sector?: string;
+  longName?: string;
+  longBusinessSummary?: string;
+  industryDisp?: string;
+  website?: string;
+  irWebsite?: string;
+  beta?: number;
+  recommendationMean?: number;
+  auditRisk?: number;
+};
+
+const assetPath = (path: string) => {
+  if (/^https?:/i.test(path)) return path;
+  const base = ((import.meta as any).env?.BASE_URL as string | undefined) ?? "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const trimmed = path.replace(/^\/+/, "");
+  return `${normalizedBase}${trimmed}`;
+};
+
+const toNumeric = (value: unknown): number | undefined => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  if (value && typeof value === "object") {
+    const container = value as Record<string, unknown>;
+    if (typeof container.raw === "number" && Number.isFinite(container.raw)) return container.raw;
+    if (typeof container.fmt === "number" && Number.isFinite(container.fmt)) return container.fmt;
+    if (typeof container.fmt === "string") {
+      const parsed = Number(container.fmt.replace(/[^\d.-]/g, ""));
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return undefined;
+};
+
+const normalizeProfile = (raw: any): CompanyProfile => {
+  const sanitizeString = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : undefined;
+
+  const profile: CompanyProfile = {
+    symbol: sanitizeString(raw?.symbol) ?? "",
+    name: sanitizeString(raw?.name),
+    sector: sanitizeString(raw?.sector),
+    longName: sanitizeString(raw?.longName),
+    longBusinessSummary: sanitizeString(raw?.longBusinessSummary),
+    industryDisp: sanitizeString(raw?.industryDisp),
+    website: sanitizeString(raw?.website),
+    irWebsite: sanitizeString(raw?.irWebsite),
+  };
+
+  const beta = toNumeric(raw?.beta);
+  if (beta !== undefined) profile.beta = beta;
+
+  const recommendationMean = toNumeric(raw?.recommendationMean);
+  if (recommendationMean !== undefined) profile.recommendationMean = recommendationMean;
+
+  const auditRisk = toNumeric(raw?.auditRisk);
+  if (auditRisk !== undefined) profile.auditRisk = auditRisk;
+
+  return profile;
+};
+
 export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
   const [tf, setTf] = useState<TF>("6M");
   const [data, setData] = useState<OHLC[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [expandedMarkets, setExpandedMarkets] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [query, setQuery] = useState("");
@@ -42,6 +110,7 @@ export default function Explore() {
   type CandlestickSeriesApi = ReturnType<ChartApi["addSeries"]>;
   const chartRef = useRef<ChartApi | null>(null);
   const seriesRef = useRef<CandlestickSeriesApi | null>(null);
+  const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -136,6 +205,43 @@ export default function Explore() {
     [companies, symbol]
   );
 
+  useEffect(() => {
+    const company = selectedCompany;
+    if (!company?.profile) {
+      setProfile(null);
+      return;
+    }
+    const profileUrl = assetPath(company.profile);
+    const cached = profileCacheRef.current.get(profileUrl);
+    if (cached) {
+      setProfile(cached);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch(profileUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error(`profile fetch failed: ${response.status}`);
+        const raw = await response.json();
+        const normalized = normalizeProfile(raw);
+        const enriched: CompanyProfile = {
+          ...normalized,
+          symbol: company.symbol,
+          name: company.name ?? normalized.name,
+          sector: company.sector ?? normalized.sector,
+        };
+        profileCacheRef.current.set(profileUrl, enriched);
+        if (!cancelled) setProfile(enriched);
+      } catch (error) {
+        console.warn("[profile] load failed", error);
+        if (!cancelled) setProfile(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCompany]);
+
   const filtered = useMemo(() => {
     if (!data.length) return [];
     const last = new Date(data[data.length - 1].date);
@@ -210,19 +316,85 @@ export default function Explore() {
 
   const lastClose = filtered.at(-1)?.close ?? data.at(-1)?.close ?? 0;
 
+  const displayName = profile?.longName ?? selectedCompany?.name ?? symbol;
+  const subtitleParts: string[] = [symbol];
+  if (profile?.industryDisp) {
+    subtitleParts.push(profile.industryDisp);
+  } else if (selectedCompany?.sector) {
+    subtitleParts.push(selectedCompany.sector);
+  } else if (selectedCompany?.name) {
+    subtitleParts.push(selectedCompany.name);
+  }
+  const subtitle = subtitleParts.join(" · ");
+
+  const ensureProtocol = (url: string) =>
+    /^https?:/i.test(url) ? url : `https://${url}`;
+
+  const insightItems = useMemo(() => {
+    if (!profile) return [];
+    const items: Array<{ key: string; label: string; value: ReactNode }> = [];
+    if (profile.beta !== undefined) {
+      items.push({
+        key: "beta",
+        label: t("explore.metrics.beta"),
+        value: profile.beta.toFixed(2),
+      });
+    }
+    if (profile.recommendationMean !== undefined) {
+      items.push({
+        key: "recommendation",
+        label: t("explore.metrics.recommendationMean"),
+        value: profile.recommendationMean.toFixed(1),
+      });
+    }
+    if (profile.auditRisk !== undefined) {
+      items.push({
+        key: "audit",
+        label: t("explore.metrics.auditRisk"),
+        value: Math.round(profile.auditRisk).toString(),
+      });
+    }
+    if (profile.industryDisp) {
+      items.push({
+        key: "industry",
+        label: t("explore.metrics.industry"),
+        value: profile.industryDisp,
+      });
+    }
+    if (profile.website) {
+      const href = ensureProtocol(profile.website);
+      const label = profile.website.replace(/^https?:\/\//i, "");
+      items.push({
+        key: "website",
+        label: t("explore.metrics.website"),
+        value: (
+          <a href={href} target="_blank" rel="noreferrer">
+            {label}
+          </a>
+        ),
+      });
+    }
+    if (profile.irWebsite) {
+      const href = ensureProtocol(profile.irWebsite);
+      const label = profile.irWebsite.replace(/^https?:\/\//i, "");
+      items.push({
+        key: "irWebsite",
+        label: t("explore.metrics.irWebsite"),
+        value: (
+          <a href={href} target="_blank" rel="noreferrer">
+            {label}
+          </a>
+        ),
+      });
+    }
+    return items;
+  }, [profile, t]);
+
   const toggleMarket = (code: string) => {
     setExpandedMarkets((prev) => ({ ...prev, [code]: !prev[code] }));
   };
 
-  const asset = (path: string) => {
-    if (/^https?:/i.test(path)) return path;
-    const base = ((import.meta as any).env?.BASE_URL as string | undefined) ?? "/";
-    const normalizedBase = base.endsWith("/") ? base : `${base}/`;
-    const trimmed = path.replace(/^\/+/, "");
-    return `${normalizedBase}${trimmed}`;
-  };
-
-  const placeholderLogo = asset("img/logo-placeholder.svg");
+  const placeholderLogo = assetPath("img/logo-placeholder.svg");
 
   return (
     <main className="explore-page">
@@ -256,7 +428,7 @@ export default function Explore() {
                 ) : (
                   <ul className="explore-symbols search-results">
                     {searchResults.map((company) => {
-                      const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
+                      const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
                       const isActive = company.symbol === symbol;
                       return (
                         <li key={company.symbol}>
@@ -280,7 +452,7 @@ export default function Explore() {
                 grouped.map((group) => {
                   const expanded = !!expandedMarkets[group.code];
                   const panelId = `market-${group.code}`;
-                  const iconSrc = asset(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
+                  const iconSrc = assetPath(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
                   if (!group.companies.length) return null;
                   return (
                     <div key={group.code} className="explore-group">
@@ -301,7 +473,7 @@ export default function Explore() {
                       {expanded && (
                         <ul className="explore-symbols" id={panelId}>
                           {group.companies.map((company) => {
-                            const logoPath = company.logo ? asset(company.logo) : placeholderLogo;
+                            const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
                             const isActive = company.symbol === symbol;
                             return (
                               <li key={company.symbol}>
@@ -341,8 +513,8 @@ export default function Explore() {
           <div className="explore-main-content">
             <div className="explore-toolbar">
               <div className="explore-selected">
-                <h2>{selectedCompany?.symbol ?? symbol}</h2>
-                <p>{selectedCompany?.name ?? symbol}</p>
+                <h2>{displayName}</h2>
+                <p>{subtitle}</p>
               </div>
               <div className="tf">
                 {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
@@ -364,6 +536,25 @@ export default function Explore() {
             <div className="chart-card">
               <div ref={chartContainerRef} className="chart-container" />
             </div>
+            {insightItems.length > 0 && (
+              <section className="explore-insights">
+                <h3>{t("explore.metrics.title")}</h3>
+                <div className="explore-insights-grid">
+                  {insightItems.map((item) => (
+                    <div key={item.key} className="explore-insight-card">
+                      <span className="label">{item.label}</span>
+                      <span className="value">{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+            {profile?.longBusinessSummary && (
+              <section className="explore-summary-card">
+                <h3>{t("explore.aboutTitle")}</h3>
+                <p>{profile.longBusinessSummary}</p>
+              </section>
+            )}
             <p className="hint">{t("explore.sourceHint")}</p>
           </div>
         </div>
