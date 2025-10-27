@@ -74,10 +74,29 @@ const assetPath = (path: string) => {
   return `${normalizedBase}${trimmed}`;
 };
 
-const toBusinessDay = (value: string): BusinessDay => {
-  const [year, month, day] = value.split("-").map((x) => Number.parseInt(x, 10));
-  return { year, month, day } as BusinessDay;
+const toBusinessDay = (value: string | Date): BusinessDay => {
+  if (typeof value === "string") {
+    const [year, month, day] = value.split("-").map((x) => Number.parseInt(x, 10));
+    return { year, month, day } as BusinessDay;
+  }
+  return {
+    year: value.getFullYear(),
+    month: value.getMonth() + 1,
+    day: value.getDate(),
+  } as BusinessDay;
 };
+
+const timeToDate = (value: Time): Date => {
+  if (typeof value === "number") {
+    return new Date(value * 1000);
+  }
+  if (typeof value === "string") {
+    return new Date(value);
+  }
+  return new Date(value.year, value.month - 1, value.day);
+};
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 const toNumeric = (value: unknown): number | undefined => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -230,6 +249,7 @@ export default function Explore() {
   const chartRef = useRef<ChartApi | null>(null);
   const seriesRef = useRef<CandlestickSeriesApi | null>(null);
   const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
+  const suppressRangeUpdateRef = useRef<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -361,17 +381,61 @@ export default function Explore() {
     };
   }, [selectedCompany]);
 
+  const dateBounds = useMemo(() => {
+    if (!data.length) return null;
+    const firstDate = new Date(data[0].date);
+    firstDate.setHours(0, 0, 0, 0);
+    const min = shiftDays(firstDate, -30);
+    min.setHours(0, 0, 0, 0);
+    const max = new Date();
+    max.setHours(0, 0, 0, 0);
+    return { min, max };
+  }, [data]);
+
+  const setVisibleRangeClamped = useCallback(
+    (fromDate: Date, toDate: Date) => {
+      if (!chartRef.current) return;
+      const timeScale = chartRef.current.timeScale();
+      let rangeStart = new Date(fromDate);
+      let rangeEnd = new Date(toDate);
+      if (rangeStart.getTime() > rangeEnd.getTime()) {
+        const temp = rangeStart;
+        rangeStart = rangeEnd;
+        rangeEnd = temp;
+      }
+      if (dateBounds) {
+        const clamped = clampDateRange(rangeStart, rangeEnd, dateBounds);
+        rangeStart = clamped.from;
+        rangeEnd = clamped.to;
+      }
+      suppressRangeUpdateRef.current = true;
+      timeScale.setVisibleRange({
+        from: toBusinessDay(rangeStart),
+        to: toBusinessDay(rangeEnd),
+      });
+      const release = () => {
+        suppressRangeUpdateRef.current = false;
+      };
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(release);
+      } else {
+        setTimeout(release, 0);
+      }
+    },
+    [dateBounds]
+  );
+
   const applyTimeframeRange = useCallback(
     (timeframe: TF) => {
-      if (!chartRef.current || data.length === 0) return;
+      if (!data.length) return;
       if (data.length < 2) {
-        chartRef.current.timeScale().fitContent();
+        chartRef.current?.timeScale().fitContent();
         return;
       }
       const lastEntry = data[data.length - 1];
       const lastDate = new Date(lastEntry.date);
       let fromDate = new Date(data[0].date);
-      const yearStart = new Date(lastDate.getFullYear(), 0, 1);
+      const currentYearStart = new Date(new Date().getFullYear(), 0, 1);
 
       if (timeframe === "1M") {
         fromDate = shiftDays(lastDate, -30);
@@ -380,19 +444,19 @@ export default function Explore() {
       } else if (timeframe === "1Y") {
         fromDate = shiftDays(lastDate, -365);
       } else if (timeframe === "YTD") {
-        fromDate = yearStart;
+        fromDate = currentYearStart;
       } else if (timeframe === "MAX") {
-        chartRef.current.timeScale().fitContent();
+        if (dateBounds) {
+          setVisibleRangeClamped(dateBounds.min, dateBounds.max);
+        } else {
+          setVisibleRangeClamped(new Date(data[0].date), lastDate);
+        }
         return;
       }
 
-      const fromEntry = data.find((d) => new Date(d.date) >= fromDate) ?? data[0];
-
-      chartRef.current
-        .timeScale()
-        .setVisibleRange({ from: toBusinessDay(fromEntry.date), to: toBusinessDay(lastEntry.date) });
+      setVisibleRangeClamped(fromDate, lastDate);
     },
-    [data]
+    [data, dateBounds, setVisibleRangeClamped]
   );
 
   useEffect(() => {
@@ -450,6 +514,27 @@ export default function Explore() {
   useEffect(() => {
     applyTimeframeRange(tf);
   }, [tf, applyTimeframeRange]);
+
+  useEffect(() => {
+    if (!chartRef.current || !dateBounds) return;
+    const timeScale = chartRef.current.timeScale();
+    const handler = (range: ReturnType<typeof timeScale.getVisibleRange>) => {
+      if (!range || suppressRangeUpdateRef.current) return;
+      const fromDate = timeToDate(range.from);
+      const toDate = timeToDate(range.to);
+      const clamped = clampDateRange(fromDate, toDate, dateBounds);
+      if (
+        clamped.from.getTime() !== fromDate.getTime() ||
+        clamped.to.getTime() !== toDate.getTime()
+      ) {
+        setVisibleRangeClamped(clamped.from, clamped.to);
+      }
+    };
+    timeScale.subscribeVisibleTimeRangeChange(handler);
+    return () => {
+      timeScale.unsubscribeVisibleTimeRangeChange(handler);
+    };
+  }, [dateBounds, setVisibleRangeClamped]);
 
   const lastClose = data.at(-1)?.close ?? 0;
   const lastCloseLabel = data.length ? lastClose.toFixed(2) : "--";
@@ -867,6 +952,41 @@ function shiftDays(d: Date, delta: number) {
   const x = new Date(d);
   x.setDate(x.getDate() + delta);
   return x;
+}
+
+function clampDateRange(
+  from: Date,
+  to: Date,
+  bounds: { min: Date; max: Date }
+): { from: Date; to: Date } {
+  const minTs = bounds.min.getTime();
+  const maxTs = bounds.max.getTime();
+  let start = from.getTime();
+  let end = to.getTime();
+  if (start > end) {
+    const temp = start;
+    start = end;
+    end = temp;
+  }
+  let span = Math.max(ONE_DAY_MS, end - start);
+  const totalSpan = Math.max(ONE_DAY_MS, maxTs - minTs);
+  if (span > totalSpan) span = totalSpan;
+
+  if (start < minTs) {
+    start = minTs;
+    end = start + span;
+  }
+  if (end > maxTs) {
+    end = maxTs;
+    start = end - span;
+  }
+  if (start < minTs) start = minTs;
+  if (end > maxTs) end = maxTs;
+  if (start > end) {
+    start = minTs;
+    end = maxTs;
+  }
+  return { from: new Date(start), to: new Date(end) };
 }
 
 function groupByMarket(list: Company[]): Record<string, Company[]> {
