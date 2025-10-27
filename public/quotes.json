@@ -1,101 +1,101 @@
 {
   "600519.SS": {
-    "last": 1441.49,
-    "as_of": "2025-10-27T03:14:36Z",
+    "last": 1444.68,
+    "as_of": "2025-10-27T05:15:33Z",
     "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 57.87,
-    "as_of": "2025-10-27T03:16:04Z",
+    "last": 57.96,
+    "as_of": "2025-10-27T05:17:15Z",
     "interval": "akshare_spot"
   },
   "601398.SS": {
-    "last": 7.92,
+    "last": 7.91,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.13,
+    "last": 8.14,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.61,
+    "last": 5.62,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.16,
+    "last": 9.18,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.6,
+    "last": 5.61,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 41.86,
+    "last": 41.73,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.55,
+    "last": 20.58,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.33,
+    "last": 28.37,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 70.0,
+    "last": 70.04,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.96,
+    "last": 19.05,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.67,
+    "last": 16.7,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.99,
+    "last": 30.17,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.75,
+    "last": 23.8,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 13.0,
+    "last": 12.98,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 37.17,
+    "last": 37.22,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.47,
+    "last": 9.46,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.31,
+    "last": 7.33,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 66.79,
+    "last": 66.98,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -105,17 +105,17 @@
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 62.53,
+    "last": 62.7,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 22.9,
+    "last": 22.94,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.42,
+    "last": 27.41,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -125,22 +125,22 @@
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 6.04,
+    "last": 6.02,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.89,
+    "last": 6.91,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 44.73,
+    "last": 45.19,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 132.84,
+    "last": 133.97,
     "as_of": "2025-10-27T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-27T03:25:57Z",
+    "generated_at": "2025-10-27T05:28:27Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
