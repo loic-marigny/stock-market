@@ -26,6 +26,25 @@ const MARKET_ICONS: Record<string, string> = {
 
 const DEFAULT_MARKET_ICON = 'img/companies/categories/world.png';
 
+type GaugeVariant = "circular" | "linear";
+
+type GaugeConfig = {
+  value: number;
+  min: number;
+  max: number;
+  format: (value: number) => string;
+  variant?: GaugeVariant;
+  target?: number;
+};
+
+type InsightItem = {
+  key: string;
+  label: string;
+  description?: string;
+  content?: ReactNode;
+  gauge?: GaugeConfig;
+};
+
 type CompanyProfile = {
   symbol: string;
   name?: string;
@@ -325,35 +344,70 @@ export default function Explore() {
   } else if (selectedCompany?.name) {
     subtitleParts.push(selectedCompany.name);
   }
-  const subtitle = subtitleParts.join(" · ");
+  const subtitle = subtitleParts.join(" - ");
 
   const ensureProtocol = (url: string) =>
     /^https?:/i.test(url) ? url : `https://${url}`;
 
   const insightItems = useMemo(() => {
     if (!profile) return [];
-    const items: Array<{ key: string; label: string; value: ReactNode }> = [];
+    const items: InsightItem[] = [];
+
     if (profile.beta !== undefined) {
+      const betaValue = profile.beta;
+      const betaMin = Math.min(-1, Math.floor(betaValue - 1));
+      const betaMax = Math.max(3, Math.ceil(betaValue + 1));
+
       items.push({
         key: "beta",
         label: t("explore.metrics.beta"),
-        value: profile.beta.toFixed(2),
+        description: t("explore.metrics.beta.help"),
+        gauge: {
+          value: betaValue,
+          min: betaMin,
+          max: betaMax,
+          target: 1,
+          variant: "linear",
+          format: (val) => val.toFixed(2),
+        },
       });
     }
+
     if (profile.recommendationMean !== undefined) {
       items.push({
         key: "recommendation",
         label: t("explore.metrics.recommendationMean"),
-        value: profile.recommendationMean.toFixed(1),
+        description: t("explore.metrics.recommendationMean.help"),
+        gauge: {
+          value: profile.recommendationMean,
+          min: 1,
+          max: 5,
+          format: (val) => val.toFixed(1),
+        },
       });
     }
+
     if (profile.auditRisk !== undefined) {
       items.push({
         key: "audit",
         label: t("explore.metrics.auditRisk"),
-        value: Math.round(profile.auditRisk).toString(),
+        description: t("explore.metrics.auditRisk.help"),
+        gauge: {
+          value: profile.auditRisk,
+          min: 0,
+          max: 10,
+          format: (val) => val.toFixed(0),
+        },
       });
     }
+
+    return items;
+  }, [profile, t]);
+
+  const headerMeta = useMemo(() => {
+    if (!profile) return [];
+    const items: { key: string; label: string; value: ReactNode }[] = [];
+
     if (profile.industryDisp) {
       items.push({
         key: "industry",
@@ -361,6 +415,7 @@ export default function Explore() {
         value: profile.industryDisp,
       });
     }
+
     if (profile.website) {
       const href = ensureProtocol(profile.website);
       const label = profile.website.replace(/^https?:\/\//i, "");
@@ -374,6 +429,7 @@ export default function Explore() {
         ),
       });
     }
+
     if (profile.irWebsite) {
       const href = ensureProtocol(profile.irWebsite);
       const label = profile.irWebsite.replace(/^https?:\/\//i, "");
@@ -387,6 +443,7 @@ export default function Explore() {
         ),
       });
     }
+
     return items;
   }, [profile, t]);
 
@@ -395,6 +452,62 @@ export default function Explore() {
   };
 
   const placeholderLogo = assetPath("img/logo-placeholder.svg");
+
+  const headerLogo = selectedCompany?.logo ? assetPath(selectedCompany.logo) : placeholderLogo;
+
+  const formatTick = (tick: number) =>
+    Math.abs(tick) >= 10 || Number.isInteger(tick) ? tick.toFixed(0) : tick.toFixed(1);
+
+  const Gauge = ({ label, value, min, max, format, variant = "circular", target }: { label: string } & GaugeConfig) => {
+    const span = Math.max(0.0001, max - min);
+    const clamped = Math.min(max, Math.max(min, value));
+    const pct = (clamped - min) / span;
+
+    if (variant === "linear") {
+      const boundedPct = Math.min(100, Math.max(0, pct * 100));
+      const targetPct =
+        target !== undefined ? Math.min(100, Math.max(0, ((target - min) / span) * 100)) : undefined;
+      const isAboveTarget = target !== undefined ? clamped >= target : pct >= 0.5;
+      const color = isAboveTarget ? "var(--primary-500)" : "var(--primary-700)";
+      return (
+        <div className="linear-gauge" role="img" aria-label={`${label}: ${format(clamped)}`}>
+          <div className="linear-gauge-value">{format(clamped)}</div>
+          <div className="linear-gauge-track">
+            <div
+              className="linear-gauge-fill"
+              style={{ width: `${boundedPct}%`, background: `linear-gradient(90deg, ${color}, rgba(147,40,192,0.45))` }}
+            />
+            <span className="linear-gauge-marker" style={{ left: `${boundedPct}%` }} />
+            {targetPct !== undefined && <span className="linear-gauge-target" style={{ left: `${targetPct}%` }} />}
+          </div>
+          <div className={`linear-gauge-scale${target !== undefined ? " with-target" : ""}`}>
+            <span>{formatTick(min)}</span>
+            {target !== undefined && <span>{formatTick(target)}</span>}
+            <span>{formatTick(max)}</span>
+          </div>
+        </div>
+      );
+    }
+
+    const angle = pct * 360;
+    const color = `hsl(${Math.max(0, 120 - pct * 120)}, 70%, 50%)`;
+    return (
+      <div className="gauge gauge--circular" role="img" aria-label={`${label}: ${format(clamped)}`}>
+        <div
+          className="gauge-dial"
+          style={{
+            background: `conic-gradient(${color} ${angle}deg, rgba(148,163,184,0.15) ${angle}deg)`,
+          }}
+        >
+          <div className="gauge-cap">
+            <span>{format(clamped)}</span>
+          </div>
+          <span className="gauge-marker gauge-marker--min">{formatTick(min)}</span>
+          <span className="gauge-marker gauge-marker--max">{formatTick(max)}</span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <main className="explore-page">
@@ -511,11 +624,30 @@ export default function Explore() {
             <span className="explore-toggle-icon" aria-hidden="true" />
           </button>
           <div className="explore-main-content">
-            <div className="explore-toolbar">
-              <div className="explore-selected">
-                <h2>{displayName}</h2>
-                <p>{subtitle}</p>
+            <div className="explore-header">
+              <div className="company-identity">
+                <img src={headerLogo} alt={`${selectedCompany?.name ?? symbol} logo`} className="company-logo" />
+                <div>
+                  <h1>{displayName}</h1>
+                  <p>{subtitle}</p>
+                </div>
               </div>
+              {profile?.longBusinessSummary && (
+                <p className="company-summary">{profile.longBusinessSummary}</p>
+              )}
+              {headerMeta.length > 0 && (
+                <dl className="company-meta">
+                  {headerMeta.map((item) => (
+                    <div key={item.key} className="company-meta-item">
+                      <dt>{item.label}</dt>
+                      <dd>{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
+
+            <div className="explore-toolbar">
               <div className="tf">
                 {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
                   <button
@@ -540,19 +672,41 @@ export default function Explore() {
               <section className="explore-insights">
                 <h3>{t("explore.metrics.title")}</h3>
                 <div className="explore-insights-grid">
-                  {insightItems.map((item) => (
-                    <div key={item.key} className="explore-insight-card">
-                      <span className="label">{item.label}</span>
-                      <span className="value">{item.value}</span>
-                    </div>
-                  ))}
+                  {insightItems.map((item) => {
+                    const tooltipId = `insight-${item.key}-tooltip`;
+                    const tooltipLabel = item.description ? `${item.label}: ${item.description}` : item.label;
+                    return (
+                      <div key={item.key} className="explore-insight-card">
+                        <div className="insight-header">
+                          <span className="label">{item.label}</span>
+                          {item.description && (
+                            <span className="info-tooltip">
+                              <button
+                                type="button"
+                                className="info-btn"
+                                title={item.description}
+                                aria-label={tooltipLabel}
+                                aria-describedby={item.description ? tooltipId : undefined}
+                              >
+                                i
+                              </button>
+                              <span id={tooltipId} role="tooltip" className="info-tooltip-content">
+                                {item.description}
+                              </span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="insight-body">
+                          {item.gauge ? (
+                            <Gauge label={item.label} {...item.gauge} />
+                          ) : (
+                            <div className="insight-value">{item.content ?? "--"}</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </section>
-            )}
-            {profile?.longBusinessSummary && (
-              <section className="explore-summary-card">
-                <h3>{t("explore.aboutTitle")}</h3>
-                <p>{profile.longBusinessSummary}</p>
               </section>
             )}
             <p className="hint">{t("explore.sourceHint")}</p>
@@ -586,4 +740,7 @@ function groupByMarket(list: Company[]): Record<string, Company[]> {
   }
   return ordered;
 }
+
+
+
 

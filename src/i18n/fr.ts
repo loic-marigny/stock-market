@@ -73,14 +73,19 @@ const fr: Translations = {
   'explore.noResults': 'Aucun r\u00E9sultat',
   'explore.metrics.title': 'Indicateurs cl\u00E9s',
   'explore.metrics.beta': 'B\u00EAta',
+  'explore.metrics.beta.help': 'Mesure de la volatilit\u00E9 du titre par rapport au march\u00E9 (1 = volatilit\u00E9 identique).',
   'explore.metrics.auditRisk': 'Risque d\'audit',
+  'explore.metrics.auditRisk.help': 'Score de risque d\'audit (0 = faible, 10 = \u00E9lev\u00E9).',
   'explore.metrics.recommendationMean': 'Moyenne des recommandations',
+  'explore.metrics.recommendationMean.help': 'Moyenne des recommandations des analystes (1 = Achat fort, 5 = Vente).',
   'explore.metrics.industry': 'Industrie',
+  'explore.metrics.industry.help': 'Classification sectorielle communiqu\u00E9e.',
   'explore.metrics.website': 'Site web',
+  'explore.metrics.website.help': 'Site officiel de l\'entreprise.',
   'explore.metrics.irWebsite': 'Relations investisseurs',
+  'explore.metrics.irWebsite.help': 'Portail des relations investisseurs.',
   'explore.aboutTitle': 'Pr\u00E9sentation de l\'entreprise',
   'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).'
 };
 
 export default fr;
-
