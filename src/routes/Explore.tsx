@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from "react";
-import { CandlestickSeries, createChart, type CandlestickData, type Time } from "lightweight-charts";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from "react";
+import { CandlestickSeries, createChart, type BusinessDay, type CandlestickData, type Time } from "lightweight-charts";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
@@ -72,6 +72,11 @@ const assetPath = (path: string) => {
   const normalizedBase = base.endsWith("/") ? base : `${base}/`;
   const trimmed = path.replace(/^\/+/, "");
   return `${normalizedBase}${trimmed}`;
+};
+
+const toBusinessDay = (value: string): BusinessDay => {
+  const [year, month, day] = value.split("-").map((x) => Number.parseInt(x, 10));
+  return { year, month, day } as BusinessDay;
 };
 
 const toNumeric = (value: unknown): number | undefined => {
@@ -356,24 +361,39 @@ export default function Explore() {
     };
   }, [selectedCompany]);
 
-  const filtered = useMemo(() => {
-    if (!data.length) return [];
-    const last = new Date(data[data.length - 1].date);
-    let from = new Date(data[0].date);
-    const yearStart = new Date(new Date().getFullYear(), 0, 1);
+  const applyTimeframeRange = useCallback(
+    (timeframe: TF) => {
+      if (!chartRef.current || data.length === 0) return;
+      if (data.length < 2) {
+        chartRef.current.timeScale().fitContent();
+        return;
+      }
+      const lastEntry = data[data.length - 1];
+      const lastDate = new Date(lastEntry.date);
+      let fromDate = new Date(data[0].date);
+      const yearStart = new Date(lastDate.getFullYear(), 0, 1);
 
-    if (tf === "1M") {
-      from = shiftDays(last, -30);
-    } else if (tf === "6M") {
-      from = shiftDays(last, -182);
-    } else if (tf === "1Y") {
-      from = shiftDays(last, -365);
-    } else if (tf === "YTD") {
-      from = yearStart;
-    }
+      if (timeframe === "1M") {
+        fromDate = shiftDays(lastDate, -30);
+      } else if (timeframe === "6M") {
+        fromDate = shiftDays(lastDate, -182);
+      } else if (timeframe === "1Y") {
+        fromDate = shiftDays(lastDate, -365);
+      } else if (timeframe === "YTD") {
+        fromDate = yearStart;
+      } else if (timeframe === "MAX") {
+        chartRef.current.timeScale().fitContent();
+        return;
+      }
 
-    return data.filter((d) => new Date(d.date) >= from);
-  }, [data, tf]);
+      const fromEntry = data.find((d) => new Date(d.date) >= fromDate) ?? data[0];
+
+      chartRef.current
+        .timeScale()
+        .setVisibleRange({ from: toBusinessDay(fromEntry.date), to: toBusinessDay(lastEntry.date) });
+    },
+    [data]
+  );
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
@@ -403,7 +423,7 @@ export default function Explore() {
 
     const resizeObserver = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
-      chart.applyOptions({ width, height });
+      chart.resize(width, height);
     });
     resizeObserver.observe(element);
 
@@ -417,7 +437,7 @@ export default function Explore() {
 
   useEffect(() => {
     if (!seriesRef.current) return;
-    const formatted: CandlestickData[] = filtered.map((d) => ({
+    const formatted: CandlestickData[] = data.map((d) => ({
       time: d.date as Time,
       open: d.open,
       high: d.high,
@@ -425,10 +445,14 @@ export default function Explore() {
       close: d.close,
     }));
     seriesRef.current.setData(formatted);
-    chartRef.current?.timeScale().fitContent();
-  }, [filtered]);
+  }, [data]);
 
-  const lastClose = filtered.at(-1)?.close ?? data.at(-1)?.close ?? 0;
+  useEffect(() => {
+    applyTimeframeRange(tf);
+  }, [tf, applyTimeframeRange]);
+
+  const lastClose = data.at(-1)?.close ?? 0;
+  const lastCloseLabel = data.length ? lastClose.toFixed(2) : "--";
 
   const displayName = profile?.longName ?? selectedCompany?.name ?? symbol;
   const subtitleParts: string[] = [symbol];
@@ -770,25 +794,25 @@ export default function Explore() {
               )}
             </div>
 
-            <div className="explore-toolbar">
-              <div className="tf">
-                {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
-                  <button
-                    key={x}
-                    type="button"
-                    className={`pill${tf === x ? " active" : ""}`}
-                    onClick={() => setTf(x as TF)}
-                  >
-                    {x}
-                  </button>
-                ))}
-              </div>
-              <div className="price">
-                {t("explore.lastLabel")} <strong>{lastClose.toFixed(2)}</strong>
-              </div>
-            </div>
-
             <div className="chart-card">
+              <div className="chart-overlay">
+                <div className="chart-last">
+                  {t("explore.lastLabel")} <strong>{lastCloseLabel}</strong>
+                </div>
+                <div className="timeframe-group" role="group" aria-label={t("explore.timeframe.label")}>
+                  {["1M", "6M", "YTD", "1Y", "MAX"].map((x) => (
+                    <button
+                      key={x}
+                      type="button"
+                      className={tf === x ? "timeframe-btn active" : "timeframe-btn"}
+                      onClick={() => setTf(x as TF)}
+                      aria-pressed={tf === x}
+                    >
+                      {x}
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div ref={chartContainerRef} className="chart-container" />
             </div>
             {insightItems.length > 0 && (
