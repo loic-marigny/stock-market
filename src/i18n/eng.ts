@@ -71,11 +71,17 @@ const en = {
   'explore.noResults': 'No results',
   'explore.metrics.title': 'Key indicators',
   'explore.metrics.beta': 'Beta',
+  'explore.metrics.beta.help': 'Volatility relative to the market (1 = same volatility).',
   'explore.metrics.auditRisk': 'Audit risk',
+  'explore.metrics.auditRisk.help': 'Audit risk score (0 = low, 10 = high).',
   'explore.metrics.recommendationMean': 'Recommendation mean',
+  'explore.metrics.recommendationMean.help': 'Average analyst recommendation (1 = Strong buy, 5 = Sell).',
   'explore.metrics.industry': 'Industry',
+  'explore.metrics.industry.help': 'Reported industry classification.',
   'explore.metrics.website': 'Website',
+  'explore.metrics.website.help': 'Official corporate website.',
   'explore.metrics.irWebsite': 'Investor relations',
+  'explore.metrics.irWebsite.help': 'Investor relations portal.',
   'explore.aboutTitle': 'Company overview',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
 } as const;
@@ -84,3 +90,11 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
+
+
+
+
+
+
+
+
