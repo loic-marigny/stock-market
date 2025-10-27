@@ -177,11 +177,10 @@ input:focus{ border-color: var(--primary-700); box-shadow: 0 0 0 3px rgba(147,40
   justify-content:space-between;
   flex-wrap:wrap;
   gap:12px;
-  pointer-events:none;
-  z-index:2;
+  pointer-events:auto;
+  z-index:3;
 }
 .chart-last{
-  pointer-events:auto;
   font-size:0.85rem;
   font-weight:600;
   color:var(--text);
