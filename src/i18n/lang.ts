@@ -82,6 +82,7 @@
   'explore.metrics.website.help': 'Official corporate website.',
   'explore.metrics.irWebsite': 'Investor relations',
   'explore.metrics.irWebsite.help': 'Investor relations portal.',
+  'explore.timeframe.label': 'Time range',
   'explore.aboutTitle': 'Company overview',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
 } as const;

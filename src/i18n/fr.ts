@@ -84,6 +84,7 @@ const fr: Translations = {
   'explore.metrics.website.help': 'Site officiel de l\'entreprise.',
   'explore.metrics.irWebsite': 'Relations investisseurs',
   'explore.metrics.irWebsite.help': 'Portail des relations investisseurs.',
+  'explore.timeframe.label': 'P\u00E9riode affich\u00E9e',
   'explore.aboutTitle': 'Pr\u00E9sentation de l\'entreprise',
   'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).'
 };
