@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from "react";
 import { CandlestickSeries, createChart, type CandlestickData, type Time } from "lightweight-charts";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
@@ -59,6 +59,13 @@ type CompanyProfile = {
   auditRisk?: number;
 };
 
+const DEFAULT_LOGO_STYLE: CSSProperties = {
+  padding: 12,
+  background: "linear-gradient(135deg, rgba(244,247,254,0.95), rgba(226,232,240,0.7))",
+  border: "1px solid rgba(15,23,42,0.12)",
+  boxShadow: "0 4px 14px rgba(15,23,42,0.16)",
+};
+
 const assetPath = (path: string) => {
   if (/^https?:/i.test(path)) return path;
   const base = ((import.meta as any).env?.BASE_URL as string | undefined) ?? "/";
@@ -110,6 +117,94 @@ const normalizeProfile = (raw: any): CompanyProfile => {
   if (auditRisk !== undefined) profile.auditRisk = auditRisk;
 
   return profile;
+};
+
+const analyzeLogoAppearance = async (src: string): Promise<CSSProperties> => {
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.decoding = "async";
+  const size = 64;
+
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("logo-load-failed"));
+    image.src = src;
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) {
+    return DEFAULT_LOGO_STYLE;
+  }
+  ctx.clearRect(0, 0, size, size);
+  ctx.drawImage(image, 0, 0, size, size);
+
+  let imageData: ImageData;
+  try {
+    imageData = ctx.getImageData(0, 0, size, size);
+  } catch {
+    return DEFAULT_LOGO_STYLE;
+  }
+  const data = imageData.data;
+  let brightnessSum = 0;
+  let pixelCount = 0;
+  let edgePixels = 0;
+  let opaqueEdgePixels = 0;
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const idx = (y * size + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      const a = data[idx + 3];
+      if (a < 15) continue;
+      pixelCount += 1;
+      brightnessSum += 0.299 * r + 0.587 * g + 0.114 * b;
+      const isEdge = x < 2 || x >= size - 2 || y < 2 || y >= size - 2;
+      if (isEdge) {
+        edgePixels += 1;
+        if (a > 230) opaqueEdgePixels += 1;
+      }
+    }
+  }
+
+  const hasOpaqueFrame = edgePixels > 0 && opaqueEdgePixels / edgePixels > 0.85;
+  if (hasOpaqueFrame) {
+    return {
+      padding: 0,
+      background: "transparent",
+      border: "0",
+      boxShadow: "none",
+      objectFit: "cover",
+    };
+  }
+
+  const avgBrightness = pixelCount > 0 ? brightnessSum / pixelCount : 200;
+  if (avgBrightness < 140) {
+    return {
+      padding: 12,
+      background: "linear-gradient(135deg, rgba(248,250,252,0.96), rgba(226,232,240,0.72))",
+      border: "1px solid rgba(15,23,42,0.18)",
+      boxShadow: "0 4px 16px rgba(15,23,42,0.18)",
+    };
+  }
+  if (avgBrightness > 200) {
+    return {
+      padding: 12,
+      background: "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.75))",
+      border: "1px solid rgba(15,23,42,0.32)",
+      boxShadow: "0 4px 18px rgba(15,23,42,0.3)",
+    };
+  }
+  return {
+    padding: 12,
+    background: "linear-gradient(135deg, rgba(240,244,255,0.95), rgba(226,232,240,0.75))",
+    border: "1px solid rgba(15,23,42,0.14)",
+    boxShadow: "0 4px 16px rgba(15,23,42,0.2)",
+  };
 };
 
 export default function Explore() {
@@ -454,6 +549,29 @@ export default function Explore() {
   const placeholderLogo = assetPath("img/logo-placeholder.svg");
 
   const headerLogo = selectedCompany?.logo ? assetPath(selectedCompany.logo) : placeholderLogo;
+  const [logoStyle, setLogoStyle] = useState<CSSProperties>(DEFAULT_LOGO_STYLE);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!selectedCompany?.logo) {
+      setLogoStyle(DEFAULT_LOGO_STYLE);
+      return () => {
+        cancelled = true;
+      };
+    }
+    setLogoStyle(DEFAULT_LOGO_STYLE);
+    analyzeLogoAppearance(headerLogo)
+      .then((style) => {
+        if (!cancelled) setLogoStyle(style);
+      })
+      .catch(() => {
+        if (!cancelled) setLogoStyle(DEFAULT_LOGO_STYLE);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [headerLogo, selectedCompany?.logo]);
 
   const formatTick = (tick: number) =>
     Math.abs(tick) >= 10 || Number.isInteger(tick) ? tick.toFixed(0) : tick.toFixed(1);
@@ -626,7 +744,12 @@ export default function Explore() {
           <div className="explore-main-content">
             <div className="explore-header">
               <div className="company-identity">
-                <img src={headerLogo} alt={`${selectedCompany?.name ?? symbol} logo`} className="company-logo" />
+                <img
+                  src={headerLogo}
+                  alt={`${selectedCompany?.name ?? symbol} logo`}
+                  className="company-logo"
+                  style={logoStyle}
+                />
                 <div>
                   <h1>{displayName}</h1>
                   <p>{subtitle}</p>
