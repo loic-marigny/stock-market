@@ -1,11 +1,11 @@
 {
   "600519.SS": {
-    "last": 1448.51,
-    "as_of": "2025-10-28T00:00:00Z",
-    "interval": "akshare_daily"
+    "last": 1448.96,
+    "as_of": "2025-10-28T05:51:18Z",
+    "interval": "akshare_spot"
   },
   "601318.SS": {
-    "last": 57.8,
+    "last": 57.87,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -20,127 +20,127 @@
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.61,
+    "last": 5.6,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.15,
+    "last": 9.12,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.57,
+    "last": 5.56,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 41.59,
+    "last": 41.67,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 20.37,
+    "last": 20.38,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.49,
+    "last": 28.44,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 69.8,
+    "last": 69.7,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 18.85,
+    "last": 18.84,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.55,
+    "last": 16.53,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.98,
+    "last": 30.0,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.43,
+    "last": 23.39,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 12.39,
+    "last": 12.37,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 37.14,
+    "last": 37.24,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.41,
+    "last": 9.4,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.16,
+    "last": 7.13,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 63.63,
+    "last": 63.78,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 8.05,
+    "last": 8.02,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 61.84,
+    "last": 61.7,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 22.9,
+    "last": 22.87,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.34,
+    "last": 27.29,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.68,
+    "last": 5.67,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 6.09,
+    "last": 6.08,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.89,
+    "last": 6.88,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 44.83,
+    "last": 44.87,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 133.06,
+    "last": 133.22,
     "as_of": "2025-10-28T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -170,7 +170,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-10-28T05:44:10Z",
+    "generated_at": "2025-10-28T06:02:11Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
