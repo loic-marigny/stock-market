@@ -45,6 +45,27 @@ type InsightItem = {
   gauge?: GaugeConfig;
 };
 
+type RangeItem = {
+  key: string;
+  label: string;
+  description?: string;
+  low: number;
+  high: number;
+  current: number;
+  lowDate?: string;
+  highDate?: string;
+  currentDate?: string;
+  lowLabel?: string;
+  highLabel?: string;
+  currentLabel?: string;
+};
+
+type MetricRow = {
+  key: string;
+  label: string;
+  value: ReactNode;
+};
+
 type CompanyProfile = {
   symbol: string;
   name?: string;
@@ -56,7 +77,25 @@ type CompanyProfile = {
   irWebsite?: string;
   beta?: number;
   recommendationMean?: number;
-  auditRisk?: number;
+  marketCap?: number;
+  marketCapRaw?: number;
+  fiftyTwoWeeksHigh?: number;
+  fiftyTwoWeeksHighDate?: string;
+  fiftyTwoWeeksLow?: number;
+  fiftyTwoWeeksLowDate?: string;
+  allTimeHigh?: number;
+  allTimeHighDate?: string;
+  allTimeLow?: number;
+  allTimeLowDate?: string;
+  trailingPE?: number;
+  trailingEPS?: number;
+  totalRevenue?: number;
+  totalDebt?: number;
+  totalCash?: number;
+  freeCashflow?: number;
+  operatingCashflow?: number;
+  displayName?: string;
+  sectorDisplay?: string;
 };
 
 const DEFAULT_LOGO_STYLE: CSSProperties = {
@@ -98,6 +137,33 @@ const timeToDate = (value: Time): Date => {
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
+const numberFormatter = (maximumFractionDigits = 2, minimumFractionDigits = 0) =>
+  new Intl.NumberFormat(undefined, { maximumFractionDigits, minimumFractionDigits });
+
+const formatNumberValue = (value: number, maximumFractionDigits = 2, minimumFractionDigits = 0) =>
+  numberFormatter(maximumFractionDigits, minimumFractionDigits).format(value);
+
+const currencyFormatter = (maximumFractionDigits = 0) =>
+  new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits });
+
+const compactCurrencyFormatter = new Intl.NumberFormat(undefined, {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 2,
+});
+
+const formatUSD = (value: number, maximumFractionDigits = 0) =>
+  currencyFormatter(maximumFractionDigits).format(value);
+
+const formatCompactUSD = (value: number) => compactCurrencyFormatter.format(value);
+
+const formatDateString = (value: string) => {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" }).format(parsed);
+};
+
 const toNumeric = (value: unknown): number | undefined => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value === "string" && value.trim()) {
@@ -137,8 +203,35 @@ const normalizeProfile = (raw: any): CompanyProfile => {
   const recommendationMean = toNumeric(raw?.recommendationMean);
   if (recommendationMean !== undefined) profile.recommendationMean = recommendationMean;
 
-  const auditRisk = toNumeric(raw?.auditRisk);
-  if (auditRisk !== undefined) profile.auditRisk = auditRisk;
+  const assignNumeric = (key: keyof CompanyProfile, value: unknown) => {
+    const num = toNumeric(value);
+    if (num !== undefined) (profile as any)[key] = num;
+  };
+
+  const assignString = (key: keyof CompanyProfile, value: unknown) => {
+    const str = sanitizeString(value);
+    if (str) (profile as any)[key] = str;
+  };
+
+  assignNumeric("marketCap", raw?.marketCap ?? raw?.marketCapRaw);
+  assignNumeric("marketCapRaw", raw?.marketCapRaw ?? raw?.marketCap);
+  assignNumeric("fiftyTwoWeeksHigh", raw?.fiftyTwoWeeksHigh);
+  assignString("fiftyTwoWeeksHighDate", raw?.fiftyTwoWeeksHighDate);
+  assignNumeric("fiftyTwoWeeksLow", raw?.fiftyTwoWeeksLow);
+  assignString("fiftyTwoWeeksLowDate", raw?.fiftyTwoWeeksLowDate);
+  assignNumeric("allTimeHigh", raw?.allTimeHigh);
+  assignString("allTimeHighDate", raw?.allTimeHighDate);
+  assignNumeric("allTimeLow", raw?.allTimeLow);
+  assignString("allTimeLowDate", raw?.allTimeLowDate);
+  assignNumeric("trailingPE", raw?.trailingPE);
+  assignNumeric("trailingEPS", raw?.trailingEPS);
+  assignNumeric("totalRevenue", raw?.totalRevenue);
+  assignNumeric("totalDebt", raw?.totalDebt);
+  assignNumeric("totalCash", raw?.totalCash);
+  assignNumeric("freeCashflow", raw?.freeCashflow);
+  assignNumeric("operatingCashflow", raw?.operatingCashflow);
+  assignString("displayName", raw?.displayName);
+  assignString("sectorDisplay", raw?.sectorDisplay);
 
   return profile;
 };
@@ -538,10 +631,17 @@ export default function Explore() {
 
   const lastClose = data.at(-1)?.close ?? 0;
   const lastCloseLabel = data.length ? lastClose.toFixed(2) : "--";
+  const lastPriceDate = data.at(-1)?.date;
 
-  const displayName = profile?.longName ?? selectedCompany?.name ?? symbol;
+  const displayName = profile?.displayName ?? profile?.longName ?? selectedCompany?.name ?? symbol;
+  const longNameSuffix =
+    profile?.longName && profile.longName !== displayName ? ` (${profile.longName})` : "";
   const subtitleParts: string[] = [symbol];
-  if (profile?.industryDisp) {
+  if (profile?.sectorDisplay) {
+    subtitleParts.push(profile.sectorDisplay);
+  } else if (profile?.sector) {
+    subtitleParts.push(profile.sector);
+  } else if (profile?.industryDisp) {
     subtitleParts.push(profile.industryDisp);
   } else if (selectedCompany?.sector) {
     subtitleParts.push(selectedCompany.sector);
@@ -553,16 +653,19 @@ export default function Explore() {
   const ensureProtocol = (url: string) =>
     /^https?:/i.test(url) ? url : `https://${url}`;
 
-  const insightItems = useMemo(() => {
-    if (!profile) return [];
-    const items: InsightItem[] = [];
+  const insights = useMemo(() => {
+    if (!profile) return { gauges: [], ranges: [], metrics: [] };
+    const gauges: InsightItem[] = [];
+    const ranges: RangeItem[] = [];
+    const metrics: MetricRow[] = [];
+    type Key = Parameters<typeof t>[0];
 
     if (profile.beta !== undefined) {
       const betaValue = profile.beta;
       const betaMin = Math.min(-1, Math.floor(betaValue - 1));
       const betaMax = Math.max(3, Math.ceil(betaValue + 1));
 
-      items.push({
+      gauges.push({
         key: "beta",
         label: t("explore.metrics.beta"),
         description: t("explore.metrics.beta.help"),
@@ -571,14 +674,13 @@ export default function Explore() {
           min: betaMin,
           max: betaMax,
           target: 1,
-          variant: "linear",
           format: (val) => val.toFixed(2),
         },
       });
     }
 
     if (profile.recommendationMean !== undefined) {
-      items.push({
+      gauges.push({
         key: "recommendation",
         label: t("explore.metrics.recommendationMean"),
         description: t("explore.metrics.recommendationMean.help"),
@@ -591,26 +693,115 @@ export default function Explore() {
       });
     }
 
-    if (profile.auditRisk !== undefined) {
-      items.push({
-        key: "audit",
-        label: t("explore.metrics.auditRisk"),
-        description: t("explore.metrics.auditRisk.help"),
-        gauge: {
-          value: profile.auditRisk,
-          min: 0,
-          max: 10,
-          format: (val) => val.toFixed(0),
-        },
+    const addNumberMetric = (
+      key: string,
+      labelKey: Key,
+      value: number | undefined,
+      formatter: (value: number) => ReactNode
+    ) => {
+      if (value === undefined) return;
+      metrics.push({
+        key,
+        label: t(labelKey),
+        value: formatter(value),
       });
-    }
+    };
 
-    return items;
-  }, [profile, t]);
+    const addCurrencyMetric = (key: string, labelKey: Key, value: number | undefined) => {
+      if (value === undefined) return;
+      metrics.push({
+        key,
+        label: t(labelKey),
+        value: (
+          <div className="metric-stack">
+            <span className="metric-main">{formatCompactUSD(value)}</span>
+            <span className="metric-sub">{formatUSD(value)}</span>
+          </div>
+        ),
+      });
+    };
+
+    const addRange = (
+      key: string,
+      labelKey: Key,
+      min: number | undefined,
+      max: number | undefined,
+      helpKey?: Key,
+      current?: number,
+      minDate?: string,
+      maxDate?: string,
+      currentDate?: string
+    ) => {
+      if (min === undefined || max === undefined) return;
+      ranges.push({
+        key,
+        label: t(labelKey),
+        description: helpKey ? t(helpKey) : undefined,
+        low: min,
+        high: max,
+        current: current ?? lastClose,
+        lowDate: minDate,
+        highDate: maxDate,
+        currentDate,
+        lowLabel: t("explore.metrics.range.low"),
+        highLabel: t("explore.metrics.range.high"),
+        currentLabel: t("explore.metrics.range.current"),
+      });
+    };
+
+    addNumberMetric("trailingPE", "explore.metrics.trailingPE", profile.trailingPE, (value) =>
+      formatNumberValue(value, 2)
+    );
+    addNumberMetric("trailingEPS", "explore.metrics.trailingEPS", profile.trailingEPS, (value) =>
+      formatNumberValue(value, 2)
+    );
+
+    addCurrencyMetric("marketCap", "explore.metrics.marketCap", profile.marketCap ?? profile.marketCapRaw);
+    addCurrencyMetric("totalRevenue", "explore.metrics.totalRevenue", profile.totalRevenue);
+    addCurrencyMetric("totalDebt", "explore.metrics.totalDebt", profile.totalDebt);
+    addCurrencyMetric("totalCash", "explore.metrics.totalCash", profile.totalCash);
+    addCurrencyMetric("freeCashflow", "explore.metrics.freeCashflow", profile.freeCashflow);
+    addCurrencyMetric("operatingCashflow", "explore.metrics.operatingCashflow", profile.operatingCashflow);
+
+    addRange(
+      "fiftyTwoWeeksRange",
+      "explore.metrics.fiftyTwoWeeksRange",
+      profile.fiftyTwoWeeksLow,
+      profile.fiftyTwoWeeksHigh,
+      "explore.metrics.fiftyTwoWeeksRange.help",
+      lastClose,
+      profile.fiftyTwoWeeksLowDate,
+      profile.fiftyTwoWeeksHighDate,
+      lastPriceDate ?? undefined
+    );
+
+    addRange(
+      "allTimeRange",
+      "explore.metrics.allTimeRange",
+      profile.allTimeLow,
+      profile.allTimeHigh,
+      "explore.metrics.allTimeRange.help",
+      lastClose,
+      profile.allTimeLowDate,
+      profile.allTimeHighDate,
+      lastPriceDate ?? undefined
+    );
+
+    return { gauges, ranges, metrics };
+  }, [profile, t, lastClose, lastPriceDate]);
+  const { gauges, ranges, metrics } = insights;
 
   const headerMeta = useMemo(() => {
     if (!profile) return [];
     const items: { key: string; label: string; value: ReactNode }[] = [];
+
+    if (profile.sectorDisplay || profile.sector) {
+      items.push({
+        key: "sector",
+        label: t("explore.metrics.sectorDisplay"),
+        value: profile.sectorDisplay ?? profile.sector ?? "",
+      });
+    }
 
     if (profile.industryDisp) {
       items.push({
@@ -860,7 +1051,10 @@ export default function Explore() {
                   style={logoStyle}
                 />
                 <div>
-                  <h1>{displayName}</h1>
+                  <h1>
+                    {displayName}
+                    {longNameSuffix && <span className="company-alias">{longNameSuffix}</span>}
+                  </h1>
                   <p>{subtitle}</p>
                 </div>
               </div>
@@ -900,45 +1094,98 @@ export default function Explore() {
               </div>
               <div ref={chartContainerRef} className="chart-container" />
             </div>
-            {insightItems.length > 0 && (
+            {(gauges.length > 0 || ranges.length > 0 || metrics.length > 0) && (
               <section className="explore-insights">
                 <h3>{t("explore.metrics.title")}</h3>
-                <div className="explore-insights-grid">
-                  {insightItems.map((item) => {
-                    const tooltipId = `insight-${item.key}-tooltip`;
-                    const tooltipLabel = item.description ? `${item.label}: ${item.description}` : item.label;
-                    return (
-                      <div key={item.key} className="explore-insight-card">
-                        <div className="insight-header">
-                          <span className="label">{item.label}</span>
-                          {item.description && (
-                            <span className="info-tooltip">
-                              <button
-                                type="button"
-                                className="info-btn"
-                                title={item.description}
-                                aria-label={tooltipLabel}
-                                aria-describedby={item.description ? tooltipId : undefined}
-                              >
-                                i
-                              </button>
-                              <span id={tooltipId} role="tooltip" className="info-tooltip-content">
-                                {item.description}
+
+                {gauges.length > 0 && (
+                  <div className="explore-insights-grid">
+                    {gauges.map((item) => {
+                      const tooltipId = `insight-${item.key}-tooltip`;
+                      const tooltipLabel = item.description ? `${item.label}: ${item.description}` : item.label;
+                      return (
+                        <div key={item.key} className="explore-insight-card">
+                          <div className="insight-header">
+                            <span className="label">{item.label}</span>
+                            {item.description && (
+                              <span className="info-tooltip">
+                                <button
+                                  type="button"
+                                  className="info-btn"
+                                  title={item.description}
+                                  aria-label={tooltipLabel}
+                                  aria-describedby={item.description ? tooltipId : undefined}
+                                >
+                                  i
+                                </button>
+                                <span id={tooltipId} role="tooltip" className="info-tooltip-content">
+                                  {item.description}
+                                </span>
                               </span>
-                            </span>
-                          )}
+                            )}
+                          </div>
+                          <div className="insight-body">
+                            {item.gauge ? (
+                              <Gauge label={item.label} {...item.gauge} />
+                            ) : (
+                              <div className="insight-value">{item.content ?? "--"}</div>
+                            )}
+                          </div>
                         </div>
-                        <div className="insight-body">
-                          {item.gauge ? (
-                            <Gauge label={item.label} {...item.gauge} />
-                          ) : (
-                            <div className="insight-value">{item.content ?? "--"}</div>
-                          )}
+                      );
+                    })}
+                  </div>
+                )}
+
+                {ranges.length > 0 && (
+                  <div className="explore-ranges-grid">
+                    {ranges.map((range) => {
+                      const tooltipId = `range-${range.key}-tooltip`;
+                      const tooltipLabel = range.description ? `${range.label}: ${range.description}` : range.label;
+                      return (
+                        <div key={range.key} className="explore-insight-card">
+                          <div className="insight-header">
+                            <span className="label">{range.label}</span>
+                            {range.description && (
+                              <span className="info-tooltip">
+                                <button
+                                  type="button"
+                                  className="info-btn"
+                                  title={range.description}
+                                  aria-label={tooltipLabel}
+                                  aria-describedby={range.description ? tooltipId : undefined}
+                                >
+                                  i
+                                </button>
+                                <span id={tooltipId} role="tooltip" className="info-tooltip-content">
+                                  {range.description}
+                                </span>
+                              </span>
+                            )}
+                          </div>
+                          <div className="insight-body range-body">
+                            <RangeHistogram {...range} />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {metrics.length > 0 && (
+                  <div className="explore-insight-card metrics-card">
+                    <table className="metrics-table">
+                      <tbody>
+                        {metrics.map((row) => (
+                          <tr key={row.key}>
+                            <th scope="row">{row.label}</th>
+                            <td>{row.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </section>
             )}
             <p className="hint">{t("explore.sourceHint")}</p>
@@ -987,6 +1234,118 @@ function clampDateRange(
     end = maxTs;
   }
   return { from: new Date(start), to: new Date(end) };
+}
+
+type RangeHistogramProps = {
+  low: number;
+  high: number;
+  current: number;
+  lowDate?: string;
+  highDate?: string;
+  currentDate?: string;
+  lowLabel?: string;
+  highLabel?: string;
+  currentLabel?: string;
+};
+
+function RangeHistogram({
+  low,
+  high,
+  current,
+  lowDate,
+  highDate,
+  currentDate,
+  lowLabel,
+  highLabel,
+  currentLabel,
+}: RangeHistogramProps) {
+  let lowValue = low;
+  let highValue = high;
+  let lowValueDate = lowDate;
+  let highValueDate = highDate;
+  let lowValueLabel = lowLabel;
+  let highValueLabel = highLabel;
+
+  if (lowValue > highValue) {
+    [lowValue, highValue] = [highValue, lowValue];
+    [lowValueDate, highValueDate] = [highValueDate, lowValueDate];
+    [lowValueLabel, highValueLabel] = [highValueLabel, lowValueLabel];
+  }
+
+  const minValue = Math.min(lowValue, highValue, current);
+  let maxValue = Math.max(lowValue, highValue, current);
+  if (!Number.isFinite(maxValue) || maxValue - minValue < 1e-6) {
+    maxValue = minValue + 1;
+  }
+  const normalizeHeight = (value: number) =>
+    Math.max(18, ((value - minValue) / (maxValue - minValue)) * 100);
+
+  const hasRange = Math.abs(highValue - lowValue) >= 1e-6;
+  const rangeSpan = hasRange ? highValue - lowValue : 1;
+  const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
+  const percentFromValue = (value: number) => ((value - lowValue) / rangeSpan) * 100;
+
+  const currentPercentRaw = percentFromValue(current);
+  const currentOutside =
+    hasRange && Number.isFinite(currentPercentRaw)
+      ? currentPercentRaw < 0
+        ? "below"
+        : currentPercentRaw > 100
+          ? "above"
+          : undefined
+      : undefined;
+  const currentPosition = hasRange ? clampPercent(currentPercentRaw) : 50;
+  const lowPosition = hasRange ? 0 : 50;
+  const highPosition = hasRange ? 100 : 50;
+
+  const bars = [
+    {
+      key: "low",
+      value: lowValue,
+      height: normalizeHeight(lowValue),
+      dateText: lowValueDate ? formatDateString(lowValueDate) : undefined,
+      caption: lowValueLabel,
+      position: lowPosition,
+    },
+    {
+      key: "current",
+      value: current,
+      height: normalizeHeight(current),
+      dateText: currentDate ? formatDateString(currentDate) : undefined,
+      caption: currentLabel,
+      position: currentPosition,
+      outside: currentOutside,
+    },
+    {
+      key: "high",
+      value: highValue,
+      height: normalizeHeight(highValue),
+      dateText: highValueDate ? formatDateString(highValueDate) : undefined,
+      caption: highValueLabel,
+      position: highPosition,
+    },
+  ];
+
+  return (
+    <div className="range-bar-chart">
+      <div className="range-bar-axis" />
+      {bars.map((bar) => (
+        <div
+          key={bar.key}
+          className={`range-bar ${bar.key}${bar.outside ? ` ${bar.outside}` : ""}`}
+          style={{ left: `${bar.position}%` }}
+        >
+          <div className="range-bar-column" style={{ height: `${bar.height}%` }}>
+            <span className="range-bar-value">{formatUSD(bar.value, 2)}</span>
+          </div>
+          <div className="range-bar-date">
+            {bar.dateText && <span>{bar.dateText}</span>}
+            {bar.caption && <span className="range-bar-caption">{bar.caption}</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function groupByMarket(list: Company[]): Record<string, Company[]> {
