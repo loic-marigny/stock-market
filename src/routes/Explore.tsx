@@ -506,7 +506,7 @@ export default function Explore() {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   type ChartApi = ReturnType<typeof createChart>;
   const chartRef = useRef<IChartApi | null>(null);
-const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
   const suppressRangeUpdateRef = useRef<boolean>(false);
 
@@ -1368,16 +1368,11 @@ const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
                                     type="button"
                                     className="info-btn"
                                     title={item.description}
-                                    aria-label={tooltipLabel}
-                                    aria-describedby={item.description ? tooltipId : undefined}
+                                    aria-label={`${item.label}: ${item.description}`}
                                   >
                                     i
                                   </button>
-                                  <span
-                                    id={tooltipId}
-                                    role="tooltip"
-                                    className="info-tooltip-content"
-                                  >
+                                  <span role="tooltip" className="info-tooltip-content">
                                     {item.description}
                                   </span>
                                 </span>
@@ -1385,13 +1380,23 @@ const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
                             </div>
 
                             <div className="insight-subcard-body">
-                              {item.gauge ? (
-                                <Gauge label={item.label} {...item.gauge} />
-                              ) : (
-                                <div className="insight-value">
-                                  {item.content ?? "--"}
-                                </div>
-                              )}
+                              {item.key === "recommendation" && item.gauge ? (
+                                <GaugeDonut
+                                  value={item.gauge.value}
+                                  min={item.gauge.min}
+                                  max={item.gauge.max}
+                                  color="#22c55e"
+                                  label={item.gauge.format(item.gauge.value)}
+                                />
+                              ) : item.key === "beta" && item.gauge ? (
+                                <GaugeSemi
+                                  value={item.gauge.value}
+                                  min={item.gauge.min}
+                                  max={item.gauge.max}
+                                  color="#d4b200"
+                                  label={item.gauge.format(item.gauge.value)}
+                                />
+                              ) : null}
                             </div>
                           </div>
                         );
