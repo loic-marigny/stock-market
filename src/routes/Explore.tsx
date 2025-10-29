@@ -1,8 +1,31 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type CSSProperties } from "react";
-import { CandlestickSeries, createChart, type BusinessDay, type CandlestickData, type Time } from "lightweight-charts";
+import {
+  createChart,
+  type BusinessDay,
+  type CandlestickData,
+  type Time,
+  type ISeriesApi,
+  type IChartApi,
+} from "lightweight-charts";
+import { useDrawingArea, useYScale } from "@mui/x-charts/hooks";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
+import {
+  BarChart as RBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RTooltip,
+  ReferenceLine,
+  ResponsiveContainer,
+  Customized,
+  RadialBarChart,
+  RadialBar,
+  PolarAngleAxis,
+} from "recharts";
+
 
 type TF = "1M" | "6M" | "YTD" | "1Y" | "MAX";
 
@@ -324,6 +347,150 @@ const analyzeLogoAppearance = async (src: string): Promise<CSSProperties> => {
   };
 };
 
+// ---------- Gauge utils ----------
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+type GaugeCommonProps = {
+  value: number;
+  min: number;
+  max: number;
+  color: string;
+  label?: string;         // texte au centre (ex: "1.25" ou "2.1")
+  unit?: string;          // ex: ""
+  trackColor?: string;    // couleur de fond de piste
+};
+
+// ---------- Demi-cercle (pour Bêta) ----------
+function GaugeSemi({
+  value,
+  min,
+  max,
+  color,
+  label,
+  unit = "",
+  trackColor = "rgba(15, 23, 42, 0.08)", // slate-900 @8%
+}: GaugeCommonProps) {
+  const v = clamp(value, min, max);
+
+  // Data pour 2 arcs : 1) piste (max), 2) valeur (v)
+  const data = [
+    { name: "track", val: max, fill: trackColor },
+    { name: "value", val: v, fill: color },
+  ];
+
+  return (
+    <div style={{ width: "100%", height: 160, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadialBarChart
+          cx="50%"
+          cy="100%"               // centre en bas pour dessiner un demi-cercle
+          innerRadius="70%"
+          outerRadius="90%"
+          startAngle={180}
+          endAngle={0}
+          data={data}
+        >
+          {/* Axe d'angle = domaine [min..max], pas de ticks visuels */}
+          <PolarAngleAxis type="number" domain={[min, max]} dataKey="val" tick={false} />
+          {/* Piste */}
+          <RadialBar dataKey="val" background={false} cornerRadius={10} fill={trackColor} />
+          {/* Valeur (dessinée par-dessus) */}
+          <RadialBar dataKey="val" cornerRadius={10} fill={color} />
+        </RadialBarChart>
+      </ResponsiveContainer>
+
+      {/* Min/Max aux extrémités */}
+      <div style={{ position: "absolute", left: 16, bottom: 8, fontSize: 12, color: "#475569" }}>
+        {min}
+      </div>
+      <div style={{ position: "absolute", right: 16, bottom: 8, fontSize: 12, color: "#475569" }}>
+        {max}
+      </div>
+
+      {/* Valeur au centre */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          bottom: 40,
+          transform: "translateX(-50%)",
+          fontSize: 24,
+          fontWeight: 800,
+          color: "var(--primary-700)",
+          textAlign: "center",
+        }}
+      >
+        {label ?? v.toFixed(2)}{unit}
+      </div>
+    </div>
+  );
+}
+
+// ---------- Cercle complet (pour Moyenne des reco) ----------
+function GaugeDonut({
+  value,
+  min,
+  max,
+  color,
+  label,
+  unit = "",
+  trackColor = "rgba(15, 23, 42, 0.08)",
+}: GaugeCommonProps) {
+  const v = clamp(value, min, max);
+
+  const data = [
+    { name: "track", val: max, fill: trackColor },
+    { name: "value", val: v, fill: color },
+  ];
+
+  return (
+    <div style={{ width: "100%", height: 160, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadialBarChart
+          cx="50%"
+          cy="50%"
+          innerRadius="65%"
+          outerRadius="85%"
+          startAngle={90}      // 12h -> clockwise
+          endAngle={-270}      // boucle complète
+          data={data}
+        >
+          <PolarAngleAxis type="number" domain={[min, max]} dataKey="val" tick={false} />
+          <RadialBar dataKey="val" background={false} cornerRadius={10} fill={trackColor} />
+          <RadialBar dataKey="val" cornerRadius={10} fill={color} />
+        </RadialBarChart>
+      </ResponsiveContainer>
+
+      {/* Min/Max discrets à gauche/droite */}
+      <div style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
+        {min}
+      </div>
+      <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
+        {max}
+      </div>
+
+      {/* Valeur au centre */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          fontSize: 24,
+          fontWeight: 800,
+          color: "var(--primary-700)",
+          textAlign: "center",
+        }}
+      >
+        {label ?? v.toFixed(1)}{unit}
+      </div>
+    </div>
+  );
+}
+
+
 export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
@@ -338,9 +505,8 @@ export default function Explore() {
   const searchMode = trimmedQuery.length > 0;
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   type ChartApi = ReturnType<typeof createChart>;
-  type CandlestickSeriesApi = ReturnType<ChartApi["addSeries"]>;
-  const chartRef = useRef<ChartApi | null>(null);
-  const seriesRef = useRef<CandlestickSeriesApi | null>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
   const suppressRangeUpdateRef = useRef<boolean>(false);
 
@@ -555,19 +721,31 @@ export default function Explore() {
   useEffect(() => {
     if (!chartContainerRef.current) return;
     const element = chartContainerRef.current;
+    
     const chart = createChart(element, {
       width: element.clientWidth,
       height: element.clientHeight,
-      layout: { background: { color: "transparent" }, textColor: "#0f172a" },
+      layout: {
+        background: { color: "transparent" },
+        textColor: "#0f172a",
+      },
       grid: {
         vertLines: { color: "rgba(15,23,42,0.08)" },
         horzLines: { color: "rgba(15,23,42,0.05)" },
       },
-      rightPriceScale: { borderColor: "rgba(15,23,42,0.08)" },
-      timeScale: { borderColor: "rgba(15,23,42,0.08)" },
-      crosshair: { mode: 1 },
+      rightPriceScale: {
+        borderColor: "rgba(15,23,42,0.08)",
+      },
+      timeScale: {
+        borderColor: "rgba(15,23,42,0.08)",
+      },
+      crosshair: {
+        mode: 1,
+      },
     });
-    const series = chart.addSeries(CandlestickSeries, {
+
+    // v3 officiel : addCandlestickSeries
+    const series = chart.addCandlestickSeries({
       upColor: "#16a34a",
       downColor: "#dc2626",
       wickUpColor: "#16a34a",
@@ -575,8 +753,10 @@ export default function Explore() {
       borderUpColor: "#16a34a",
       borderDownColor: "#dc2626",
     });
+
     chartRef.current = chart;
     seriesRef.current = series;
+
 
     const resizeObserver = new ResizeObserver((entries) => {
       const { width, height } = entries[0].contentRect;
@@ -1094,96 +1274,159 @@ export default function Explore() {
               </div>
               <div ref={chartContainerRef} className="chart-container" />
             </div>
-            {(gauges.length > 0 || ranges.length > 0 || metrics.length > 0) && (
+              {(gauges.length > 0 || ranges.length > 0 || metrics.length > 0) && (
               <section className="explore-insights">
-                <h3>{t("explore.metrics.title")}</h3>
-
-                {gauges.length > 0 && (
-                  <div className="explore-insights-grid">
-                    {gauges.map((item) => {
-                      const tooltipId = `insight-${item.key}-tooltip`;
-                      const tooltipLabel = item.description ? `${item.label}: ${item.description}` : item.label;
-                      return (
-                        <div key={item.key} className="explore-insight-card">
-                          <div className="insight-header">
-                            <span className="label">{item.label}</span>
-                            {item.description && (
-                              <span className="info-tooltip">
-                                <button
-                                  type="button"
-                                  className="info-btn"
-                                  title={item.description}
-                                  aria-label={tooltipLabel}
-                                  aria-describedby={item.description ? tooltipId : undefined}
-                                >
-                                  i
-                                </button>
-                                <span id={tooltipId} role="tooltip" className="info-tooltip-content">
-                                  {item.description}
-                                </span>
-                              </span>
-                            )}
-                          </div>
-                          <div className="insight-body">
-                            {item.gauge ? (
-                              <Gauge label={item.label} {...item.gauge} />
-                            ) : (
-                              <div className="insight-value">{item.content ?? "--"}</div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
+                {/* PERFORMANCE */}
                 {ranges.length > 0 && (
-                  <div className="explore-ranges-grid">
-                    {ranges.map((range) => {
-                      const tooltipId = `range-${range.key}-tooltip`;
-                      const tooltipLabel = range.description ? `${range.label}: ${range.description}` : range.label;
-                      return (
-                        <div key={range.key} className="explore-insight-card">
-                          <div className="insight-header">
-                            <span className="label">{range.label}</span>
-                            {range.description && (
-                              <span className="info-tooltip">
-                                <button
-                                  type="button"
-                                  className="info-btn"
-                                  title={range.description}
-                                  aria-label={tooltipLabel}
-                                  aria-describedby={range.description ? tooltipId : undefined}
-                                >
-                                  i
-                                </button>
-                                <span id={tooltipId} role="tooltip" className="info-tooltip-content">
-                                  {range.description}
+                  <div className="insight-panel">
+                    <div className="insight-panel-head">
+                      <h3 className="insight-panel-title">
+                        {t("explore.metrics.performanceTitle") ?? "Performance"}
+                      </h3>
+                      <p className="insight-panel-desc">
+                        {t("explore.metrics.performanceDesc") ??
+                          "Évolution du cours : sur 52 semaines et sur l'historique complet."}
+                      </p>
+                    </div>
+
+                    <div className="insight-panel-body insight-panel-body--grid">
+                      {ranges.map((range) => {
+                        const tooltipId = `range-${range.key}-tooltip`;
+                        const tooltipLabel = range.description
+                          ? `${range.label}: ${range.description}`
+                          : range.label;
+                        return (
+                          <div key={range.key} className="insight-subcard">
+                            <div className="insight-subcard-head">
+                              <span className="label">{range.label}</span>
+                              {range.description && (
+                                <span className="info-tooltip">
+                                  <button
+                                    type="button"
+                                    className="info-btn"
+                                    title={range.description}
+                                    aria-label={tooltipLabel}
+                                    aria-describedby={range.description ? tooltipId : undefined}
+                                  >
+                                    i
+                                  </button>
+                                  <span
+                                    id={tooltipId}
+                                    role="tooltip"
+                                    className="info-tooltip-content"
+                                  >
+                                    {range.description}
+                                  </span>
                                 </span>
-                              </span>
-                            )}
+                              )}
+                            </div>
+
+                            <div className="insight-subcard-body range-body">
+                              <RangeHistogram
+                                key={range.key}
+                                low={range.low}
+                                high={range.high}
+                                current={range.current}
+                                lowLabel={range.lowLabel}
+                                highLabel={range.highLabel}
+                                currentLabel={range.currentLabel}
+                              />
+                            </div>
                           </div>
-                          <div className="insight-body range-body">
-                            <RangeHistogram {...range} />
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
+                {/* RISQUE & AVIS */}
+                {gauges.length > 0 && (
+                  <div className="insight-panel">
+                    <div className="insight-panel-head">
+                      <h3 className="insight-panel-title">
+                        {t("explore.metrics.riskTitle") ?? "Risque & Avis analystes"}
+                      </h3>
+                      <p className="insight-panel-desc">
+                        {t("explore.metrics.riskDesc") ??
+                          "Volatilité vs marché et consensus des analystes."}
+                      </p>
+                    </div>
+
+                    <div className="insight-panel-body insight-panel-body--grid">
+                      {gauges.map((item) => {
+                        const tooltipId = `insight-${item.key}-tooltip`;
+                        const tooltipLabel = item.description
+                          ? `${item.label}: ${item.description}`
+                          : item.label;
+                        return (
+                          <div key={item.key} className="insight-subcard">
+                            <div className="insight-subcard-head">
+                              <span className="label">{item.label}</span>
+                              {item.description && (
+                                <span className="info-tooltip">
+                                  <button
+                                    type="button"
+                                    className="info-btn"
+                                    title={item.description}
+                                    aria-label={tooltipLabel}
+                                    aria-describedby={item.description ? tooltipId : undefined}
+                                  >
+                                    i
+                                  </button>
+                                  <span
+                                    id={tooltipId}
+                                    role="tooltip"
+                                    className="info-tooltip-content"
+                                  >
+                                    {item.description}
+                                  </span>
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="insight-subcard-body">
+                              {item.gauge ? (
+                                <Gauge label={item.label} {...item.gauge} />
+                              ) : (
+                                <div className="insight-value">
+                                  {item.content ?? "--"}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* FONDAMENTAUX */}
                 {metrics.length > 0 && (
-                  <div className="explore-insight-card metrics-card">
-                    <table className="metrics-table">
-                      <tbody>
-                        {metrics.map((row) => (
-                          <tr key={row.key}>
-                            <th scope="row">{row.label}</th>
-                            <td>{row.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="insight-panel">
+                    <div className="insight-panel-head">
+                      <h3 className="insight-panel-title">
+                        {t("explore.metrics.fundamentalsTitle") ?? "Fondamentaux"}
+                      </h3>
+                      <p className="insight-panel-desc">
+                        {t("explore.metrics.fundamentalsDesc") ??
+                          "Valorisation, revenus, cashflow et structure financière."}
+                      </p>
+                    </div>
+
+                    <div className="insight-panel-body">
+                      <div className="metrics-card">
+                        <table className="metrics-table">
+                          <tbody>
+                            {metrics.map((row) => (
+                              <tr key={row.key}>
+                                <th scope="row">{row.label}</th>
+                                <td>{row.value}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 )}
               </section>
@@ -1236,13 +1479,71 @@ function clampDateRange(
   return { from: new Date(start), to: new Date(end) };
 }
 
+// ===== Overlay qui lit l'échelle réelle du chart MUI =====
+
+function CurrentLineOverlay({
+  current,
+  label,
+  formatValue,
+}: {
+  current: number;
+  label: string;
+  formatValue: (n: number) => string;
+}) {
+  // zone de tracé réelle (px)
+  const { top, bottom, left, right } = useDrawingArea();
+  // fonction d'échelle Y utilisée par le chart pour convertir une valeur -> pixel
+  const yScale = useYScale(); // par défaut l'axe Y primaire
+
+  // yScale(current) nous donne une coordonnée Y ABSOLUE dans le SVG.
+  // On veut positionner un élément HTML en overlay à cet endroit.
+  // La drawing area elle-même vit à (top..bottom); donc cette coordonnée est dans le même repère.
+  const yPx = yScale(current);
+
+  if (yPx == null || Number.isNaN(yPx)) {
+    return null;
+  }
+
+  const lineStyle: React.CSSProperties = {
+    position: "absolute",
+    left: left,
+    right: left === right ? 0 : `calc(100% - ${right}px)`,
+    top: yPx,
+    borderTop: "2px dashed #475569",
+    pointerEvents: "none",
+  };
+
+  const badgeStyle: React.CSSProperties = {
+    position: "absolute",
+    left: `calc(100% - ${right}px)`,
+    transform: "translateY(-100%) translateX(-100%)",
+    fontSize: "0.7rem",
+    lineHeight: 1.2,
+    color: "#475569",
+    background: "rgba(255,255,255,0.9)",
+    borderRadius: "6px",
+    padding: "2px 6px",
+    border: "1px solid rgba(0,0,0,0.06)",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+    fontWeight: 600,
+    pointerEvents: "none",
+    whiteSpace: "nowrap",
+  };
+
+  return (
+    <>
+      <div style={lineStyle} />
+      <div style={badgeStyle}>
+        {label} {formatValue(current)}
+      </div>
+    </>
+  );
+}
+
 type RangeHistogramProps = {
   low: number;
   high: number;
   current: number;
-  lowDate?: string;
-  highDate?: string;
-  currentDate?: string;
   lowLabel?: string;
   highLabel?: string;
   currentLabel?: string;
@@ -1252,98 +1553,240 @@ function RangeHistogram({
   low,
   high,
   current,
-  lowDate,
-  highDate,
-  currentDate,
   lowLabel,
   highLabel,
   currentLabel,
 }: RangeHistogramProps) {
-  let lowValue = low;
-  let highValue = high;
-  let lowValueDate = lowDate;
-  let highValueDate = highDate;
-  let lowValueLabel = lowLabel;
-  let highValueLabel = highLabel;
-
-  if (lowValue > highValue) {
-    [lowValue, highValue] = [highValue, lowValue];
-    [lowValueDate, highValueDate] = [highValueDate, lowValueDate];
-    [lowValueLabel, highValueLabel] = [highValueLabel, lowValueLabel];
-  }
-
-  const minValue = Math.min(lowValue, highValue, current);
-  let maxValue = Math.max(lowValue, highValue, current);
-  if (!Number.isFinite(maxValue) || maxValue - minValue < 1e-6) {
-    maxValue = minValue + 1;
-  }
-  const normalizeHeight = (value: number) =>
-    Math.max(18, ((value - minValue) / (maxValue - minValue)) * 100);
-
-  const hasRange = Math.abs(highValue - lowValue) >= 1e-6;
-  const rangeSpan = hasRange ? highValue - lowValue : 1;
-  const clampPercent = (value: number) => Math.min(Math.max(value, 0), 100);
-  const percentFromValue = (value: number) => ((value - lowValue) / rangeSpan) * 100;
-
-  const currentPercentRaw = percentFromValue(current);
-  const currentOutside =
-    hasRange && Number.isFinite(currentPercentRaw)
-      ? currentPercentRaw < 0
-        ? "below"
-        : currentPercentRaw > 100
-          ? "above"
-          : undefined
-      : undefined;
-  const currentPosition = hasRange ? clampPercent(currentPercentRaw) : 50;
-  const lowPosition = hasRange ? 0 : 50;
-  const highPosition = hasRange ? 100 : 50;
-
-  const bars = [
+  // Données pour les barres
+  const data = [
     {
-      key: "low",
-      value: lowValue,
-      height: normalizeHeight(lowValue),
-      dateText: lowValueDate ? formatDateString(lowValueDate) : undefined,
-      caption: lowValueLabel,
-      position: lowPosition,
+      label: lowLabel ?? "Plus bas",
+      lowVal: low,
+      highVal: 0,
     },
     {
-      key: "current",
-      value: current,
-      height: normalizeHeight(current),
-      dateText: currentDate ? formatDateString(currentDate) : undefined,
-      caption: currentLabel,
-      position: currentPosition,
-      outside: currentOutside,
-    },
-    {
-      key: "high",
-      value: highValue,
-      height: normalizeHeight(highValue),
-      dateText: highValueDate ? formatDateString(highValueDate) : undefined,
-      caption: highValueLabel,
-      position: highPosition,
+      label: highLabel ?? "Plus haut",
+      lowVal: 0,
+      highVal: high,
     },
   ];
 
-  return (
-    <div className="range-bar-chart">
-      <div className="range-bar-axis" />
-      {bars.map((bar) => (
-        <div
-          key={bar.key}
-          className={`range-bar ${bar.key}${bar.outside ? ` ${bar.outside}` : ""}`}
-          style={{ left: `${bar.position}%` }}
+  // bornes Y -> commence à 0, on prend le max entre low/high/current
+  const rawMax = Math.max(
+    typeof low === "number" ? low : 0,
+    typeof high === "number" ? high : 0,
+    typeof current === "number" ? current : 0
+  );
+
+  // on "arrondit" le max vers le haut pour éviter les ticks moches genre 59.5799
+  // règle simple : on prend le multiple de 10 supérieur
+  const yMaxNice = (() => {
+    if (rawMax <= 0) return 10;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawMax))); // ordre de grandeur
+    const step = magnitude / 2; // un pas raisonnable
+    return Math.ceil(rawMax / step) * step;
+  })();
+
+  const fmtUSD = (n: number) =>
+    n.toLocaleString("fr-FR", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    });
+
+  // Tooltip propre corrigé
+  const CustomTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active?: boolean;
+    payload?: any[];
+    label?: string;
+  }) => {
+    if (!active || !payload || payload.length === 0) return null;
+
+    const numericVals = payload
+      .map((entry) => (typeof entry.value === "number" ? entry.value : NaN))
+      .filter((v) => Number.isFinite(v)) as number[];
+
+    if (numericVals.length === 0) return null;
+
+    const nonZeroVals = numericVals.filter((v) => v !== 0);
+    const chosenVal =
+      nonZeroVals.length > 0
+        ? Math.max(...nonZeroVals)
+        : Math.max(...numericVals);
+
+    return (
+      <div
+        style={{
+          background: "rgba(255,255,255,0.9)",
+          borderRadius: "6px",
+          padding: "6px 8px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+          border: "1px solid rgba(0,0,0,0.06)",
+          fontSize: "0.75rem",
+          lineHeight: 1.3,
+          color: "#0f172a",
+          fontWeight: 500,
+        }}
+      >
+        <div style={{ color: "#475569", fontSize: "0.7rem" }}>{label}</div>
+        <div style={{ fontWeight: 600 }}>{fmtUSD(chosenVal)}</div>
+      </div>
+    );
+  };
+
+  // composant custom pour dessiner la ligne + bulle "Cours actuel ..."
+  // directement dans le système SVG de Recharts, avec l'échelle Y réelle
+  const CurrentMarker = (props: any) => {
+    const { yAxisMap, offset } = props || {};
+
+    // Si Recharts n'a pas encore injecté les infos, on ne dessine rien.
+    if (!yAxisMap || !offset) return null;
+
+    const axisKeys = Object.keys(yAxisMap);
+    if (axisKeys.length === 0) return null;
+
+    const firstAxisKey = axisKeys[0];
+    const axis = yAxisMap[firstAxisKey];
+    if (!axis || typeof axis.scale !== "function") return null;
+
+    const yScale = axis.scale;
+    const yPx = yScale(current);
+
+    if (typeof yPx !== "number" || Number.isNaN(yPx)) return null;
+
+    const xRight = offset.left + offset.width;
+    const labelText = `${currentLabel ?? "Cours actuel"} ${fmtUSD(current)}`;
+
+    return (
+      <g pointerEvents="none">
+        {/* ligne horizontale pointillée */}
+        <line
+          x1={offset.left}
+          x2={xRight}
+          y1={yPx}
+          y2={yPx}
+          stroke="#475569"
+          strokeWidth={2}
+          strokeDasharray="4 4"
+        />
+
+        {/* bulle texte à droite */}
+        <foreignObject
+          x={xRight - 4}
+          y={yPx - 24}
+          width={200}
+          height={40}
+          style={{ overflow: "visible" }}
         >
-          <div className="range-bar-column" style={{ height: `${bar.height}%` }}>
-            <span className="range-bar-value">{formatUSD(bar.value, 2)}</span>
+          <div
+            style={{
+              transform: "translateX(-100%)",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: "6px",
+              padding: "4px 8px",
+              border: "1px solid rgba(0,0,0,0.06)",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+              fontSize: "0.7rem",
+              lineHeight: 1.2,
+              fontWeight: 600,
+              color: "#475569",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {labelText}
           </div>
-          <div className="range-bar-date">
-            {bar.dateText && <span>{bar.dateText}</span>}
-            {bar.caption && <span className="range-bar-caption">{bar.caption}</span>}
-          </div>
-        </div>
-      ))}
+        </foreignObject>
+      </g>
+    );
+  };
+
+  return (
+    <div
+      className="range-chart-wrapper"
+      style={{
+        position: "relative",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <RBarChart
+          data={data}
+          margin={{ top: 10, right: 28, bottom: 0, left: 0 }}
+          barCategoryGap="30%"
+        >
+          {/* grille horizontale */}
+          <CartesianGrid
+            stroke="rgba(0,0,0,0.1)"
+            strokeDasharray="3 3"
+            vertical={false}
+          />
+
+          {/* Axe Y formaté proprement */}
+          <YAxis
+            domain={[0, yMaxNice]}
+            width={32}                  // << ajoute cette ligne (réduit la gouttière à gauche)
+            tickMargin={4}              // << ajoute cette ligne (un peu d’air entre ticks et axe)
+            tickFormatter={(tick: number) => {
+              if (Math.abs(tick) >= 10 || Number.isInteger(tick)) return tick.toFixed(0);
+              return tick.toFixed(1);
+            }}
+            tick={{ fontSize: 11, fill: "#475569" }}
+            axisLine={{ stroke: "#0f172a", strokeWidth: 1 }}
+            tickLine={false}
+            padding={{ top: 5, bottom: 0 }}
+          />
+
+          {/* Axe X */}
+          <XAxis
+            dataKey="label"
+            tick={{ fontSize: 11, fill: "#475569" }}
+            axisLine={{ stroke: "#0f172a", strokeWidth: 1 }}
+            tickLine={{ stroke: "#0f172a", strokeWidth: 1 }}
+          />
+
+          {/* Bar "Plus bas" -> rouge */}
+          <Bar
+            dataKey="lowVal"
+            stackId="range"
+            fill="#b91c1c"
+            radius={[4, 4, 0, 0]}
+            barSize={36}         // optionnel, pour une largeur fixe
+          />
+
+          {/* Bar "Plus haut" -> vert */}
+          <Bar
+            dataKey="highVal"
+            stackId="range"
+            fill="#047857"
+            radius={[4, 4, 0, 0]}
+            barSize={36}         // optionnel
+          />
+
+          {/* Ligne horizontale pointillée + bulle "Cours actuel" */}
+          {/* On retire label=... du ReferenceLine pour éviter le texte coupé */}
+          <ReferenceLine
+            y={current}
+            stroke="#475569"
+            strokeDasharray="4 4"
+            strokeWidth={2}
+            ifOverflow="extendDomain"
+          />
+
+          {/* Notre overlay SVG aligné sur l'échelle réelle */}
+          <Customized component={<CurrentMarker />} />
+
+          {/* Tooltip corrigé */}
+          <RTooltip
+            content={<CustomTooltip />}
+            cursor={{ fill: "rgba(0,0,0,0.03)" }}
+          />
+        </RBarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
