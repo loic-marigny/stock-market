@@ -120,9 +120,15 @@ const fr: Translations = {
   'explore.metrics.website.help': 'Site officiel de l\'entreprise.',
   'explore.metrics.irWebsite': 'Relations investisseurs',
   'explore.metrics.irWebsite.help': 'Portail des relations investisseurs.',
+  'explore.metrics.performanceTitle': 'Performance',
+  'explore.metrics.performanceDesc': 'Évolution du cours : sur 52 semaines et sur l\'historique complet.',
+  'explore.metrics.riskTitle': 'Risque & Avis analystes',
+  'explore.metrics.riskDesc': 'Volatilité vs marché et consensus des analystes.',
+  'explore.metrics.fundamentalsTitle': 'Fondamentaux',
+  'explore.metrics.fundamentalsDesc': 'Valorisation, revenus, cashflow et structure financière.',
   'explore.timeframe.label': 'P\u00E9riode affich\u00E9e',
   'explore.aboutTitle': 'Pr\u00E9sentation de l\'entreprise',
-  'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).'
+  'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).',
 };
 
 export default fr;
