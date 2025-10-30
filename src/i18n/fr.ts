@@ -129,6 +129,31 @@ const fr: Translations = {
   'explore.timeframe.label': 'P\u00E9riode affich\u00E9e',
   'explore.aboutTitle': 'Pr\u00E9sentation de l\'entreprise',
   'explore.sourceHint': 'Source : fichiers JSON statiques (Finnhub/Akshare/Yahoo via CI).',
+
+  // Portefeuille – tableau
+  "portfolio.table.headers.company": "Entreprise",
+
+  // Portefeuille – infobulles (help)
+  "portfolio.help.cash": "Montant de liquidités immédiatement disponibles pour exécuter des achats.",
+  "portfolio.help.positionValue": "Somme des valeurs actuelles (dernier prix × quantité) de toutes les positions.",
+  "portfolio.help.totalValue": "Somme du cash et de la valeur de vos positions (patrimoine total du portefeuille).",
+  "portfolio.help.company": "Nom de l’entreprise et symbole boursier.",
+  "portfolio.help.qty": "Nombre d’actions/parts détenues.",
+  "portfolio.help.avgPrice": "Prix de revient unitaire (PRU) de la position.",
+  "portfolio.help.last": "Dernier prix de marché connu pour le titre.",
+  "portfolio.help.value": "Valeur actuelle de la ligne (dernier prix × quantité).",
+  "portfolio.help.pnl": "Gain ou perte latent(e) : (dernier prix − PRU) × quantité. Entre parenthèses : en pourcentage.",
+
+  "portfolio.composition.title": "Composition du portefeuille",
+  "portfolio.composition.others": "Autres",
+  "portfolio.composition.note": "Hors liquidités",
+  "portfolio.composition.cash": "Liquidités",
+  "portfolio.composition.withCash.title": "Portefeuille (avec liquidités)",
+  "portfolio.composition.withCash.note": "Inclut les liquidités",
+  "portfolio.history.title": "Historique du patrimoine",
+  "portfolio.history.note": "Répartition actions + liquidités (mock)",
+  "portfolio.history.stocks": "Actions",
+  "portfolio.history.cash": "Liquidités",
 };
 
 export default fr;
