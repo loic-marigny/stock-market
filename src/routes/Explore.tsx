@@ -24,6 +24,9 @@ import {
   RadialBarChart,
   RadialBar,
   PolarAngleAxis,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 
@@ -362,72 +365,6 @@ type GaugeCommonProps = {
   trackColor?: string;    // couleur de fond de piste
 };
 
-// ---------- Demi-cercle (pour Bêta) ----------
-function GaugeSemi({
-  value,
-  min,
-  max,
-  color,
-  label,
-  unit = "",
-  trackColor = "rgba(15, 23, 42, 0.08)", // slate-900 @8%
-}: GaugeCommonProps) {
-  const v = clamp(value, min, max);
-
-  // Data pour 2 arcs : 1) piste (max), 2) valeur (v)
-  const data = [
-    { name: "track", val: max, fill: trackColor },
-    { name: "value", val: v, fill: color },
-  ];
-
-  return (
-    <div style={{ width: "100%", height: 160, position: "relative" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <RadialBarChart
-          cx="50%"
-          cy="100%"               // centre en bas pour dessiner un demi-cercle
-          innerRadius="70%"
-          outerRadius="90%"
-          startAngle={180}
-          endAngle={0}
-          data={data}
-        >
-          {/* Axe d'angle = domaine [min..max], pas de ticks visuels */}
-          <PolarAngleAxis type="number" domain={[min, max]} dataKey="val" tick={false} />
-          {/* Piste */}
-          <RadialBar dataKey="val" background={false} cornerRadius={10} fill={trackColor} />
-          {/* Valeur (dessinée par-dessus) */}
-          <RadialBar dataKey="val" cornerRadius={10} fill={color} />
-        </RadialBarChart>
-      </ResponsiveContainer>
-
-      {/* Min/Max aux extrémités */}
-      <div style={{ position: "absolute", left: 16, bottom: 8, fontSize: 12, color: "#475569" }}>
-        {min}
-      </div>
-      <div style={{ position: "absolute", right: 16, bottom: 8, fontSize: 12, color: "#475569" }}>
-        {max}
-      </div>
-
-      {/* Valeur au centre */}
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          bottom: 40,
-          transform: "translateX(-50%)",
-          fontSize: 24,
-          fontWeight: 800,
-          color: "var(--primary-700)",
-          textAlign: "center",
-        }}
-      >
-        {label ?? v.toFixed(2)}{unit}
-      </div>
-    </div>
-  );
-}
-
 // ---------- Cercle complet (pour Moyenne des reco) ----------
 function GaugeDonut({
   value,
@@ -489,6 +426,141 @@ function GaugeDonut({
     </div>
   );
 }
+
+/** Pie (demi-cercle) avec aiguille pour le Bêta — aiguille en overlay SVG */
+function GaugeBetaNeedle({
+  value,
+  min,
+  max,
+  color = "#d4b200",
+  trackColor = "rgba(15, 23, 42, 0.08)",
+  label,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  color?: string;
+  trackColor?: string;
+  label?: string;
+}) {
+  // clamp + pourcentage [0..1]
+  const span = Math.max(0.0001, max - min);
+  const v = Math.max(min, Math.min(max, value));
+  const pct = (v - min) / span;
+
+  // angles d’un demi-cercle (gauche -> droite)
+  const START = 180;
+  const END = 0;
+
+  const trackData = [{ name: "track", val: span }];
+  const valueData = [
+    { name: "filled", val: pct * span },
+    { name: "rest", val: (1 - pct) * span },
+  ];
+
+  // ----- MESURE du conteneur pour dessiner l’aiguille dans un SVG overlay -----
+  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const [box, setBox] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    if (!overlayRef.current) return;
+    const el = overlayRef.current;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setBox({ w: Math.max(0, Math.floor(width)), h: Math.max(0, Math.floor(height)) });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Hauteur fixe du conteneur => pas de "width/height = -1"
+  const HEIGHT = 180;
+  const CY_RATIO = 0.70;      // même valeur que le Pie
+  const NEEDLE_LEN = 0.46;    // <— c'est bien la LENGTH (proportion du côté min), pas la height
+
+  // Coordonnées de l’aiguille (si size connue)
+  const cx = box.w / 2;
+  const cy = box.h * CY_RATIO;
+  const r = Math.min(box.w, box.h) * NEEDLE_LEN; // longueur de l’aiguille
+  const theta = Math.PI * (1 - pct);             // 0..π (droite->gauche)
+  const x2 = cx + r * Math.cos(theta);
+  const y2 = cy - r * Math.sin(theta);
+  const hubR = Math.max(3, Math.min(6, r * 0.04));
+
+  return (
+    <div className="gauge-wrapper" style={{ width: "100%", height: HEIGHT, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          {/* Piste */}
+          <Pie
+            data={trackData}
+            dataKey="val"
+            startAngle={START}
+            endAngle={END}
+            cx="50%"
+            cy={`${CY_RATIO * 100}%`}
+            innerRadius="68%"
+            outerRadius="86%"
+            stroke="none"
+            isAnimationActive={false}
+          >
+            <Cell fill={trackColor} />
+          </Pie>
+
+          {/* Valeur */}
+          <Pie
+            data={valueData}
+            dataKey="val"
+            startAngle={START}
+            endAngle={END}
+            cx="50%"
+            cy={`${CY_RATIO * 100}%`}
+            innerRadius="68%"
+            outerRadius="86%"
+            stroke="none"
+            isAnimationActive={false}
+          >
+            <Cell fill={color} />
+            <Cell fill="transparent" />
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* AIGUILLE en overlay, indépendante de Recharts */}
+      <div ref={overlayRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        {box.w > 0 && box.h > 0 && (
+          <svg width={box.w} height={box.h} viewBox={`0 0 ${box.w} ${box.h}`}>
+            <line x1={cx} y1={cy} x2={x2} y2={y2} stroke="#334155" strokeWidth={3} />
+            <circle cx={cx} cy={cy} r={hubR} fill="#334155" />
+          </svg>
+        )}
+      </div>
+
+      {/* Min / Max */}
+      <div style={{ position: "absolute", left: 16, bottom: 8, fontSize: 12, color: "#475569" }}>{min}</div>
+      <div style={{ position: "absolute", right: 16, bottom: 8, fontSize: 12, color: "#475569" }}>{max}</div>
+
+      {/* Valeur sous l’arc (descendue pour ne plus chevaucher l’aiguille) */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "76%", // <— descendu
+          transform: "translate(-50%, -50%)",
+          fontSize: 24,
+          fontWeight: 800,
+          color: "var(--primary-700)",
+          textAlign: "center",
+        }}
+      >
+        {label ?? v.toFixed(2)}
+      </div>
+    </div>
+  );
+}
+
+
+
 
 
 export default function Explore() {
@@ -1379,7 +1451,7 @@ export default function Explore() {
                               )}
                             </div>
 
-                            <div className="insight-subcard-body">
+                            <div className="insight-subcard-body gauge-body">
                               {item.key === "recommendation" && item.gauge ? (
                                 <GaugeDonut
                                   value={item.gauge.value}
@@ -1389,11 +1461,11 @@ export default function Explore() {
                                   label={item.gauge.format(item.gauge.value)}
                                 />
                               ) : item.key === "beta" && item.gauge ? (
-                                <GaugeSemi
+                                <GaugeBetaNeedle
                                   value={item.gauge.value}
-                                  min={item.gauge.min}
-                                  max={item.gauge.max}
-                                  color="#d4b200"
+                                  min={0}
+                                  max={3}
+                                  color="#d4b200" // doré (ta charte pour Bêta)
                                   label={item.gauge.format(item.gauge.value)}
                                 />
                               ) : null}

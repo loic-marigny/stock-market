@@ -2021,3 +2021,20 @@ input:focus {
 .insight-subcard-body.range-body .range-chart-wrapper {
   margin-left: -8px; /* ajuste à -6 / -10px si besoin */
 }
+
+/* Centrer verticalement/horizontalement le contenu des jauges */
+.insight-subcard-body.gauge-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.gauge-wrapper {
+  /* la jauge occupe l'espace fourni par le body centré */
+}
+
+.insight-subcard-body.gauge-body,
+.gauge-wrapper {
+  min-width: 0; /* évite les mesures -1 dans des conteneurs flex */
+}
