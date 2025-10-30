@@ -43,7 +43,9 @@ export default function App(){
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<Explore/>} />
+          <Route path="/" element={<Explore />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/trade" element={<Trade />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

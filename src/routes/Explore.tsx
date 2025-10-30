@@ -11,6 +11,7 @@ import { useDrawingArea, useYScale } from "@mui/x-charts/hooks";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
+import "./Explore.css";
 import {
   BarChart as RBarChart,
   Bar,
@@ -355,6 +356,55 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
 
+// --- Color utils (HSL) ---
+const hsl = (h: number, s = 72, l = 45) => `hsl(${Math.round(h)} ${s}% ${l}%)`;
+const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+// Dégradé Bêta : bleu(215°) -> (étroit) vert(135°) à 1 -> rouge(0°)
+// greenBand = largeur relative de la zone “bien autour de 1”
+function betaHueAt(norm: number, pos1: number, greenBand = 0.06) {
+  const left = Math.max(0, pos1 - greenBand / 2);
+  const right = Math.min(1, pos1 + greenBand / 2);
+  if (norm <= left) {
+    // bleu 215 -> ~150 avant la zone verte
+    const t = norm / Math.max(1e-6, left);
+    return lerp(215, 150, t);
+  }
+  if (norm >= right) {
+    // ~75 juste après la zone verte -> rouge 0
+    const t = (norm - right) / Math.max(1e-6, 1 - right);
+    return lerp(75, 0, t);
+  }
+  // au centre de la bande : vert 135
+  const mid = (left + right) / 2;
+  const t = norm < mid
+    ? (norm - left) / Math.max(1e-6, mid - left)
+    : (norm - mid) / Math.max(1e-6, right - mid);
+  return 135; // pic vert net à 1 (bande étroite)
+}
+
+// Dégradé Reco : vert(135°) -> rouge(0°)
+function recoHueAt(norm: number) {
+  return lerp(135, 0, norm);
+}
+
+// Bêta : <1 -> du bleu vers le vert ; 1 -> vert ; >1 -> du vert vers le rouge
+function betaValueColor(value: number, min: number, max: number) {
+  const target = 1;
+  const belowT = clamp01((value - min) / Math.max(0.0001, target - min)); // [min..1] -> [0..1]
+  const aboveT = clamp01((value - target) / Math.max(0.0001, max - target)); // [1..max] -> [0..1]
+  // teinte bleu≈215° -> vert≈135° -> rouge≈0°
+  if (value <= target) return hsl(lerp(215, 135, belowT));
+  return hsl(lerp(135, 0, aboveT));
+}
+
+// Reco (1=achat fort ... 5=vente) : 1 -> vert ; 5 -> rouge
+function recommendationValueColor(value: number) {
+  const t = clamp01((value - 1) / 4); // [1..5] -> [0..1]
+  return hsl(lerp(135, 0, t));        // vert≈135° -> rouge≈0°
+}
+
 type GaugeCommonProps = {
   value: number;
   min: number;
@@ -367,20 +417,22 @@ type GaugeCommonProps = {
 
 // ---------- Cercle complet (pour Moyenne des reco) ----------
 function GaugeDonut({
-  value,
-  min,
-  max,
-  color,
-  label,
-  unit = "",
-  trackColor = "rgba(15, 23, 42, 0.08)",
-}: GaugeCommonProps) {
-  const v = clamp(value, min, max);
+  value, min, max, color, label, unit = "", trackColor, valueColor,
+}: GaugeCommonProps & { valueColor?: string }) {
+  const v = Math.max(min, Math.min(max, value));
+  const data = [{ name: "val", val: max }];
 
-  const data = [
-    { name: "track", val: max, fill: trackColor },
-    { name: "value", val: v, fill: color },
-  ];
+  // Dégradé rouge (5) -> vert (1)
+  const gradId = "recoGradient";
+  const gradient = (
+    <defs>
+      <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#dc2626" /> {/* rouge */}
+        <stop offset="50%" stopColor="#facc15" /> {/* jaune intermédiaire */}
+        <stop offset="100%" stopColor="#16a34a" /> {/* vert */}
+      </linearGradient>
+    </defs>
+  );
 
   return (
     <div style={{ width: "100%", height: 160, position: "relative" }}>
@@ -390,25 +442,14 @@ function GaugeDonut({
           cy="50%"
           innerRadius="65%"
           outerRadius="85%"
-          startAngle={90}      // 12h -> clockwise
-          endAngle={-270}      // boucle complète
+          startAngle={90}
+          endAngle={-270}
           data={data}
         >
-          <PolarAngleAxis type="number" domain={[min, max]} dataKey="val" tick={false} />
-          <RadialBar dataKey="val" background={false} cornerRadius={10} fill={trackColor} />
-          <RadialBar dataKey="val" cornerRadius={10} fill={color} />
+          {gradient}
+          <RadialBar dataKey="val" cornerRadius={10} fill={`url(#${gradId})`} />
         </RadialBarChart>
       </ResponsiveContainer>
-
-      {/* Min/Max discrets à gauche/droite */}
-      <div style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
-        {min}
-      </div>
-      <div style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
-        {max}
-      </div>
-
-      {/* Valeur au centre */}
       <div
         style={{
           position: "absolute",
@@ -417,139 +458,246 @@ function GaugeDonut({
           transform: "translate(-50%, -50%)",
           fontSize: 24,
           fontWeight: 800,
-          color: "var(--primary-700)",
-          textAlign: "center",
+          color: valueColor ?? "var(--primary-700)",
         }}
       >
-        {label ?? v.toFixed(1)}{unit}
+        {label ?? v.toFixed(1)}
+      </div>
+      <div style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
+        {min}
+      </div>
+      <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
+        {max}
       </div>
     </div>
   );
 }
 
-/** Pie (demi-cercle) avec aiguille pour le Bêta — aiguille en overlay SVG */
+
+/** Pie (demi-cercle) avec aiguille + repère à 1 + labels collés à l’arc */
 function GaugeBetaNeedle({
   value,
   min,
   max,
   color = "#d4b200",
-  trackColor = "rgba(15, 23, 42, 0.08)",
   label,
+  valueColor,
 }: {
   value: number;
   min: number;
   max: number;
   color?: string;
-  trackColor?: string;
   label?: string;
+  valueColor?: string;
 }) {
-  // clamp + pourcentage [0..1]
+  // ====== RÉGLAGES VISUELS (AJUSTE ICI) ======
+
+  // 1) Anneau (doit matcher le <Pie> plus bas)
+  const ARC = {
+    innerPct: 0.68,   // épaisseur intérieure (innerRadius="68%")
+    outerPct: 1,   // épaisseur extérieure (outerRadius="86%")
+    cyRatio: 0.65,    // position verticale du centre (0=haut, 1=bas)
+  };
+
+  // 2) Aiguille
+  const NEEDLE = {
+    lengthRatio: 0.44, // longueur relative (0..1)
+    stroke: 3,         // épaisseur
+    hub: 4,            // rayon du pivot
+    color: "#334155",  // couleur
+  };
+
+  // 3) Repère “1”
+  const ONE_MARKER = {
+    TIE_TO_ARC: false,  // true = colle pile à l’anneau ; false = libre (startRatio/endRatio)
+    startRatio: 0.33,  // si TIE_TO_ARC=false : début (0..1)
+    endRatio: 0.50,    // si TIE_TO_ARC=false : fin (0..1)
+    stroke: 2,         // épaisseur du trait
+    color: "#0f172a",  // couleur
+    cap: "round" as const,
+    labelOffset: 14,   // ← ICI : distance (px) du petit "1" par rapport au bord externe
+    labelFont: 12,     // ← ICI : taille (px) du petit "1"
+  };
+
+  // 4) Labels sur l’arc (0 et 3 / min et max)
+  const TICKS = {
+    offset: 10,        // ← ICI : distance (px) des labels 0 et 3 au-delà du bord externe
+    font: 12,          // ← ICI : taille (px) des labels 0 et 3
+  };
+
+  // 5) Valeur centrale (ex: 1.25)
+  const VALUE_LABEL = {
+    topPct: 0.75,      // ← ICI : place la valeur (0=haut, 1=bas). 0.83 = plus bas qu’avant
+    font: 20,          // taille (px)
+  };
+
+  const HEIGHT = 200; // hauteur du composant
+
+  // ====== CALCULS ======
   const span = Math.max(0.0001, max - min);
   const v = Math.max(min, Math.min(max, value));
   const pct = (v - min) / span;
 
-  // angles d’un demi-cercle (gauche -> droite)
   const START = 180;
   const END = 0;
 
+  // Dégradé bleu -> vert -> rouge
+  const gradientId = "betaGradient";
+  const gradient = (
+    <defs>
+      <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stopColor="#1d4ed8" />
+        <stop offset="50%"  stopColor="#16a34a" />
+        <stop offset="100%" stopColor="#dc2626" />
+      </linearGradient>
+    </defs>
+  );
+
   const trackData = [{ name: "track", val: span }];
-  const valueData = [
-    { name: "filled", val: pct * span },
-    { name: "rest", val: (1 - pct) * span },
-  ];
 
-  // ----- MESURE du conteneur pour dessiner l’aiguille dans un SVG overlay -----
-  const overlayRef = useRef<HTMLDivElement | null>(null);
+  // Mesure conteneur pour overlay
+  const theta = Math.PI * (1 - pct);
   const [box, setBox] = useState({ w: 0, h: 0 });
-
+  const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    if (!overlayRef.current) return;
-    const el = overlayRef.current;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setBox({ w: Math.max(0, Math.floor(width)), h: Math.max(0, Math.floor(height)) });
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      setBox({ w: width, h: height });
     });
-    ro.observe(el);
+    ro.observe(ref.current);
     return () => ro.disconnect();
   }, []);
 
-  // Hauteur fixe du conteneur => pas de "width/height = -1"
-  const HEIGHT = 180;
-  const CY_RATIO = 0.70;      // même valeur que le Pie
-  const NEEDLE_LEN = 0.46;    // <— c'est bien la LENGTH (proportion du côté min), pas la height
-
-  // Coordonnées de l’aiguille (si size connue)
+  const base = Math.min(box.w, box.h);
   const cx = box.w / 2;
-  const cy = box.h * CY_RATIO;
-  const r = Math.min(box.w, box.h) * NEEDLE_LEN; // longueur de l’aiguille
-  const theta = Math.PI * (1 - pct);             // 0..π (droite->gauche)
-  const x2 = cx + r * Math.cos(theta);
-  const y2 = cy - r * Math.sin(theta);
-  const hubR = Math.max(3, Math.min(6, r * 0.04));
+  const cy = box.h * ARC.cyRatio;
+
+  // Aiguille
+  const needleR = base * NEEDLE.lengthRatio; // ← longueur de l’aiguille
+  const x2 = cx + needleR * Math.cos(theta);
+  const y2 = cy - needleR * Math.sin(theta);
+
+  // Repère "1" (angle de 1)
+  const stdPct = (1 - min) / span;
+  const stdTheta = Math.PI * (1 - stdPct);
+
+  // Rayons de début/fin du repère (collé à l’anneau ou libre)
+  const markerInnerR = ONE_MARKER.TIE_TO_ARC
+    ? base * (ARC.innerPct / 2)
+    : base * ONE_MARKER.startRatio;
+  const markerOuterR = ONE_MARKER.TIE_TO_ARC
+    ? base * (ARC.outerPct / 2)
+    : base * ONE_MARKER.endRatio;
+
+  // Coordonnées du trait “1”
+  const xStdIn  = cx + markerInnerR * Math.cos(stdTheta);
+  const yStdIn  = cy - markerInnerR * Math.sin(stdTheta);
+  const xStdOut = cx + markerOuterR * Math.cos(stdTheta);
+  const yStdOut = cy - markerOuterR * Math.sin(stdTheta);
+
+  // Position du petit label "1" (juste au-delà du bord externe)
+  const oneLabelR = markerOuterR + ONE_MARKER.labelOffset;
+  const xOne = cx + oneLabelR * Math.cos(stdTheta);
+  const yOne = cy - oneLabelR * Math.sin(stdTheta);
+
+  // Positions des labels min/max (0 et 3) collés à l’arc
+  const outerR = base * (ARC.outerPct / 2);
+  const tickR = outerR + TICKS.offset;
+
+  const xMin = cx + tickR * Math.cos(Math.PI); // angle gauche
+  const yMin = cy - tickR * Math.sin(Math.PI);
+
+  const xMax = cx + tickR * Math.cos(0);       // angle droit
+  const yMax = cy - tickR * Math.sin(0);
 
   return (
     <div className="gauge-wrapper" style={{ width: "100%", height: HEIGHT, position: "relative" }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
-          {/* Piste */}
+          {gradient}
           <Pie
             data={trackData}
             dataKey="val"
             startAngle={START}
             endAngle={END}
             cx="50%"
-            cy={`${CY_RATIO * 100}%`}
-            innerRadius="68%"
-            outerRadius="86%"
+            cy={`${ARC.cyRatio * 100}%`}
+            innerRadius={`${ARC.innerPct * 100}%`}
+            outerRadius={`${ARC.outerPct * 100}%`}
             stroke="none"
             isAnimationActive={false}
-          >
-            <Cell fill={trackColor} />
-          </Pie>
-
-          {/* Valeur */}
-          <Pie
-            data={valueData}
-            dataKey="val"
-            startAngle={START}
-            endAngle={END}
-            cx="50%"
-            cy={`${CY_RATIO * 100}%`}
-            innerRadius="68%"
-            outerRadius="86%"
-            stroke="none"
-            isAnimationActive={false}
-          >
-            <Cell fill={color} />
-            <Cell fill="transparent" />
-          </Pie>
+            fill={`url(#${gradientId})`}
+          />
         </PieChart>
       </ResponsiveContainer>
 
-      {/* AIGUILLE en overlay, indépendante de Recharts */}
-      <div ref={overlayRef} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        {box.w > 0 && box.h > 0 && (
+      {/* Overlay : aiguille + repère “1” + labels sur l’arc */}
+      <div ref={ref} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        {box.w > 0 && (
           <svg width={box.w} height={box.h} viewBox={`0 0 ${box.w} ${box.h}`}>
-            <line x1={cx} y1={cy} x2={x2} y2={y2} stroke="#334155" strokeWidth={3} />
-            <circle cx={cx} cy={cy} r={hubR} fill="#334155" />
+            {/* Aiguille */}
+            <line x1={cx} y1={cy} x2={x2} y2={y2} stroke={NEEDLE.color} strokeWidth={NEEDLE.stroke} />
+            <circle cx={cx} cy={cy} r={NEEDLE.hub} fill={NEEDLE.color} />
+
+            {/* Repère radial à 1 */}
+            <line
+              x1={xStdIn}
+              y1={yStdIn}
+              x2={xStdOut}
+              y2={yStdOut}
+              stroke={ONE_MARKER.color}
+              strokeWidth={ONE_MARKER.stroke}
+              strokeLinecap={ONE_MARKER.cap}
+            />
+            {/* Petit "1" à côté du repère */}
+            <text
+              x={xOne}
+              y={yOne}
+              fontSize={ONE_MARKER.labelFont}
+              fill="#334155"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{ fontWeight: 600 }}
+            >
+              1
+            </text>
+
+            {/* Labels min et max collés à l'arc */}
+            <text
+              x={xMin}
+              y={yMin}
+              fontSize={TICKS.font}
+              fill="#475569"
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {min}
+            </text>
+            <text
+              x={xMax}
+              y={yMax}
+              fontSize={TICKS.font}
+              fill="#475569"
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {max}
+            </text>
           </svg>
         )}
       </div>
 
-      {/* Min / Max */}
-      <div style={{ position: "absolute", left: 16, bottom: 8, fontSize: 12, color: "#475569" }}>{min}</div>
-      <div style={{ position: "absolute", right: 16, bottom: 8, fontSize: 12, color: "#475569" }}>{max}</div>
-
-      {/* Valeur sous l’arc (descendue pour ne plus chevaucher l’aiguille) */}
+      {/* Valeur centrale — plus bas (VALUE_LABEL.topPct) */}
       <div
         style={{
           position: "absolute",
           left: "50%",
-          top: "76%", // <— descendu
+          top: `${VALUE_LABEL.topPct * 100}%`, // ← DESCENDS/REMONTES la valeur ici
           transform: "translate(-50%, -50%)",
-          fontSize: 24,
+          fontSize: VALUE_LABEL.font,
           fontWeight: 800,
-          color: "var(--primary-700)",
+          color: valueColor ?? "var(--primary-700)",
           textAlign: "center",
         }}
       >
@@ -560,7 +708,181 @@ function GaugeBetaNeedle({
 }
 
 
+/** Demi-cercle coloré pour la moyenne des recommandations (1..5) */
+function GaugeRecommendationNeedle({
+  value,
+  min,
+  max,
+  label,
+  valueColor,
+}: {
+  value: number;   // ex: 2.1
+  min: number;     // 1
+  max: number;     // 5
+  label?: string;  // ex: "2.1"
+  valueColor?: string;
+}) {
+  // ---- RÉGLAGES VISUELS (ajuste ici) ----
+  const ARC = {
+    innerPct: 0.68,  // épaisseur intérieure (match <Pie> innerRadius)
+    outerPct: 1.00,  // extérieur de l’anneau
+    cyRatio: 0.65,   // position verticale du centre (0=haut, 1=bas)
+  };
+  const TRACK = {
+    color: "rgba(148,163,184,0.24)", // gris de la piste après l’aiguille
+  };
+  const NEEDLE = {
+    lengthRatio: 0.44,
+    stroke: 3,
+    hub: 4,
+    color: "#334155",
+  };
+  const TICKS = {
+    offset: 10,
+    font: 12,
+  };
+  const VALUE_LABEL = {
+    topPct: 0.75,
+    font: 20,
+  };
+  const HEIGHT = 160;
 
+  // bornes / normalisation
+  const span = Math.max(0.0001, max - min);
+  const v = Math.max(min, Math.min(max, value));
+  const pct = (v - min) / span; // 0..1
+
+  // angles (demi-cercle de gauche -> droite)
+  const START = 180;               // gauche
+  const END   = 0;                 // droite
+  const VALUE_END = START - pct * 180; // fin de l’arc coloré (jusqu’à l’aiguille)
+
+  // gradients
+  const gradId = "recoNeedleGradient";
+  const gradient = (
+    <defs>
+      <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+        {/* 1 -> vert foncé */}
+        <stop offset="0%"   stopColor="#16a34a" />
+        {/* 3 -> jaune au milieu */}
+        <stop offset="50%"  stopColor="#f59e0b" />
+        {/* 5 -> rouge */}
+        <stop offset="100%" stopColor="#dc2626" />
+      </linearGradient>
+    </defs>
+  );
+
+  const trackData = [{ name: "span", val: span }];
+
+  // --- Overlay pour l’aiguille et les labels 1 & 5
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      setBox({ w: width, h: height });
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const cx = box.w / 2;
+  const cy = box.h * ARC.cyRatio;
+  const base = Math.min(box.w, box.h);
+
+  // aiguille = angle correspondant à la valeur
+  const theta = Math.PI * (1 - pct); // même formule que bêta
+  const needleR = base * NEEDLE.lengthRatio;
+  const x2 = cx + needleR * Math.cos(theta);
+  const y2 = cy - needleR * Math.sin(theta);
+
+  // labels min/max collés à l’arc
+  const outerR = base * (ARC.outerPct / 2);
+  const tickR = outerR + TICKS.offset;
+  const xMin = cx + tickR * Math.cos(Math.PI);
+  const yMin = cy - tickR * Math.sin(Math.PI);
+  const xMax = cx + tickR * Math.cos(0);
+  const yMax = cy - tickR * Math.sin(0);
+
+  return (
+    <div style={{ width: "100%", height: HEIGHT, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          {gradient}
+
+          {/* 1) Arc coloré jusqu’à l’aiguille */}
+          <Pie
+            data={trackData}
+            dataKey="val"
+            startAngle={START}
+            endAngle={VALUE_END}
+            cx="50%"
+            cy={`${ARC.cyRatio * 100}%`}
+            innerRadius={`${ARC.innerPct * 100}%`}
+            outerRadius={`${ARC.outerPct * 100}%`}
+            stroke="none"
+            isAnimationActive={false}
+            fill={`url(#${gradId})`}
+          />
+
+          {/* 2) Reste de la piste (après l’aiguille) en gris */}
+          <Pie
+            data={trackData}
+            dataKey="val"
+            startAngle={VALUE_END}
+            endAngle={END}
+            cx="50%"
+            cy={`${ARC.cyRatio * 100}%`}
+            innerRadius={`${ARC.innerPct * 100}%`}
+            outerRadius={`${ARC.outerPct * 100}%`}
+            stroke="none"
+            isAnimationActive={false}
+            fill={TRACK.color}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* Overlay (aiguille + labels 1/5) */}
+      <div ref={ref} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        {box.w > 0 && (
+          <svg width={box.w} height={box.h} viewBox={`0 0 ${box.w} ${box.h}`}>
+            {/* aiguille */}
+            <line x1={cx} y1={cy} x2={x2} y2={y2}
+                  stroke={NEEDLE.color} strokeWidth={NEEDLE.stroke} />
+            <circle cx={cx} cy={cy} r={NEEDLE.hub} fill={NEEDLE.color} />
+
+            {/* 1 et 5 collés à l’arc */}
+            <text x={xMin} y={yMin} fontSize={TICKS.font} fill="#475569"
+                  textAnchor="middle" dominantBaseline="middle">
+              {min}
+            </text>
+            <text x={xMax} y={yMax} fontSize={TICKS.font} fill="#475569"
+                  textAnchor="middle" dominantBaseline="middle">
+              {max}
+            </text>
+          </svg>
+        )}
+      </div>
+
+      {/* valeur au centre */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: `${VALUE_LABEL.topPct * 100}%`,
+          transform: "translate(-50%, -50%)",
+          fontSize: VALUE_LABEL.font,
+          fontWeight: 800,
+          color: valueColor ?? "var(--primary-700)",
+          pointerEvents: "none",
+        }}
+      >
+        {label ?? v.toFixed(1)}
+      </div>
+    </div>
+  );
+}
 
 
 export default function Explore() {
@@ -1453,20 +1775,22 @@ export default function Explore() {
 
                             <div className="insight-subcard-body gauge-body">
                               {item.key === "recommendation" && item.gauge ? (
-                                <GaugeDonut
+                                <GaugeRecommendationNeedle
                                   value={item.gauge.value}
                                   min={item.gauge.min}
                                   max={item.gauge.max}
-                                  color="#22c55e"
                                   label={item.gauge.format(item.gauge.value)}
+                                  valueColor={recommendationValueColor(item.gauge.value)}
                                 />
                               ) : item.key === "beta" && item.gauge ? (
                                 <GaugeBetaNeedle
                                   value={item.gauge.value}
+                                  // si tu gardes 0..3 affichés, utilise les mêmes bornes ici
                                   min={0}
                                   max={3}
-                                  color="#d4b200" // doré (ta charte pour Bêta)
+                                  color="#d4b200"
                                   label={item.gauge.format(item.gauge.value)}
+                                  valueColor={betaValueColor(item.gauge.value, 0, 3)}
                                 />
                               ) : null}
                             </div>
@@ -1886,7 +2210,6 @@ function groupByMarket(list: Company[]): Record<string, Company[]> {
   }
   return ordered;
 }
-
 
 
 

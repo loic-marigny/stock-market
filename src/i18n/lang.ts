@@ -126,7 +126,32 @@
   'explore.metrics.irWebsite.help': 'Investor relations portal.',
   'explore.timeframe.label': 'Time range',
   'explore.aboutTitle': 'Company overview',
-  'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
+  'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).',
+
+  // Portfolio – table
+  "portfolio.table.headers.company": "Company",
+
+  // Portfolio – tooltips (help)
+  "portfolio.help.cash": "Amount of immediately available cash to place buy orders.",
+  "portfolio.help.positionValue": "Sum of current values (last price × quantity) of all positions.",
+  "portfolio.help.totalValue": "Cash plus the market value of your positions (total portfolio value).",
+  "portfolio.help.company": "Company name and ticker symbol.",
+  "portfolio.help.qty": "Number of shares/units held.",
+  "portfolio.help.avgPrice": "Average cost basis (ACB) per share/unit.",
+  "portfolio.help.last": "Most recent known market price for the security.",
+  "portfolio.help.value": "Current line value (last price × quantity).",
+  "portfolio.help.pnl": "Unrealized profit or loss: (last price − ACB) × quantity. Percentage shown in parentheses.",
+  "portfolio.composition.title": "Portfolio composition",
+  "portfolio.composition.others": "Others",
+  "portfolio.composition.note": "Excludes cash",
+
+  "portfolio.composition.cash": "Cash",
+  "portfolio.composition.withCash.title": "Portfolio (with cash)",
+  "portfolio.composition.withCash.note": "Includes cash",
+  "portfolio.history.title": "Wealth history",
+  "portfolio.history.note": "Stocks + cash breakdown (mock)",
+  "portfolio.history.stocks": "Stocks",
+  "portfolio.history.cash": "Cash",
 } as const;
 
 export type TranslationKey = keyof typeof en;
