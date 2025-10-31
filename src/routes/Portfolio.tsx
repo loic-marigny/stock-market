@@ -262,14 +262,12 @@ export default function Portfolio() {
     data,
     bySymbol,
     fxRatesUSD,
-    showLogos = true, // pour "Autres", on masque de toute façon
   }: {
     data: Slice[];
     bySymbol: Map<string, Company>;
     fxRatesUSD: Record<string, number>;
     showLogos?: boolean;
   }) {
-    const total = data.reduce((a, s) => a + s.value, 0) || 1;
 
     return (
       <div style={{ display: "grid", gap: 6 }}>
