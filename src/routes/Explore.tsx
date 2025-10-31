@@ -598,6 +598,238 @@ function GaugeBetaNeedle({
   );
 }
 
+function GaugeNeedle({
+  value,
+  min,
+  max,
+  label,
+  valueColor,
+  gradient = "beta",
+  customStops,
+  fillToNeedle = false,
+  showStandardTick = false,
+  standardValue = 1,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  label?: string;
+  valueColor?: string;
+  gradient?: "beta" | "reco";
+  customStops?: Array<{ offset: number; color: string }>;
+  fillToNeedle?: boolean;
+  showStandardTick?: boolean;
+  standardValue?: number;
+}) {
+  // Réglages visuels unifiés (cohérents avec ta jauge Bêta)
+  const ARC = { innerPct: 0.68, outerPct: 1.00, cyRatio: 0.65 };
+  const NEEDLE = { lengthRatio: 0.44, stroke: 3, hub: 4, color: "#334155" };
+  const TICKS = { offset: 10, font: 12 };
+  const VALUE_LABEL = { topPct: 0.75, font: 20 };
+  const TRACK_COLOR = "rgba(148,163,184,0.18)"; // piste claire
+  const HEIGHT = 160;
+
+  // Normalisation
+  const span = Math.max(0.0001, max - min);
+  const v = Math.max(min, Math.min(max, value));
+  const pct = (v - min) / span;
+
+  // Demi-cercle gauche (180°) -> droite (0°)
+  const START = 180;
+  const END = 0;
+
+  // Angle de l’aiguille
+  const needleAngle = START + pct * (END - START); // linéaire sur 180°
+
+  // Dégradés
+  const gradId = useMemo(() => `gn-grad-${Math.random().toString(36).slice(2)}`, []);
+  const defaultStops =
+    gradient === "beta"
+      ? [
+          { offset: 0, color: "#1d4ed8" }, // bleu
+          { offset: 50, color: "#16a34a" }, // vert
+          { offset: 100, color: "#dc2626" }, // rouge
+        ]
+      : [
+          { offset: 0, color: "#16a34a" }, // vert
+          { offset: 50, color: "#f59e0b" }, // jaune
+          { offset: 100, color: "#dc2626" }, // rouge
+        ];
+  const stops = customStops ?? defaultStops;
+
+  const gradientSvg = (
+    <defs>
+      <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
+        {stops.map((s, i) => (
+          <stop key={i} offset={`${s.offset}%`} stopColor={s.color} />
+        ))}
+      </linearGradient>
+    </defs>
+  );
+
+  // Données “pleines” pour dessiner un arc complet
+  const trackData = [{ name: "track", val: 1 }];
+
+  // Overlay (aiguille + labels)
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([e]) => {
+      const { width, height } = e.contentRect;
+      setBox({ w: width, h: height });
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
+
+  const cx = box.w / 2;
+  const cy = box.h * ARC.cyRatio;
+  const base = Math.min(box.w, box.h);
+
+  // Aiguille
+  const theta = (needleAngle * Math.PI) / 180;
+  const needleR = base * NEEDLE.lengthRatio;
+  const x2 = cx + needleR * Math.cos(theta);
+  const y2 = cy - needleR * Math.sin(theta);
+
+  // Labels min/max collés à l’arc
+  const outerR = base * (ARC.outerPct / 2);
+  const tickR = outerR + TICKS.offset;
+  const xMin = cx + tickR * Math.cos(Math.PI);
+  const yMin = cy - tickR * Math.sin(Math.PI);
+  const xMax = cx + tickR * Math.cos(0);
+  const yMax = cy - tickR * Math.sin(0);
+
+  // Repère standard (ex: 1 pour Bêta)
+  const stdPct = (standardValue - min) / span;
+  const stdTheta = Math.PI * (1 - stdPct);
+  const markerInnerR = base * (ARC.innerPct / 2);
+  const markerOuterR = base * (ARC.outerPct / 2);
+  const xStdIn = cx + markerInnerR * Math.cos(stdTheta);
+  const yStdIn = cy - markerInnerR * Math.sin(stdTheta);
+  const xStdOut = cx + markerOuterR * Math.cos(stdTheta);
+  const yStdOut = cy - markerOuterR * Math.sin(stdTheta);
+
+  return (
+    <div style={{ width: "100%", height: HEIGHT, position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          {gradientSvg}
+
+          {/* 1) piste grise sur tout l’arc */}
+          <Pie
+            data={trackData}
+            dataKey="val"
+            startAngle={START}
+            endAngle={END}
+            cx="50%"
+            cy={`${ARC.cyRatio * 100}%`}
+            innerRadius={`${ARC.innerPct * 100}%`}
+            outerRadius={`${ARC.outerPct * 100}%`}
+            isAnimationActive={false}
+            stroke="none"
+            fill={TRACK_COLOR}
+          />
+
+          {/* 2) gradient sur TOUT l’arc (uniforme) */}
+          <Pie
+            data={trackData}
+            dataKey="val"
+            startAngle={START}
+            endAngle={END}
+            cx="50%"
+            cy={`${ARC.cyRatio * 100}%`}
+            innerRadius={`${ARC.innerPct * 100}%`}
+            outerRadius={`${ARC.outerPct * 100}%`}
+            isAnimationActive={false}
+            stroke="none"
+            fill={`url(#${gradId})`}
+          />
+
+          {/* 3) masque : on recouvre APRÈS l’aiguille avec la couleur de fond */}
+          {fillToNeedle && (
+            <Pie
+              data={trackData}
+              dataKey="val"
+              startAngle={needleAngle}
+              endAngle={END}
+              cx="50%"
+              cy={`${ARC.cyRatio * 100}%`}
+              innerRadius={`${ARC.innerPct * 100}%`}
+              outerRadius={`${ARC.outerPct * 100}%`}
+              isAnimationActive={false}
+              fill="rgba(148,163,184)"  // gris neutre semi-transparent
+              stroke="rgba(148,163,184)"
+            />
+          )}
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* Overlay : aiguille + repère + labels sur l’arc */}
+      <div ref={ref} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        {box.w > 0 && (
+          <svg width={box.w} height={box.h} viewBox={`0 0 ${box.w} ${box.h}`}>
+            {/* Aiguille */}
+            <line x1={cx} y1={cy} x2={x2} y2={y2} stroke={NEEDLE.color} strokeWidth={NEEDLE.stroke} />
+            <circle cx={cx} cy={cy} r={NEEDLE.hub} fill={NEEDLE.color} />
+
+            {/* Repère standard (optionnel) */}
+            {showStandardTick && (
+              <>
+                <line
+                  x1={xStdIn}
+                  y1={yStdIn}
+                  x2={xStdOut}
+                  y2={yStdOut}
+                  stroke="#0f172a"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                />
+                <text
+                  x={cx + (markerOuterR + 12) * Math.cos(stdTheta)}
+                  y={cy - (markerOuterR + 12) * Math.sin(stdTheta)}
+                  fontSize={12}
+                  fill="#334155"
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  style={{ fontWeight: 600 }}
+                >
+                  {standardValue}
+                </text>
+              </>
+            )}
+
+            {/* Min / Max aux extrémités de l’arc */}
+            <text x={xMin} y={yMin} fontSize={TICKS.font} fill="#475569" textAnchor="middle" dominantBaseline="middle">
+              {min}
+            </text>
+            <text x={xMax} y={yMax} fontSize={TICKS.font} fill="#475569" textAnchor="middle" dominantBaseline="middle">
+              {max}
+            </text>
+          </svg>
+        )}
+      </div>
+
+      {/* Valeur au centre */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: `${VALUE_LABEL.topPct * 100}%`,
+          transform: "translate(-50%, -50%)",
+          fontSize: VALUE_LABEL.font,
+          fontWeight: 800,
+          color: valueColor ?? "var(--primary-700)",
+          pointerEvents: "none",
+          textAlign: "center",
+        }}
+      >
+        {label ?? v.toFixed(2)}
+      </div>
+    </div>
+  );
+}
 
 /** Demi-cercle coloré pour la moyenne des recommandations (1..5) */
 function GaugeRecommendationNeedle({
@@ -1608,12 +1840,15 @@ export default function Explore() {
 
                             <div className="insight-subcard-body gauge-body">
                               {item.key === "recommendation" && item.gauge ? (
-                                <GaugeRecommendationNeedle
+                                <GaugeNeedle
                                   value={item.gauge.value}
-                                  min={item.gauge.min}
-                                  max={item.gauge.max}
+                                  min={item.gauge.min}   // 1
+                                  max={item.gauge.max}   // 5
                                   label={item.gauge.format(item.gauge.value)}
                                   valueColor={recommendationValueColor(item.gauge.value)}
+                                  gradient="reco"
+                                  fillToNeedle={true}        // ← gradient uniforme sur tout l’arc + masquage après l’aiguille
+                                  showStandardTick={false}   // pas de repère fixe
                                 />
                               ) : item.key === "beta" && item.gauge ? (
                                 <GaugeBetaNeedle
