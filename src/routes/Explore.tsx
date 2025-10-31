@@ -7,7 +7,6 @@ import {
   type ISeriesApi,
   type IChartApi,
 } from "lightweight-charts";
-import { useDrawingArea, useYScale } from "@mui/x-charts/hooks";
 import provider, { type OHLC } from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
@@ -22,12 +21,8 @@ import {
   ReferenceLine,
   ResponsiveContainer,
   Customized,
-  RadialBarChart,
-  RadialBar,
-  PolarAngleAxis,
   PieChart,
   Pie,
-  Cell,
 } from "recharts";
 
 
@@ -185,11 +180,6 @@ const formatUSD = (value: number, maximumFractionDigits = 0) =>
 
 const formatCompactUSD = (value: number) => compactCurrencyFormatter.format(value);
 
-const formatDateString = (value: string) => {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" }).format(parsed);
-};
 
 const toNumeric = (value: unknown): number | undefined => {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -352,42 +342,12 @@ const analyzeLogoAppearance = async (src: string): Promise<CSSProperties> => {
 };
 
 // ---------- Gauge utils ----------
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
 
 // --- Color utils (HSL) ---
 const hsl = (h: number, s = 72, l = 45) => `hsl(${Math.round(h)} ${s}% ${l}%)`;
 const clamp01 = (t: number) => Math.max(0, Math.min(1, t));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-// Dégradé Bêta : bleu(215°) -> (étroit) vert(135°) à 1 -> rouge(0°)
-// greenBand = largeur relative de la zone “bien autour de 1”
-function betaHueAt(norm: number, pos1: number, greenBand = 0.06) {
-  const left = Math.max(0, pos1 - greenBand / 2);
-  const right = Math.min(1, pos1 + greenBand / 2);
-  if (norm <= left) {
-    // bleu 215 -> ~150 avant la zone verte
-    const t = norm / Math.max(1e-6, left);
-    return lerp(215, 150, t);
-  }
-  if (norm >= right) {
-    // ~75 juste après la zone verte -> rouge 0
-    const t = (norm - right) / Math.max(1e-6, 1 - right);
-    return lerp(75, 0, t);
-  }
-  // au centre de la bande : vert 135
-  const mid = (left + right) / 2;
-  const t = norm < mid
-    ? (norm - left) / Math.max(1e-6, mid - left)
-    : (norm - mid) / Math.max(1e-6, right - mid);
-  return 135; // pic vert net à 1 (bande étroite)
-}
-
-// Dégradé Reco : vert(135°) -> rouge(0°)
-function recoHueAt(norm: number) {
-  return lerp(135, 0, norm);
-}
 
 // Bêta : <1 -> du bleu vers le vert ; 1 -> vert ; >1 -> du vert vers le rouge
 function betaValueColor(value: number, min: number, max: number) {
@@ -405,81 +365,12 @@ function recommendationValueColor(value: number) {
   return hsl(lerp(135, 0, t));        // vert≈135° -> rouge≈0°
 }
 
-type GaugeCommonProps = {
-  value: number;
-  min: number;
-  max: number;
-  color: string;
-  label?: string;         // texte au centre (ex: "1.25" ou "2.1")
-  unit?: string;          // ex: ""
-  trackColor?: string;    // couleur de fond de piste
-};
-
-// ---------- Cercle complet (pour Moyenne des reco) ----------
-function GaugeDonut({
-  value, min, max, color, label, unit = "", trackColor, valueColor,
-}: GaugeCommonProps & { valueColor?: string }) {
-  const v = Math.max(min, Math.min(max, value));
-  const data = [{ name: "val", val: max }];
-
-  // Dégradé rouge (5) -> vert (1)
-  const gradId = "recoGradient";
-  const gradient = (
-    <defs>
-      <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#dc2626" /> {/* rouge */}
-        <stop offset="50%" stopColor="#facc15" /> {/* jaune intermédiaire */}
-        <stop offset="100%" stopColor="#16a34a" /> {/* vert */}
-      </linearGradient>
-    </defs>
-  );
-
-  return (
-    <div style={{ width: "100%", height: 160, position: "relative" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <RadialBarChart
-          cx="50%"
-          cy="50%"
-          innerRadius="65%"
-          outerRadius="85%"
-          startAngle={90}
-          endAngle={-270}
-          data={data}
-        >
-          {gradient}
-          <RadialBar dataKey="val" cornerRadius={10} fill={`url(#${gradId})`} />
-        </RadialBarChart>
-      </ResponsiveContainer>
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-          fontSize: 24,
-          fontWeight: 800,
-          color: valueColor ?? "var(--primary-700)",
-        }}
-      >
-        {label ?? v.toFixed(1)}
-      </div>
-      <div style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
-        {min}
-      </div>
-      <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 12, color: "#475569" }}>
-        {max}
-      </div>
-    </div>
-  );
-}
-
 
 /** Pie (demi-cercle) avec aiguille + repère à 1 + labels collés à l’arc */
 function GaugeBetaNeedle({
   value,
   min,
   max,
-  color = "#d4b200",
   label,
   valueColor,
 }: {
@@ -898,7 +789,6 @@ export default function Explore() {
   const trimmedQuery = query.trim();
   const searchMode = trimmedQuery.length > 0;
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
-  type ChartApi = ReturnType<typeof createChart>;
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
@@ -1447,59 +1337,6 @@ export default function Explore() {
     };
   }, [headerLogo, selectedCompany?.logo]);
 
-  const formatTick = (tick: number) =>
-    Math.abs(tick) >= 10 || Number.isInteger(tick) ? tick.toFixed(0) : tick.toFixed(1);
-
-  const Gauge = ({ label, value, min, max, format, variant = "circular", target }: { label: string } & GaugeConfig) => {
-    const span = Math.max(0.0001, max - min);
-    const clamped = Math.min(max, Math.max(min, value));
-    const pct = (clamped - min) / span;
-
-    if (variant === "linear") {
-      const boundedPct = Math.min(100, Math.max(0, pct * 100));
-      const targetPct =
-        target !== undefined ? Math.min(100, Math.max(0, ((target - min) / span) * 100)) : undefined;
-      const isAboveTarget = target !== undefined ? clamped >= target : pct >= 0.5;
-      const color = isAboveTarget ? "var(--primary-500)" : "var(--primary-700)";
-      return (
-        <div className="linear-gauge" role="img" aria-label={`${label}: ${format(clamped)}`}>
-          <div className="linear-gauge-value">{format(clamped)}</div>
-          <div className="linear-gauge-track">
-            <div
-              className="linear-gauge-fill"
-              style={{ width: `${boundedPct}%`, background: `linear-gradient(90deg, ${color}, rgba(147,40,192,0.45))` }}
-            />
-            <span className="linear-gauge-marker" style={{ left: `${boundedPct}%` }} />
-            {targetPct !== undefined && <span className="linear-gauge-target" style={{ left: `${targetPct}%` }} />}
-          </div>
-          <div className={`linear-gauge-scale${target !== undefined ? " with-target" : ""}`}>
-            <span>{formatTick(min)}</span>
-            {target !== undefined && <span>{formatTick(target)}</span>}
-            <span>{formatTick(max)}</span>
-          </div>
-        </div>
-      );
-    }
-
-    const angle = pct * 360;
-    const color = `hsl(${Math.max(0, 120 - pct * 120)}, 70%, 50%)`;
-    return (
-      <div className="gauge gauge--circular" role="img" aria-label={`${label}: ${format(clamped)}`}>
-        <div
-          className="gauge-dial"
-          style={{
-            background: `conic-gradient(${color} ${angle}deg, rgba(148,163,184,0.15) ${angle}deg)`,
-          }}
-        >
-          <div className="gauge-cap">
-            <span>{format(clamped)}</span>
-          </div>
-          <span className="gauge-marker gauge-marker--min">{formatTick(min)}</span>
-          <span className="gauge-marker gauge-marker--max">{formatTick(max)}</span>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <main className="explore-page">
@@ -1748,10 +1585,6 @@ export default function Explore() {
 
                     <div className="insight-panel-body insight-panel-body--grid">
                       {gauges.map((item) => {
-                        const tooltipId = `insight-${item.key}-tooltip`;
-                        const tooltipLabel = item.description
-                          ? `${item.label}: ${item.description}`
-                          : item.label;
                         return (
                           <div key={item.key} className="insight-subcard">
                             <div className="insight-subcard-head">
@@ -1881,65 +1714,6 @@ function clampDateRange(
 }
 
 // ===== Overlay qui lit l'échelle réelle du chart MUI =====
-
-function CurrentLineOverlay({
-  current,
-  label,
-  formatValue,
-}: {
-  current: number;
-  label: string;
-  formatValue: (n: number) => string;
-}) {
-  // zone de tracé réelle (px)
-  const { top, bottom, left, right } = useDrawingArea();
-  // fonction d'échelle Y utilisée par le chart pour convertir une valeur -> pixel
-  const yScale = useYScale(); // par défaut l'axe Y primaire
-
-  // yScale(current) nous donne une coordonnée Y ABSOLUE dans le SVG.
-  // On veut positionner un élément HTML en overlay à cet endroit.
-  // La drawing area elle-même vit à (top..bottom); donc cette coordonnée est dans le même repère.
-  const yPx = yScale(current);
-
-  if (yPx == null || Number.isNaN(yPx)) {
-    return null;
-  }
-
-  const lineStyle: React.CSSProperties = {
-    position: "absolute",
-    left: left,
-    right: left === right ? 0 : `calc(100% - ${right}px)`,
-    top: yPx,
-    borderTop: "2px dashed #475569",
-    pointerEvents: "none",
-  };
-
-  const badgeStyle: React.CSSProperties = {
-    position: "absolute",
-    left: `calc(100% - ${right}px)`,
-    transform: "translateY(-100%) translateX(-100%)",
-    fontSize: "0.7rem",
-    lineHeight: 1.2,
-    color: "#475569",
-    background: "rgba(255,255,255,0.9)",
-    borderRadius: "6px",
-    padding: "2px 6px",
-    border: "1px solid rgba(0,0,0,0.06)",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-    fontWeight: 600,
-    pointerEvents: "none",
-    whiteSpace: "nowrap",
-  };
-
-  return (
-    <>
-      <div style={lineStyle} />
-      <div style={badgeStyle}>
-        {label} {formatValue(current)}
-      </div>
-    </>
-  );
-}
 
 type RangeHistogramProps = {
   low: number;
