@@ -146,15 +146,6 @@ const toBusinessDay = (value: string | Date): BusinessDay => {
   } as BusinessDay;
 };
 
-const timeToDate = (value: Time): Date => {
-  if (typeof value === "number") {
-    return new Date(value * 1000);
-  }
-  if (typeof value === "string") {
-    return new Date(value);
-  }
-  return new Date(value.year, value.month - 1, value.day);
-};
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
