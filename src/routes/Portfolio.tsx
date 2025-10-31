@@ -262,7 +262,7 @@ export default function Portfolio() {
     data,
     bySymbol,
     fxRatesUSD,
-    showLogos = true, // pour �Autres�, on masque de toute fa�on
+    showLogos = true, // pour "Autres", on masque de toute façon
   }: {
     data: Slice[];
     bySymbol: Map<string, Company>;
