@@ -34,8 +34,11 @@ const fr: Translations = {
   'portfolio.cards.cash': 'Liquidit\u00E9s (USD)',
   'portfolio.cards.positionValue': 'Valeur des positions',
   'portfolio.cards.totalValue': 'Valeur totale',
+  'portfolio.currency.unit': 'USD',
   'portfolio.table.headers.symbol': 'Symbole',
   'portfolio.table.headers.qty': 'Qt\u00E9',
+  'portfolio.table.headers.buyPrice': 'Prix d\u2019achat',
+  'portfolio.table.headers.buyDate': 'Date d\u2019achat',
   'portfolio.table.headers.avgPrice': 'Prix moyen',
   'portfolio.table.headers.last': 'Dernier',
   'portfolio.table.headers.value': 'Valeur',
@@ -140,6 +143,8 @@ const fr: Translations = {
   "portfolio.help.company": "Nom de l’entreprise et symbole boursier.",
   "portfolio.help.qty": "Nombre d’actions/parts détenues.",
   "portfolio.help.avgPrice": "Prix de revient unitaire (PRU) de la position.",
+  "portfolio.help.buyPrice": "Prix d’achat de ce lot spécifique.",
+  "portfolio.help.buyDate": "Date et heure d’exécution de l’achat.",
   "portfolio.help.last": "Dernier prix de marché connu pour le titre.",
   "portfolio.help.value": "Valeur actuelle de la ligne (dernier prix × quantité).",
   "portfolio.help.pnl": "Gain ou perte latent(e) : (dernier prix − PRU) × quantité. Entre parenthèses : en pourcentage.",
@@ -157,4 +162,3 @@ const fr: Translations = {
 };
 
 export default fr;
-

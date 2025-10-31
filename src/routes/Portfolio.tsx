@@ -1,23 +1,24 @@
 ﻿// src/routes/Portfolio.tsx
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "../firebase";
-import type { Position } from "../lib/portfolio";
+import type { Order } from "../lib/portfolio";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 import { useI18n } from "../i18n/I18nProvider";
 import provider from "../lib/prices";
 
-// ✅ nouveaux imports pour récupérer noms/logos comme sur Explore
+// ? nouveaux imports pour r�cup�rer noms/logos comme sur Explore
 import { fetchCompaniesIndex, type Company } from "../lib/companies";
 
 import {
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
+  type TooltipContentProps,
 } from "recharts";
 
 // --- helpers UI ---
 const EPSILON = 1e-9;
 
-// même logique qu'Explore pour construire le chemin d'actif (BASE_URL, etc.)
+// m�me logique qu'Explore pour construire le chemin d'actif (BASE_URL, etc.)
 const assetPath = (path: string) => {
   if (/^https?:/i.test(path)) return path;
   const base = ((import.meta as any).env?.BASE_URL as string | undefined) ?? "/";
@@ -35,41 +36,38 @@ const PIE_COLORS = [
 ];
 const OTHERS_COLOR = "rgba(148,163,184,0.85)";
 const THRESHOLD_PCT = 0.03;
-const RADIAN = Math.PI / 180;
-function renderPercentLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) {
-  if (!percent || percent < 0.015) return null;
-  const r = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + r * Math.cos(-midAngle * RADIAN);
-  const y = cy + r * Math.sin(-midAngle * RADIAN);
-  return (
-    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central" style={{ fontWeight: 700 }}>
-      {(percent * 100).toFixed(0)}%
-    </text>
-  );
-}
 
 
 type Row = {
+  id: string;
   symbol: string;
   qty: number;
-  avg: number;
+  buyPrice: number;
+  buyDate: Date;
   last: number;
   value: number;
   pnlAbs: number;
   pnlPct: number;
 };
 
-export default function Portfolio() {
-  const { t } = useI18n();
-  const uid = auth.currentUser?.uid ?? null;
-  const { positions, prices, cash, marketValue, totalValue, loadingPrices } = usePortfolioSnapshot(uid);
+type Lot = {
+  symbol: string;
+  qty: number;
+  price: number;
+  ts: Date;
+};
 
-  // On suppose que usePortfolioSnapshot retournera bientôt cashByCcy.
+export default function Portfolio() {
+  const { t, locale } = useI18n();
+  const uid = auth.currentUser?.uid ?? null;
+  const { orders, positions, prices, cash, marketValue, totalValue, loadingPrices } = usePortfolioSnapshot(uid);
+
+  // On suppose que usePortfolioSnapshot retournera bient�t cashByCcy.
   // En attendant, fallback: tout le cash est en USD.
   const cashByCcy: Record<string, number> =
     ((usePortfolioSnapshot as any)?.cashByCcy) || { USD: cash };
 
-  // --- conversion des liquidités en USD ---
+  // --- conversion des liquidit�s en USD ---
   // fxRatesUSD["USD"]=1 ; fxRatesUSD["EUR"]=prix EURUSD ; fxRatesUSD["JPY"]=1 / USDJPY ; etc.
   const [fxRatesUSD, setFxRatesUSD] = useState<Record<string, number>>({ USD: 1 });
 
@@ -82,7 +80,7 @@ export default function Portfolio() {
       const next: Record<string, number> = { USD: 1 };
       for (const ccy of ccys) {
         try {
-          // Essai direct: EURUSD, GBPUSD, etc. (USD par unité de ccy)
+          // Essai direct: EURUSD, GBPUSD, etc. (USD par unit� de ccy)
           const direct = await provider.getLastPrice(`${ccy}USD`);
           if (Number.isFinite(direct) && direct > 0) { next[ccy] = direct; continue; }
 
@@ -101,7 +99,7 @@ export default function Portfolio() {
   }, [JSON.stringify(Object.keys(cashByCcy).sort())]);
 
 
-  // 🔎 charger l'index des sociétés pour avoir noms/logos
+  // ?? charger l'index des soci�t�s pour avoir noms/logos
   const [companies, setCompanies] = useState<Company[]>([]);
   useEffect(() => {
     let cancelled = false;
@@ -110,13 +108,13 @@ export default function Portfolio() {
         const idx = await fetchCompaniesIndex();
         if (!cancelled) setCompanies(idx);
       } catch {
-        // silencieux : l'UI gère l'absence de logo/nom avec des fallbacks
+        // silencieux : l'UI g�re l'absence de logo/nom avec des fallbacks
       }
     })();
     return () => { cancelled = true; };
   }, []);
 
-  // Couleurs fixes pour devises (teal & dérivés)
+  // Couleurs fixes pour devises (teal & d�riv�s)
   const CASH_COLORS: Record<string, string> = {
     USD: "#0F766E",
     EUR: "#0EA5E9",
@@ -133,33 +131,48 @@ export default function Portfolio() {
     return map;
   }, [companies]);
 
-  const rows: Row[] = useMemo(() => buildRows(positions, prices), [positions, prices]);
+  const openLots = useMemo(() => buildOpenLots(orders), [orders]);
+  const rows: Row[] = useMemo(() => buildRows(openLots, prices), [openLots, prices]);
 
-  // Composition des positions (hors cash), regroupement “Autres” pour petites parts
+  // Composition des positions (hors cash), regroupement �Autres� pour petites parts
   type Slice = {
     key: string;
-    label: string;
-    value: number;
-    symbol?: string;
-    isOthers?: boolean;
-    color?: string; // ✅ on garde la couleur pour synchroniser chart & légende
-  };
+  label: string;
+  value: number;
+  symbol?: string;
+  isOthers?: boolean;
+  color?: string; // ? on garde la couleur pour synchroniser chart & l�gende
+  unit?: string;
+};
+
+  const rawCurrencyUnit = t('portfolio.currency.unit');
+  const currencyUnit = rawCurrencyUnit === 'portfolio.currency.unit' ? 'USD' : rawCurrencyUnit;
+
+  const compositionBase: Slice[] = useMemo(() => {
+    const slices: Slice[] = [];
+    for (const [symbol, pos] of Object.entries(positions)) {
+      const qty = pos.qty;
+      if (Math.abs(qty) <= EPSILON) continue;
+      const px = prices[symbol];
+      if (typeof px !== "number" || !Number.isFinite(px)) continue;
+      const value = qty * px;
+      if (value <= 0) continue;
+      const comp = bySymbol.get(symbol);
+      const label = comp?.name || symbol;
+      slices.push({ key: symbol, label, value, symbol });
+    }
+    return slices.sort((a, b) => b.value - a.value);
+  }, [positions, prices, bySymbol]);
 
   const pieData: Slice[] = useMemo(() => {
-    const total = rows.reduce((acc, r) => acc + Math.max(0, r.value), 0);
+    const total = compositionBase.reduce((acc, slice) => acc + slice.value, 0);
     if (total <= 0) return [];
 
-    const base = rows
-      .filter(r => r.value > 0)
-      .map(r => {
-        const comp = bySymbol.get(r.symbol);
-        const label = comp?.name || r.symbol;
-        return { key: r.symbol, label, value: r.value, symbol: r.symbol } as Slice;
-      })
-      .sort((a, b) => b.value - a.value);
-
-    const big: Slice[] = [], small: Slice[] = [];
-    for (const s of base) ((s.value / total) >= THRESHOLD_PCT ? big : small).push(s);
+    const big: Slice[] = [];
+    const small: Slice[] = [];
+    for (const slice of compositionBase) {
+      ((slice.value / total) >= THRESHOLD_PCT ? big : small).push(slice);
+    }
 
     if (small.length) {
       big.push({
@@ -170,12 +183,13 @@ export default function Portfolio() {
       });
     }
 
-    // ✅ fixe la couleur ici pour rester cohérent avec la légende même si on réordonne l’affichage
+    // ? fixe la couleur ici pour rester coh�rent avec la l�gende m�me si on r�ordonne l�affichage
     return big.map((s, idx) => ({
       ...s,
       color: s.isOthers ? OTHERS_COLOR : PIE_COLORS[idx % PIE_COLORS.length],
+      unit: currencyUnit,
     }));
-  }, [rows, bySymbol, t]);
+  }, [compositionBase, t, currencyUnit]);
 
 
   const pieWithCashData: Slice[] = useMemo(() => {
@@ -184,51 +198,71 @@ export default function Portfolio() {
     // cash par devise
     const cashSlices: Slice[] = Object.entries(cashByCcy)
       .filter(([, v]) => (v ?? 0) > 0)
-      .map(([ccy, v]) => ({
-        key: `__CASH_${normalizeCcy(ccy)}__`,
-        label: `${(t('portfolio.composition.cash') as string) || 'Liquidités'} ${normalizeCcy(ccy)}`,
-        value: v,
-        color: CASH_COLORS[normalizeCcy(ccy)] || "#0F766E",
-      }));
+      .map(([ccy, v]) => {
+        const normalized = normalizeCcy(ccy);
+        return {
+          key: `__CASH_${normalized}__`,
+          label: `${(t('portfolio.composition.cash') as string) || 'Liquidit�s'} ${normalized}`,
+          value: v,
+          color: CASH_COLORS[normalized] || "#0F766E",
+          unit: normalized,
+        };
+      });
 
     if (!positions.length && !cashSlices.length) return [];
     return [...positions, ...cashSlices];
   }, [pieData, cashByCcy, t]);
-
-
+  const pieTotal = useMemo(() => pieData.reduce((acc, slice) => acc + slice.value, 0), [pieData]);
+  const pieWithCashTotal = useMemo(() => pieWithCashData.reduce((acc, slice) => acc + slice.value, 0), [pieWithCashData]);
+  const buyDateFormatter = useMemo(
+    () => new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }),
+    [locale]
+  );
 
   // petit helper de traduction avec fallback
   const tt = (primaryKey: string, fallbackKey: string, fallback: string) =>
     (t as any)?.(primaryKey) ?? (t as any)?.(fallbackKey) ?? fallback;
 
 
-  type HistPoint = { date: string; stocks: number; cash: number };
+  type HistPoint = { label: string; stocks: number; cash: number };
 
-/* mock données historiques pour l'instant */
-const historyData: HistPoint[] = useMemo(() => {
-  // 12 points mensuels mock
-  const base = [
-    { date: "2025-01", stocks: 12000, cash: 3000 },
-    { date: "2025-02", stocks: 13200, cash: 2800 },
-    { date: "2025-03", stocks: 12800, cash: 3500 },
-    { date: "2025-04", stocks: 14000, cash: 3200 },
-    { date: "2025-05", stocks: 14500, cash: 3100 },
-    { date: "2025-06", stocks: 15000, cash: 3000 },
-    { date: "2025-07", stocks: 14800, cash: 3600 },
-    { date: "2025-08", stocks: 15500, cash: 3400 },
-    { date: "2025-09", stocks: 16000, cash: 3200 },
-    { date: "2025-10", stocks: 15800, cash: 4000 },
-    { date: "2025-11", stocks: 16500, cash: 3700 },
-    { date: "2025-12", stocks: 17000, cash: 3500 },
-  ];
-  return base;
-}, []);
+  const historyDateFormatter = useMemo(
+    () => new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }),
+    [locale]
+  );
+  const historyTimeFormatter = useMemo(
+    () => new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }),
+    [locale]
+  );
+
+  /* mock donn�es historiques pour l'instant */
+  const historyData: HistPoint[] = useMemo(() => {
+    const now = new Date();
+    const points: HistPoint[] = [];
+    const baseStocks = 14000;
+    const baseCash = 3200;
+
+    for (let step = 13; step >= 0; step--) {
+      const ts = new Date(now.getTime() - step * 12 * 60 * 60 * 1000); // deux relev�s par jour
+      const index = 13 - step;
+      const stocksTrend = baseStocks + index * 180 + Math.sin(index / 2) * 350;
+      const cashTrend = baseCash + index * 35 + Math.cos(index / 3) * 140;
+      const dateLabel = historyDateFormatter.format(ts);
+      const timeLabel = historyTimeFormatter.format(ts);
+      points.push({
+        label: `${dateLabel}\n${timeLabel}`,
+        stocks: Math.round(stocksTrend),
+        cash: Math.round(cashTrend),
+      });
+    }
+    return points;
+  }, [historyDateFormatter, historyTimeFormatter]);
 
   function LegendTable({
     data,
     bySymbol,
     fxRatesUSD,
-    showLogos = true, // pour “Autres”, on masque de toute façon
+    showLogos = true, // pour �Autres�, on masque de toute fa�on
   }: {
     data: Slice[];
     bySymbol: Map<string, Company>;
@@ -250,7 +284,7 @@ const historyData: HistPoint[] = useMemo(() => {
             const usd = isCash ? (s.value * (fxRatesUSD[ccy] ?? 1)) : s.value;
             const pct = (s.value / (data.reduce((a, x) => a + x.value, 0) || 1)) * 100;
 
-            // colonnes: •pastille •(logo+nom) •% •USD
+            // colonnes: �pastille �(logo+nom) �% �USD
             return (
               <div
                 key={s.key}
@@ -285,13 +319,13 @@ const historyData: HistPoint[] = useMemo(() => {
 
 
   return (
-    <div className="page-main">
+    <div className="page-main portfolio-page">
       <div className="container">
         {/* Header de page */}
-        <header className="page-header">
-          <h1 className="page-title">{t('portfolio.title')}</h1>
-          {/* sous-titre optionnel ; tu peux y mettre la valeur totale, la date, etc. */}
-          <span className="page-subtitle">{t('portfolio.composition.withCash.note')}</span>
+        <header className="portfolio-header">
+          <div className="portfolio-title-card">
+            <h1>{t('portfolio.title')}</h1>
+          </div>
         </header>
 
         {/* ===== KPIs avec info-tooltips ===== */}
@@ -300,37 +334,55 @@ const historyData: HistPoint[] = useMemo(() => {
             <div style={{display:"flex", alignItems:"center", gap:8, justifyContent: "space-between", width: "100%" }}>
               <div className="kpi-k">{t('portfolio.cards.cash')}</div>
               <span className="info-tooltip" aria-hidden="false">
-                <button type="button" className="info-btn" title={t('portfolio.help.cash') ?? 'Liquidités disponibles pour acheter'}>
+                <button
+                  type="button"
+                  className="info-btn"
+                  aria-label={`${t('portfolio.cards.cash')}: ${t('portfolio.help.cash') ?? 'Liquidit�s disponibles pour acheter'}`}
+                >
                   i
                 </button>
                 <span role="tooltip" className="info-tooltip-content">
-                  {t('portfolio.help.cash') ?? "Montant de liquidités immédiatement disponibles pour exécuter des achats."}
+                  {t('portfolio.help.cash') ?? "Montant de liquidit�s imm�diatement disponibles pour ex�cuter des achats."}
                 </span>
               </span>
             </div>
-            <div className="kpi-v">{fmt(totalSafe(cash))}</div>
+            <div className="kpi-v">
+              <span>{fmt(totalSafe(cash))}</span>
+              <span className="kpi-unit">{currencyUnit}</span>
+            </div>
           </div>
 
           <div className="kpi-card">
             <div style={{display:"flex", alignItems:"center", gap:8, justifyContent: "space-between", width: "100%" }}>
               <div className="kpi-k">{t('portfolio.cards.positionValue')}</div>
               <span className="info-tooltip">
-                <button type="button" className="info-btn" title={t('portfolio.help.positionValue') ?? 'Valeur de marché des positions'}>
+                <button
+                  type="button"
+                  className="info-btn"
+                  aria-label={`${t('portfolio.cards.positionValue')}: ${t('portfolio.help.positionValue') ?? 'Valeur de march� des positions'}`}
+                >
                   i
                 </button>
                 <span role="tooltip" className="info-tooltip-content">
-                  {t('portfolio.help.positionValue') ?? "Somme des valeurs actuelles (dernier prix × quantité) de toutes les positions."}
+                  {t('portfolio.help.positionValue') ?? "Somme des valeurs actuelles (dernier prix � quantit�) de toutes les positions."}
                 </span>
               </span>
             </div>
-            <div className="kpi-v">{fmt(totalSafe(marketValue))}</div>
+            <div className="kpi-v">
+              <span>{fmt(totalSafe(marketValue))}</span>
+              <span className="kpi-unit">{currencyUnit}</span>
+            </div>
           </div>
 
           <div className="kpi-card">
             <div style={{display:"flex", alignItems:"center", gap:8, justifyContent: "space-between", width: "100%" }}>
               <div className="kpi-k">{t('portfolio.cards.totalValue')}</div>
               <span className="info-tooltip">
-                <button type="button" className="info-btn" title={t('portfolio.help.totalValue') ?? 'Cash + valeur des positions'}>
+                <button
+                  type="button"
+                  className="info-btn"
+                  aria-label={`${t('portfolio.cards.totalValue')}: ${t('portfolio.help.totalValue') ?? 'Cash + valeur des positions'}`}
+                >
                   i
                 </button>
                 <span role="tooltip" className="info-tooltip-content">
@@ -338,15 +390,18 @@ const historyData: HistPoint[] = useMemo(() => {
                 </span>
               </span>
             </div>
-            <div className="kpi-v">{fmt(totalSafe(totalValue))}</div>
+            <div className="kpi-v">
+              <span>{fmt(totalSafe(totalValue))}</span>
+              <span className="kpi-unit">{currencyUnit}</span>
+            </div>
           </div>
         </div>
 
         
-        {/* ===== Deux camemberts côte à côte ===== */}
+        {/* ===== Deux camemberts c�te � c�te ===== */}
         {(pieData.length > 0 || pieWithCashData.length > 0) && (
           <div className="grid-charts-2">
-            {/* ===== Camembert hors liquidités ===== */}
+            {/* ===== Camembert hors liquidit�s ===== */}
             {pieData.length > 0 && (
               <div className="chart-card" style={{ marginTop: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
@@ -354,12 +409,12 @@ const historyData: HistPoint[] = useMemo(() => {
                     {(t('portfolio.composition.title') as string) || "Composition du portefeuille"}
                   </h3>
                   <div className="hint" style={{ margin: 0 }}>
-                    {(t('portfolio.composition.note') as string) || "Hors liquidités"}
+                    {(t('portfolio.composition.note') as string) || "Hors liquidit�s"}
                   </div>
                 </div>
 
                 <div style={{ minHeight: 260, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                  <div style={{ width: "100%", maxWidth: 360, height: 260 }}>
+                  <div style={{ width: "100%", maxWidth: 360, height: 260, minWidth: 0 }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -371,7 +426,6 @@ const historyData: HistPoint[] = useMemo(() => {
                           innerRadius={60}
                           outerRadius={100}
                           labelLine={false}
-                          label={renderPercentLabel}
                           isAnimationActive={false}
                         >
                           {pieData.map((entry) => (
@@ -382,19 +436,21 @@ const historyData: HistPoint[] = useMemo(() => {
                             />
                           ))}
                         </Pie>
-                        <Tooltip
-                          formatter={(value: any, _name: string, item: any) => {
-                            const v = Number(value) || 0;
-                            const total = pieData.reduce((a, s) => a + s.value, 0);
-                            const pct = total ? (v / total) * 100 : 0;
-                            return [`${fmt(v)} (${pct.toFixed(1)}%)`, item?.payload?.label];
-                          }}
-                        />
+                          <Tooltip
+                            content={<PieTooltip total={pieTotal} unit={currencyUnit} />}
+                            wrapperStyle={{ zIndex: 9999, pointerEvents: "none" }}
+                            contentStyle={{
+                              backgroundColor: "transparent",
+                              border: "none",
+                              boxShadow: "none",
+                              padding: 0,
+                            }}
+                          />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
 
-                  {/* Légende sous le graphique (même structure que droite) */}
+                  {/* L�gende sous le graphique (m�me structure que droite) */}
                   <div style={{ width: "100%", maxWidth: 360 }}>
                     <LegendTable data={pieData} bySymbol={bySymbol} fxRatesUSD={{ USD: 1 }} />
                   </div>
@@ -402,49 +458,50 @@ const historyData: HistPoint[] = useMemo(() => {
               </div>
             )}
 
-            {/* ===== Camembert avec liquidités ===== */}
+            {/* ===== Camembert avec liquidit�s ===== */}
             {pieWithCashData.length > 0 && (
               <div className="chart-card" style={{ marginTop: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
                   <h3 className="insight-panel-title" style={{ margin: 0 }}>
-                    {(t('portfolio.composition.withCash.title') as string) || "Portefeuille (avec liquidités)"}
+                    {(t('portfolio.composition.withCash.title') as string) || "Portefeuille (avec liquidit�s)"}
                   </h3>
                   <div className="hint" style={{ margin: 0 }}>
-                    {(t('portfolio.composition.withCash.note') as string) || "Inclut les liquidités"}
+                    {(t('portfolio.composition.withCash.note') as string) || "Inclut les liquidit�s"}
                   </div>
                 </div>
 
-                <div style={{ minHeight: 260 }}>
+                <div style={{ minHeight: 260, minWidth: 0 }}>
                   <ResponsiveContainer width="100%" height={260}>
                     <PieChart>
                       <Pie
                         data={pieWithCashData}
                         dataKey="value"
                         nameKey="label"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
-                        labelLine={false}
-                        label={renderPercentLabel}
-                        isAnimationActive={false}
-                      >
-                        {pieWithCashData.map((entry) => (
-                          <Cell key={entry.key} fill={entry.color || OTHERS_COLOR} stroke="rgba(255,255,255,0.85)" />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: any, _name: string, item: any) => {
-                          const v = Number(value) || 0;
-                          const total = pieWithCashData.reduce((a, s) => a + s.value, 0);
-                          const pct = total ? (v / total) * 100 : 0;
-                          return [`${fmt(v)} (${pct.toFixed(1)}%)`, item?.payload?.label];
-                        }}
-                      />
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={100}
+                          labelLine={false}
+                          isAnimationActive={false}
+                        >
+                          {pieWithCashData.map((entry) => (
+                            <Cell key={entry.key} fill={entry.color || OTHERS_COLOR} stroke="rgba(255,255,255,0.85)" />
+                          ))}
+                        </Pie>
+                        <Tooltip
+                          content={<PieTooltip total={pieWithCashTotal} unit={currencyUnit} />}
+                          wrapperStyle={{ zIndex: 9999, pointerEvents: "none" }}
+                          contentStyle={{
+                            backgroundColor: "transparent",
+                            border: "none",
+                            boxShadow: "none",
+                            padding: 0,
+                          }}
+                        />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                  {/* Légende détaillée */}
+                  {/* L�gende d�taill�e */}
                   <div style={{ display:"flex", flexDirection:"column", gap:8, alignSelf:"center" }}>
                     <LegendTable data={pieWithCashData} bySymbol={bySymbol} fxRatesUSD={fxRatesUSD} />
                   </div>
@@ -461,7 +518,7 @@ const historyData: HistPoint[] = useMemo(() => {
                 {(t('portfolio.history.title') as string) || "Historique du patrimoine"}
               </h3>
               <div className="hint" style={{ margin: 0 }}>
-                {(t('portfolio.history.note') as string) || "Répartition actions + liquidités (mock)"}
+                {(t('portfolio.history.note') as string) || "R�partition actions + liquidit�s (mock)"}
               </div>
             </div>
 
@@ -469,18 +526,22 @@ const historyData: HistPoint[] = useMemo(() => {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={historyData} margin={{ top: 10, right: 24, left: 0, bottom: 0 }}>
                   <CartesianGrid stroke="rgba(0,0,0,0.1)" strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 12, fill: "#475569" }} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12, fill: "#475569" }}
+                    minTickGap={18}
+                  />
                   <YAxis
                     tickFormatter={(n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     tick={{ fontSize: 12, fill: "#475569" }}
                   />
                   <Tooltip
-                    formatter={(v: any, name: any) => [fmt(Number(v) || 0), name === "stocks" ? (t('portfolio.history.stocks') as string) || "Actions" : (t('portfolio.history.cash') as string) || "Liquidités"]}
-                    labelFormatter={(lab: any) => String(lab)}
+                    formatter={(v: any, name: any) => [fmt(Number(v) || 0), name === "stocks" ? (t('portfolio.history.stocks') as string) || "Actions" : (t('portfolio.history.cash') as string) || "Liquidit�s"]}
+                    labelFormatter={(lab: any) => String(lab).split("\n").join(" \u00B7 ")}
                   />
                   {/* Actions */}
                   <Area type="monotone" dataKey="stocks" stackId="1" stroke="#6366F1" fill="rgba(99,102,241,0.45)" />
-                  {/* Liquidités */}
+                  {/* Liquidit�s */}
                   <Area type="monotone" dataKey="cash" stackId="1" stroke="#0F766E" fill="rgba(15,118,110,0.45)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -497,37 +558,43 @@ const historyData: HistPoint[] = useMemo(() => {
                 <th style={{textAlign:"left"}}>
                   <HeaderWithInfo
                     label={tt('portfolio.table.headers.company','portfolio.table.headers.symbol','Company')}
-                    help={t('portfolio.help.company') ?? "Nom de l’entreprise et symbole boursier."}
+                    help={t('portfolio.help.company') ?? "Nom de l�entreprise et symbole boursier."}
                   />
                 </th>
                 <th>
                   <HeaderWithInfo
                     label={t('portfolio.table.headers.qty')}
-                    help={t('portfolio.help.qty') ?? "Nombre d’actions/parts détenues."}
+                    help={t('portfolio.help.qty') ?? "Nombre d�actions/parts d�tenues."}
                   />
                 </th>
                 <th>
                   <HeaderWithInfo
-                    label={t('portfolio.table.headers.avgPrice')}
-                    help={t('portfolio.help.avgPrice') ?? "Prix de revient unitaire (PRU) de la position."}
+                    label={t('portfolio.table.headers.buyPrice')}
+                    help={t('portfolio.help.buyPrice') ?? "Prix d'achat de ce lot sp�cifique."}
+                  />
+                </th>
+                <th>
+                  <HeaderWithInfo
+                    label={t('portfolio.table.headers.buyDate')}
+                    help={t('portfolio.help.buyDate') ?? "Date et heure de l'ex�cution de l'achat."}
                   />
                 </th>
                 <th>
                   <HeaderWithInfo
                     label={t('portfolio.table.headers.last')}
-                    help={t('portfolio.help.last') ?? "Dernier prix de marché connu pour le titre."}
+                    help={t('portfolio.help.last') ?? "Dernier prix de march� connu pour le titre."}
                   />
                 </th>
                 <th>
                   <HeaderWithInfo
                     label={t('portfolio.table.headers.value')}
-                    help={t('portfolio.help.value') ?? "Valeur actuelle de la ligne (dernier prix × quantité)."}
+                    help={t('portfolio.help.value') ?? "Valeur actuelle de la ligne (dernier prix � quantit�)."}
                   />
                 </th>
                 <th>
                   <HeaderWithInfo
                     label={t('portfolio.table.headers.pnl')}
-                    help={t('portfolio.help.pnl') ?? "Gain/Perte latent(e) : (dernier prix − PRU) × quantité. Entre parenthèses : en %."}
+                    help={t('portfolio.help.pnl') ?? "Gain/Perte latent(e) : (dernier prix - PRU) � quantit�. Entre parenth�ses : en %."}
                   />
                 </th>
               </tr>
@@ -535,7 +602,7 @@ const historyData: HistPoint[] = useMemo(() => {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
                     {loadingPrices ? t('portfolio.table.loading') : t('portfolio.table.empty')}
                   </td>
                 </tr>
@@ -545,7 +612,7 @@ const historyData: HistPoint[] = useMemo(() => {
                 const displayName = comp?.name || r.symbol;
 
                 return (
-                  <tr key={r.symbol}>
+                  <tr key={r.id}>
                     <td style={{textAlign:"left"}}>
                       <div style={{display:"flex", alignItems:"center", gap:10}}>
                         <img
@@ -563,7 +630,10 @@ const historyData: HistPoint[] = useMemo(() => {
                       </div>
                     </td>
                     <td className="num">{r.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })}</td>
-                    <td className="num">{fmt(r.avg)}</td>
+                    <td className="num">{fmt(r.buyPrice)}</td>
+                    <td style={{ whiteSpace: "nowrap", textAlign: "right", color: "var(--text-muted)" }}>
+                      {buyDateFormatter.format(r.buyDate)}
+                    </td>
                     <td className="num">{fmt(r.last)}</td>
                     <td className="num">{fmt(r.value)}</td>
                     <td className={"num " + (r.pnlAbs >= 0 ? "pos" : "neg")}>
@@ -582,31 +652,98 @@ const historyData: HistPoint[] = useMemo(() => {
   );
 }
 
-// ====== Petites briques réutilisables ======
+// ====== Petites briques r�utilisables ======
 
 function HeaderWithInfo({ label, help }: { label: string; help: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "space-between", width: "100%" }}>
       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</span>
       <span className="info-tooltip">
-        <button type="button" className="info-btn" title={help} aria-label={`${label}: ${help}`}>i</button>
+        <button type="button" className="info-btn" aria-label={`${label}: ${help}`}>i</button>
         <span role="tooltip" className="info-tooltip-content">{help}</span>
       </span>
     </div>
   );
 }
 
-function buildRows(positions: Record<string, Position>, prices: Record<string, number>): Row[] {
-  return Object.entries(positions)
-    .filter(([, p]) => Math.abs(p.qty) > EPSILON)
-    .map(([symbol, p]) => {
-      const last = prices[symbol] ?? 0;
-      const value = p.qty * last;
-      const pnlAbs = (last - p.avgPrice) * p.qty;
-      const pnlPct = p.avgPrice ? (last / p.avgPrice - 1) * 100 : 0;
-      return { symbol, qty: p.qty, avg: p.avgPrice, last, value, pnlAbs, pnlPct };
+function buildOpenLots(orders: Order[]): Lot[] {
+  if (!orders.length) return [];
+
+  const sorted = [...orders].sort((a, b) => toDate(a.ts).getTime() - toDate(b.ts).getTime());
+  const perSymbol = new Map<string, Lot[]>();
+
+  for (const order of sorted) {
+    const queue = perSymbol.get(order.symbol) ?? [];
+    if (!perSymbol.has(order.symbol)) perSymbol.set(order.symbol, queue);
+    const ts = toDate(order.ts);
+
+    if (order.side === "buy") {
+      queue.push({ symbol: order.symbol, qty: order.qty, price: order.fillPrice, ts });
+      continue;
+    }
+
+    let remaining = order.qty;
+    while (remaining > EPSILON && queue.length) {
+      const lot = queue[0];
+      if (lot.qty > remaining + EPSILON) {
+        lot.qty -= remaining;
+        remaining = 0;
+      } else {
+        remaining -= lot.qty;
+        queue.shift();
+      }
+    }
+  }
+
+  const lots: Lot[] = [];
+  for (const queue of perSymbol.values()) {
+    for (const lot of queue) {
+      if (lot.qty > EPSILON) {
+        lots.push({ ...lot });
+      }
+    }
+  }
+
+  return lots.sort((a, b) => a.ts.getTime() - b.ts.getTime());
+}
+
+function buildRows(lots: Lot[], prices: Record<string, number>): Row[] {
+  return lots
+    .map((lot, index) => {
+      const last = prices[lot.symbol] ?? 0;
+      const value = lot.qty * last;
+      const pnlAbs = (last - lot.price) * lot.qty;
+      const pnlPct = lot.price ? (last / lot.price - 1) * 100 : 0;
+      return {
+        id: `${lot.symbol}-${lot.ts.toISOString()}-${index}`,
+        symbol: lot.symbol,
+        qty: lot.qty,
+        buyPrice: lot.price,
+        buyDate: lot.ts,
+        last,
+        value,
+        pnlAbs,
+        pnlPct,
+      };
     })
-    .sort((a, b) => a.symbol.localeCompare(b.symbol));
+    .sort((a, b) => {
+      const sym = a.symbol.localeCompare(b.symbol);
+      if (sym !== 0) return sym;
+      return a.buyDate.getTime() - b.buyDate.getTime();
+    });
+}
+
+function toDate(raw: any): Date {
+  if (!raw) return new Date(0);
+  if (raw instanceof Date) return raw;
+  if (typeof raw === "number") return new Date(raw);
+  if (typeof raw === "string") return new Date(raw);
+  if (typeof raw.toDate === "function") {
+    const converted = raw.toDate();
+    if (converted instanceof Date) return converted;
+    return new Date(converted);
+  }
+  return new Date(raw ?? 0);
 }
 
 function fmt(n: number) {
@@ -615,4 +752,55 @@ function fmt(n: number) {
 
 function totalSafe(n: number) {
   return Number.isFinite(n) ? n : 0;
+}
+
+type PieTooltipProps = Partial<TooltipContentProps<number, string>> & {
+  total: number;
+  unit: string;
+};
+
+function PieTooltip(props: PieTooltipProps) {
+  const { active, total, unit: fallbackUnit, payload = [] } = props;
+  if (!active || payload.length === 0) return null;
+
+  const entry = payload[0];
+  const slice: any = entry?.payload ?? {};
+  const label = slice?.label ?? entry?.name ?? "";
+  const color: string = slice?.color ?? entry?.color ?? "#6366F1";
+
+  const rawValue =
+    typeof entry?.value === "number"
+      ? entry.value
+      : typeof slice?.value === "number"
+      ? slice.value
+      : Number(entry?.value ?? slice?.value ?? Number.NaN);
+  const safeValue = Number.isFinite(rawValue) ? rawValue : 0;
+  const sliceUnit = slice?.unit ?? slice?.currency ?? fallbackUnit ?? "";
+  const percentFraction = total ? safeValue / total : 0;
+  const percentLabel = Number.isFinite(percentFraction)
+    ? `${(percentFraction * 100).toFixed(1)}%`
+    : null;
+  const valueLabel = safeValue.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const unitLabel = sliceUnit ? `${valueLabel} ${sliceUnit}` : valueLabel;
+
+  if (!label && !percentLabel && !unitLabel) return null;
+
+  return (
+    <div className="pie-hover-label" style={{ borderColor: color }}>
+      <div className="pie-hover-label-header">
+        <span className="pie-hover-label-dot" style={{ backgroundColor: color }} />
+        <span className="pie-hover-label-name">{label || percentLabel || unitLabel}</span>
+      </div>
+      {(percentLabel || unitLabel) && (
+        <div className="pie-hover-label-meta">
+          {percentLabel && <span className="pie-hover-label-percent">{percentLabel}</span>}
+          {percentLabel && unitLabel && <span className="pie-hover-label-separator">•</span>}
+          {unitLabel && <span className="pie-hover-label-value">{unitLabel}</span>}
+        </div>
+      )}
+    </div>
+  );
 }
