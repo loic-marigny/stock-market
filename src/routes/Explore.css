@@ -408,7 +408,7 @@
 
 .company-identity {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
 }
 
@@ -432,6 +432,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  align-items: baseline;
 }
 
 .company-alias {

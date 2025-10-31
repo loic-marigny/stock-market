@@ -20,7 +20,6 @@ import {
   Tooltip as RTooltip,
   ReferenceLine,
   ResponsiveContainer,
-  Customized,
   PieChart,
   Pie,
 } from "recharts";
@@ -831,187 +830,12 @@ function GaugeNeedle({
   );
 }
 
-/** Demi-cercle coloré pour la moyenne des recommandations (1..5) */
-function GaugeRecommendationNeedle({
-  value,
-  min,
-  max,
-  label,
-  valueColor,
-}: {
-  value: number;   // ex: 2.1
-  min: number;     // 1
-  max: number;     // 5
-  label?: string;  // ex: "2.1"
-  valueColor?: string;
-}) {
-  // ---- RÉGLAGES VISUELS (ajuste ici) ----
-  const ARC = {
-    innerPct: 0.68,  // épaisseur intérieure (match <Pie> innerRadius)
-    outerPct: 1.00,  // extérieur de l’anneau
-    cyRatio: 0.65,   // position verticale du centre (0=haut, 1=bas)
-  };
-  const TRACK = {
-    color: "rgba(148,163,184,0.24)", // gris de la piste après l’aiguille
-  };
-  const NEEDLE = {
-    lengthRatio: 0.44,
-    stroke: 3,
-    hub: 4,
-    color: "#334155",
-  };
-  const TICKS = {
-    offset: 10,
-    font: 12,
-  };
-  const VALUE_LABEL = {
-    topPct: 0.75,
-    font: 20,
-  };
-  const HEIGHT = 160;
-
-  // bornes / normalisation
-  const span = Math.max(0.0001, max - min);
-  const v = Math.max(min, Math.min(max, value));
-  const pct = (v - min) / span; // 0..1
-
-  // angles (demi-cercle de gauche -> droite)
-  const START = 180;               // gauche
-  const END   = 0;                 // droite
-  const VALUE_END = START - pct * 180; // fin de l’arc coloré (jusqu’à l’aiguille)
-
-  // gradients
-  const gradId = "recoNeedleGradient";
-  const gradient = (
-    <defs>
-      <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-        {/* 1 -> vert foncé */}
-        <stop offset="0%"   stopColor="#16a34a" />
-        {/* 3 -> jaune au milieu */}
-        <stop offset="50%"  stopColor="#f59e0b" />
-        {/* 5 -> rouge */}
-        <stop offset="100%" stopColor="#dc2626" />
-      </linearGradient>
-    </defs>
-  );
-
-  const trackData = [{ name: "span", val: span }];
-
-  // --- Overlay pour l’aiguille et les labels 1 & 5
-  const [box, setBox] = useState({ w: 0, h: 0 });
-  const ref = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!ref.current) return;
-    const ro = new ResizeObserver(([e]) => {
-      const { width, height } = e.contentRect;
-      setBox({ w: width, h: height });
-    });
-    ro.observe(ref.current);
-    return () => ro.disconnect();
-  }, []);
-
-  const cx = box.w / 2;
-  const cy = box.h * ARC.cyRatio;
-  const base = Math.min(box.w, box.h);
-
-  // aiguille = angle correspondant à la valeur
-  const theta = Math.PI * (1 - pct); // même formule que bêta
-  const needleR = base * NEEDLE.lengthRatio;
-  const x2 = cx + needleR * Math.cos(theta);
-  const y2 = cy - needleR * Math.sin(theta);
-
-  // labels min/max collés à l’arc
-  const outerR = base * (ARC.outerPct / 2);
-  const tickR = outerR + TICKS.offset;
-  const xMin = cx + tickR * Math.cos(Math.PI);
-  const yMin = cy - tickR * Math.sin(Math.PI);
-  const xMax = cx + tickR * Math.cos(0);
-  const yMax = cy - tickR * Math.sin(0);
-
-  return (
-    <div style={{ width: "100%", height: HEIGHT, position: "relative" }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          {gradient}
-
-          {/* 1) Arc coloré jusqu’à l’aiguille */}
-          <Pie
-            data={trackData}
-            dataKey="val"
-            startAngle={START}
-            endAngle={VALUE_END}
-            cx="50%"
-            cy={`${ARC.cyRatio * 100}%`}
-            innerRadius={`${ARC.innerPct * 100}%`}
-            outerRadius={`${ARC.outerPct * 100}%`}
-            stroke="none"
-            isAnimationActive={false}
-            fill={`url(#${gradId})`}
-          />
-
-          {/* 2) Reste de la piste (après l’aiguille) en gris */}
-          <Pie
-            data={trackData}
-            dataKey="val"
-            startAngle={VALUE_END}
-            endAngle={END}
-            cx="50%"
-            cy={`${ARC.cyRatio * 100}%`}
-            innerRadius={`${ARC.innerPct * 100}%`}
-            outerRadius={`${ARC.outerPct * 100}%`}
-            stroke="none"
-            isAnimationActive={false}
-            fill={TRACK.color}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-
-      {/* Overlay (aiguille + labels 1/5) */}
-      <div ref={ref} style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        {box.w > 0 && (
-          <svg width={box.w} height={box.h} viewBox={`0 0 ${box.w} ${box.h}`}>
-            {/* aiguille */}
-            <line x1={cx} y1={cy} x2={x2} y2={y2}
-                  stroke={NEEDLE.color} strokeWidth={NEEDLE.stroke} />
-            <circle cx={cx} cy={cy} r={NEEDLE.hub} fill={NEEDLE.color} />
-
-            {/* 1 et 5 collés à l’arc */}
-            <text x={xMin} y={yMin} fontSize={TICKS.font} fill="#475569"
-                  textAnchor="middle" dominantBaseline="middle">
-              {min}
-            </text>
-            <text x={xMax} y={yMax} fontSize={TICKS.font} fill="#475569"
-                  textAnchor="middle" dominantBaseline="middle">
-              {max}
-            </text>
-          </svg>
-        )}
-      </div>
-
-      {/* valeur au centre */}
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: `${VALUE_LABEL.topPct * 100}%`,
-          transform: "translate(-50%, -50%)",
-          fontSize: VALUE_LABEL.font,
-          fontWeight: 800,
-          color: valueColor ?? "var(--primary-700)",
-          pointerEvents: "none",
-        }}
-      >
-        {label ?? v.toFixed(1)}
-      </div>
-    </div>
-  );
-}
 
 
 export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
-  const [tf, setTf] = useState<TF>("6M");
+  const [tf, setTf] = useState<TF | null>("6M");
   const [data, setData] = useState<OHLC[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
@@ -1025,6 +849,8 @@ export default function Explore() {
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
   const suppressRangeUpdateRef = useRef<boolean>(false);
+  const lastIndexRef = useRef(0);
+  const firstIndexRef = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -1160,11 +986,16 @@ export default function Explore() {
     if (!data.length) return null;
     const firstDate = new Date(data[0].date);
     firstDate.setHours(0, 0, 0, 0);
+
+    // on recule un peu la borne gauche pour éviter d’être “collé” au bord
     const min = shiftDays(firstDate, -30);
     min.setHours(0, 0, 0, 0);
-    const max = new Date();
-    max.setHours(0, 0, 0, 0);
-    return { min, max };
+
+    // borne droite = DERNIÈRE bougie (pas “aujourd’hui”)
+    const lastDate = new Date(data[data.length - 1].date);
+    lastDate.setHours(0, 0, 0, 0);
+
+    return { min, max: lastDate };
   }, [data]);
 
   const setVisibleRangeClamped = useCallback(
@@ -1298,32 +1129,73 @@ export default function Explore() {
       close: d.close,
     }));
     seriesRef.current.setData(formatted);
+    firstIndexRef.current = 0;
+    lastIndexRef.current = formatted.length ? formatted.length - 1 : 0;
   }, [data]);
 
   useEffect(() => {
-    applyTimeframeRange(tf);
+    if (tf) applyTimeframeRange(tf);
   }, [tf, applyTimeframeRange]);
 
   useEffect(() => {
-    if (!chartRef.current || !dateBounds) return;
+    if (!chartRef.current) return;
     const timeScale = chartRef.current.timeScale();
-    const handler = (range: ReturnType<typeof timeScale.getVisibleRange>) => {
-      if (!range || suppressRangeUpdateRef.current) return;
-      const fromDate = timeToDate(range.from);
-      const toDate = timeToDate(range.to);
-      const clamped = clampDateRange(fromDate, toDate, dateBounds);
-      if (
-        clamped.from.getTime() !== fromDate.getTime() ||
-        clamped.to.getTime() !== toDate.getTime()
-      ) {
-        setVisibleRangeClamped(clamped.from, clamped.to);
+
+    const handler = (range: { from: number; to: number } | null) => {
+      if (!range) return;
+
+      // 1) Si pan/zoom utilisateur -> déselectionne les boutons
+      if (!suppressRangeUpdateRef.current) {
+        if (tf !== null) setTf(null);
       }
+
+      // 2) Clamp blanc gauche/droite à 15 % de la fenêtre visible
+      const span = range.to - range.from;
+      if (!Number.isFinite(span) || span <= 0) return;
+
+      const first = firstIndexRef.current;   // en pratique 0
+      const last  = lastIndexRef.current;
+
+      // bornes autorisées en logique
+      const minFrom = first - span * 0.15;   // ≤ 15 % de blanc à gauche
+      const maxTo   = last  + span * 0.15;   // ≤ 15 % de blanc à droite
+
+      let newFrom = range.from;
+      let newTo   = range.to;
+
+      // clamp à gauche
+      if (newFrom < minFrom) {
+        newFrom = minFrom;
+        newTo   = newFrom + span;
+      }
+
+      // clamp à droite
+      if (newTo > maxTo) {
+        newTo   = maxTo;
+        newFrom = newTo - span;
+      }
+
+      // si rien n'a changé -> on sort
+      if (newFrom === range.from && newTo === range.to) return;
+
+      suppressRangeUpdateRef.current = true;
+      timeScale.setVisibleLogicalRange({ from: newFrom, to: newTo });
+
+      // relâche le flag au prochain frame
+      (typeof requestAnimationFrame === "function"
+        ? requestAnimationFrame
+        : (fn: FrameRequestCallback) => setTimeout(fn, 0)
+      )(() => { suppressRangeUpdateRef.current = false; });
     };
-    timeScale.subscribeVisibleTimeRangeChange(handler);
+
+
+    timeScale.subscribeVisibleLogicalRangeChange(handler);
     return () => {
-      timeScale.unsubscribeVisibleTimeRangeChange(handler);
+      timeScale.unsubscribeVisibleLogicalRangeChange(handler);
     };
-  }, [dateBounds, setVisibleRangeClamped]);
+  }, [tf]);
+
+
 
   const lastClose = data.at(-1)?.close ?? 0;
   const lastCloseLabel = data.length ? lastClose.toFixed(2) : "--";
@@ -1331,7 +1203,7 @@ export default function Explore() {
 
   const displayName = profile?.displayName ?? profile?.longName ?? selectedCompany?.name ?? symbol;
   const longNameSuffix =
-    profile?.longName && profile.longName !== displayName ? ` (${profile.longName})` : "";
+    profile?.longName && profile.longName !== displayName ? ` · ${profile.longName}` : "";
   const subtitleParts: string[] = [symbol];
   if (profile?.sectorDisplay) {
     subtitleParts.push(profile.sectorDisplay);
@@ -1916,37 +1788,42 @@ function shiftDays(d: Date, delta: number) {
 function clampDateRange(
   from: Date,
   to: Date,
-  bounds: { min: Date; max: Date }
+  bounds: { min: Date; max: Date },
+  rightGapFraction: number = 0.25 // ≤ 25% de la fenêtre visible autorisée au-delà de la dernière bougie
 ): { from: Date; to: Date } {
   const minTs = bounds.min.getTime();
   const maxTs = bounds.max.getTime();
-  let start = from.getTime();
-  let end = to.getTime();
-  if (start > end) {
-    const temp = start;
-    start = end;
-    end = temp;
-  }
+
+  let start = Math.min(from.getTime(), to.getTime());
+  let end   = Math.max(from.getTime(), to.getTime());
+
+  // largeur minimale d’une fenêtre
   let span = Math.max(ONE_DAY_MS, end - start);
+
+  // on ne peut pas dépasser l’étendue totale
   const totalSpan = Math.max(ONE_DAY_MS, maxTs - minTs);
   if (span > totalSpan) span = totalSpan;
 
+  // borne gauche “dure”
   if (start < minTs) {
     start = minTs;
     end = start + span;
   }
-  if (end > maxTs) {
-    end = maxTs;
+
+  // borne droite + marge tolérée (25% de la fenêtre visible)
+  const maxWithGap = maxTs + Math.floor(span * rightGapFraction);
+  if (end > maxWithGap) {
+    end = maxWithGap;
     start = end - span;
   }
+
+  // re-clamp final de sécurité
   if (start < minTs) start = minTs;
-  if (end > maxTs) end = maxTs;
-  if (start > end) {
-    start = minTs;
-    end = maxTs;
-  }
+  if (end   < start) end   = start + span;
+
   return { from: new Date(start), to: new Date(end) };
 }
+
 
 // ===== Overlay qui lit l'échelle réelle du chart MUI =====
 
@@ -2005,6 +1882,46 @@ function RangeHistogram({
     });
 
   // Tooltip propre corrigé
+  const currentLabelText = currentLabel ?? "Cours actuel";
+
+  const renderCurrentLabel = useCallback(
+    (labelProps: any) => {
+      const viewBox = labelProps?.viewBox ?? {};
+      const x = Number.isFinite(viewBox.x) ? viewBox.x : 0;
+      const width = Number.isFinite(viewBox.width) ? viewBox.width : 0;
+      const y = Number.isFinite(viewBox.y) ? viewBox.y : 0;
+
+      const anchorX = x + width + 68;
+      const baseY = y - 4;
+
+      return (
+        <g pointerEvents="none">
+          <text
+            x={anchorX}
+            y={baseY}
+            fontSize={10}
+            fill="#64748b"
+            fontWeight={600}
+            textAnchor="end"
+          >
+            {currentLabelText}
+          </text>
+          <text
+            x={anchorX}
+            y={baseY + 14}
+            fontSize={12}
+            fill="#0f172a"
+            fontWeight={700}
+            textAnchor="end"
+          >
+            {fmtUSD(current)}
+          </text>
+        </g>
+      );
+    },
+    [current, currentLabelText, fmtUSD]
+  );
+
   const CustomTooltip = ({
     active,
     payload,
@@ -2048,72 +1965,6 @@ function RangeHistogram({
     );
   };
 
-  // composant custom pour dessiner la ligne + bulle "Cours actuel ..."
-  // directement dans le système SVG de Recharts, avec l'échelle Y réelle
-  const CurrentMarker = (props: any) => {
-    const { yAxisMap, offset } = props || {};
-
-    // Si Recharts n'a pas encore injecté les infos, on ne dessine rien.
-    if (!yAxisMap || !offset) return null;
-
-    const axisKeys = Object.keys(yAxisMap);
-    if (axisKeys.length === 0) return null;
-
-    const firstAxisKey = axisKeys[0];
-    const axis = yAxisMap[firstAxisKey];
-    if (!axis || typeof axis.scale !== "function") return null;
-
-    const yScale = axis.scale;
-    const yPx = yScale(current);
-
-    if (typeof yPx !== "number" || Number.isNaN(yPx)) return null;
-
-    const xRight = offset.left + offset.width;
-    const labelText = `${currentLabel ?? "Cours actuel"} ${fmtUSD(current)}`;
-
-    return (
-      <g pointerEvents="none">
-        {/* ligne horizontale pointillée */}
-        <line
-          x1={offset.left}
-          x2={xRight}
-          y1={yPx}
-          y2={yPx}
-          stroke="#475569"
-          strokeWidth={2}
-          strokeDasharray="4 4"
-        />
-
-        {/* bulle texte à droite */}
-        <foreignObject
-          x={xRight - 4}
-          y={yPx - 24}
-          width={200}
-          height={40}
-          style={{ overflow: "visible" }}
-        >
-          <div
-            style={{
-              transform: "translateX(-100%)",
-              background: "rgba(255,255,255,0.9)",
-              borderRadius: "6px",
-              padding: "4px 8px",
-              border: "1px solid rgba(0,0,0,0.06)",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
-              fontSize: "0.7rem",
-              lineHeight: 1.2,
-              fontWeight: 600,
-              color: "#475569",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {labelText}
-          </div>
-        </foreignObject>
-      </g>
-    );
-  };
-
   return (
     <div
       className="range-chart-wrapper"
@@ -2126,7 +1977,7 @@ function RangeHistogram({
       <ResponsiveContainer width="100%" height="100%">
         <RBarChart
           data={data}
-          margin={{ top: 10, right: 28, bottom: 0, left: 0 }}
+          margin={{ top: 10, right: 68, bottom: 0, left: 0 }}
           barCategoryGap="30%"
         >
           {/* grille horizontale */}
@@ -2185,10 +2036,8 @@ function RangeHistogram({
             strokeDasharray="4 4"
             strokeWidth={2}
             ifOverflow="extendDomain"
+            label={renderCurrentLabel}
           />
-
-          {/* Notre overlay SVG aligné sur l'échelle réelle */}
-          <Customized component={<CurrentMarker />} />
 
           {/* Tooltip corrigé */}
           <RTooltip
