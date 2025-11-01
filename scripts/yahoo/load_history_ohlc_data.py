@@ -8,8 +8,8 @@ from datetime import datetime
 import math
 
 # DB CONFIG
-SUPABASE_URL = "https://uwrbfhcqmytcwardffhm.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3cmJmaGNxbXl0Y3dhcmRmZmhtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODM1MTg1MywiZXhwIjoyMDczOTI3ODUzfQ.bj5Pz0OIuTSuhj_eHtsimYC9l6IsJVjgQlMIfeZ4imQ"
+SUPABASE_URL = "your_supabase_url"
+SUPABASE_KEY = "your_supabase_key"
 TABLE = "stock_market_history"
 all_rows = []
 page = 0
