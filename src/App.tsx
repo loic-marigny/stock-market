@@ -22,6 +22,16 @@ export default function App(){
   const currencyFmt = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }), []);
   const totalDisplay = loadingInitial || loadingPrices ? t('app.calculating') : currencyFmt.format(totalValue);
 
+  function TopbarCash(){
+    const uid = auth.currentUser?.uid;
+    const { cash } = usePortfolioSnapshot(uid || "");
+    return (
+      <div aria-label="Available cash" className="topbar-cash">
+        ${cash.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+      </div>
+    );
+  }
+
   if(!ready) return <p style={{color:"#fff",textAlign:"center",marginTop:40}}>{t('app.loading')}</p>;
   if(!user) return <SignIn/>;
 
@@ -38,6 +48,7 @@ export default function App(){
         <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:"1rem"}}>
           <div style={{color:"var(--text-muted)", fontSize:"0.9rem"}}>{t('nav.totalValueLabel')}: {totalDisplay}</div>
           <button className="btn" onClick={()=>signOut(auth)}>{t('nav.signOut')}</button>
+        <TopbarCash />
         </div>
       </header>
 

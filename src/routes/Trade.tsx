@@ -4,6 +4,7 @@ import { collection, doc, runTransaction, serverTimestamp } from "firebase/fires
 import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
+import { submitSpotOrder } from "../lib/trading";
 import { useI18n } from "../i18n/I18nProvider";
 
 type EntryMode = "qty" | "amount";
@@ -114,10 +115,22 @@ export default function Trade(){
         return;
       }
 
-      // --- Chemin non-FX (inchangé) : actions/ETF/crypto -> positions ---
+      // --- Chemin non-FX : actions/ETF/crypto -> positions ---
       const err = validate(side, fillPrice);
       if (err) { setMsg(err); setLoading(false); return; }
-      // ... ta logique actuelle de mise à jour positions (comme aujourd'hui) ...
+
+      await submitSpotOrder({
+        uid,
+        symbol,
+        side,
+        qty: qBase,
+        fillPrice,
+        extra: { source: "Trade" },
+      });
+
+      setMsg(side === "buy" ? t('trade.success.buy') : t('trade.success.sell'));
+      if (mode === "qty") setQty(1); else setAmount(0);
+      setLast(fillPrice);
     } catch (e: any) {
       setMsg(e?.message ?? String(e));
     } finally {

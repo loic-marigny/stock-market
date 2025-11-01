@@ -23,6 +23,9 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import { auth } from "../firebase";
+import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
+import { submitSpotOrder } from "../lib/trading";
 
 
 type TF = "1M" | "6M" | "YTD" | "1Y" | "MAX";
@@ -847,6 +850,51 @@ function GaugeNeedle({
 
 
 
+function QuickTrade({ symbol }: { symbol: string }){
+  const uid = auth.currentUser!.uid;
+  const { cash, positions } = usePortfolioSnapshot(uid);
+  const [qty, setQty] = useState(1);
+  const posQty = positions[symbol]?.qty ?? 0;
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const place = async (side:"buy"|"sell")=>{
+    setMsg(""); setLoading(true);
+    try{
+      const px = await provider.getLastPrice(symbol);
+      if(!Number.isFinite(px) || px<=0){ setMsg("Invalid price"); return; }
+      const q = Math.max(0, Number(qty)||0);
+      if(!q){ setMsg("Invalid quantity"); return; }
+      if(side==="sell" && posQty < q - 1e-9){ setMsg("Not enough position"); return; }
+      if(side==="buy" && cash + 1e-6 < q*px){ setMsg("Not enough cash"); return; }
+
+      await submitSpotOrder({
+        uid,
+        symbol,
+        side,
+        qty: q,
+        fillPrice: px,
+        extra: { source: "QuickTrade" },
+      });
+
+      setMsg(side==="buy" ? "Bought" : "Sold");
+    }catch(e:any){
+      setMsg(e?.message ?? String(e));
+    }finally{ setLoading(false); }
+  };
+
+  return (
+    <div className="quicktrade">
+      <input className="input" type="number" min={0} step="any"
+             value={qty} onChange={e=>setQty(Number(e.target.value))}/>
+      <button className="btn btn-accent" disabled={loading} onClick={()=>place("buy")}>Quick Buy</button>
+      <button className="btn btn-sell"   disabled={loading} onClick={()=>place("sell")}>Quick Sell</button>
+      <div className="hint">Cash: ${cash.toFixed(2)} · Pos: {posQty}</div>
+      {msg && <div className="trade-msg">{msg}</div>}
+    </div>
+  );
+}
+
 export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
@@ -1609,6 +1657,8 @@ export default function Explore() {
               )}
             </div>
 
+            <QuickTrade symbol={symbol} />
+
             <div className="chart-card">
               <div className="chart-overlay">
                 <div className="chart-last">
@@ -2089,6 +2139,3 @@ function groupByMarket(list: Company[]): Record<string, Company[]> {
   }
   return ordered;
 }
-
-
-
