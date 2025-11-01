@@ -26,29 +26,10 @@ import {
 import { auth } from "../firebase";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 import { submitSpotOrder } from "../lib/trading";
+import CompanySidebar from "../components/CompanySidebar";
 
 
 type TF = "1M" | "6M" | "YTD" | "1Y" | "MAX";
-
-type GroupedCompany = {
-  code: string;
-  label: string;
-  companies: Company[];
-};
-
-const MARKET_ICONS: Record<string, string> = {
-  US: 'img/companies/categories/us.png',
-  CN: 'img/companies/categories/cn.png',
-  EU: 'img/companies/categories/eu.png',
-  JP: 'img/companies/categories/jp.png',
-  SA: 'img/companies/categories/sa.png',
-  IDX: 'img/companies/categories/world.png',
-  COM: 'img/companies/categories/commodities.png',
-  CRYPTO: 'img/companies/categories/crypto.svg',
-  FX: 'img/companies/categories/forex.png',
-};
-
-const DEFAULT_MARKET_ICON = 'img/companies/categories/world.png';
 
 type GaugeVariant = "circular" | "linear";
 
@@ -902,11 +883,7 @@ export default function Explore() {
   const [data, setData] = useState<OHLC[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
-  const [expandedMarkets, setExpandedMarkets] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [query, setQuery] = useState("");
-  const trimmedQuery = query.trim();
-  const searchMode = trimmedQuery.length > 0;
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -954,55 +931,6 @@ export default function Explore() {
       cancelled = true;
     };
   }, [symbol]);
-
-  const grouped = useMemo<GroupedCompany[]>(() => {
-    const ordered = groupByMarket(companies);
-    return Object.entries(ordered).map(([code, list]) => ({
-      code,
-      label: marketLabel(code),
-      companies: list,
-    }));
-  }, [companies]);
-
-  useEffect(() => {
-    if (searchMode) return;
-    setExpandedMarkets((prev) => {
-      const next = { ...prev };
-      grouped.forEach((group, index) => {
-        if (!(group.code in next)) {
-          const containsSelected = group.companies.some((company) => company.symbol === symbol);
-          next[group.code] = containsSelected || index === 0;
-        }
-      });
-      return next;
-    });
-  }, [grouped, symbol, searchMode]);
-
-  useEffect(() => {
-    if (searchMode) return;
-    const owner = grouped.find((group) =>
-      group.companies.some((company) => company.symbol === symbol)
-    );
-    if (!owner) return;
-    setExpandedMarkets((prev) => {
-      if (prev[owner.code]) return prev;
-      return { ...prev, [owner.code]: true };
-    });
-  }, [grouped, symbol, searchMode]);
-
-  const filteredCompanies = useMemo(() => {
-    if (!searchMode) return companies;
-    const q = trimmedQuery.toLowerCase();
-    return companies.filter(
-      (c) => c.symbol.toLowerCase().includes(q) || (c.name ?? "").toLowerCase().includes(q)
-    );
-  }, [companies, trimmedQuery, searchMode]);
-
-  const searchResults = useMemo(() => {
-    if (!searchMode) return [];
-    return [...filteredCompanies].sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }, [filteredCompanies, searchMode]);
-
   const selectedCompany = useMemo(
     () => companies.find((c) => c.symbol === symbol) ?? null,
     [companies, symbol]
@@ -1479,10 +1407,6 @@ export default function Explore() {
     return items;
   }, [profile, t]);
 
-  const toggleMarket = (code: string) => {
-    setExpandedMarkets((prev) => ({ ...prev, [code]: !prev[code] }));
-  };
-
   const placeholderLogo = assetPath("img/logo-placeholder.svg");
 
   const headerLogo = selectedCompany?.logo ? assetPath(selectedCompany.logo) : placeholderLogo;
@@ -1514,104 +1438,24 @@ export default function Explore() {
   return (
     <main className="explore-page">
       <div className={`explore-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
-        <aside className={`explore-sidebar${sidebarOpen ? "" : " hidden"}`}>
-          <button
-            type="button"
-            className="explore-sidebar-toggle"
-            onClick={() => setSidebarOpen(false)}
-            aria-label={t('explore.hideSidebar')}
-            title={t('explore.hideSidebar')}
-          >
-            <span className="explore-toggle-icon" aria-hidden="true" />
-          </button>
-          <div className="explore-sidebar-content">
-            <div className="explore-sidebar-header">
-              <h3>{t('explore.markets')}</h3>
-            </div>
-            <div className="explore-search">
-              <input
-                type="search"
-                placeholder={t('explore.searchPlaceholder')}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </div>
-            <div className="explore-groups">
-              {searchMode ? (
-                searchResults.length === 0 ? (
-                  <p className="explore-no-results">{t('explore.noResults')}</p>
-                ) : (
-                  <ul className="explore-symbols search-results">
-                    {searchResults.map((company) => {
-                      const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
-                      const isActive = company.symbol === symbol;
-                      return (
-                        <li key={company.symbol}>
-                          <button
-                            type="button"
-                            className={`explore-symbol${isActive ? " active" : ""}`}
-                            onClick={() => {
-                              setSymbol(company.symbol);
-                              if (!sidebarOpen) setSidebarOpen(true);
-                            }}
-                          >
-                            <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                            <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )
-              ) : (
-                grouped.map((group) => {
-                  const expanded = !!expandedMarkets[group.code];
-                  const panelId = `market-${group.code}`;
-                  const iconSrc = assetPath(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
-                  if (!group.companies.length) return null;
-                  return (
-                    <div key={group.code} className="explore-group">
-                      <button
-                        type="button"
-                        className="explore-group-header"
-                        onClick={() => toggleMarket(group.code)}
-                        aria-expanded={expanded}
-                        aria-controls={panelId}
-                      >
-                        <img src={iconSrc} alt="" className="explore-market-icon" aria-hidden="true" />
-                        <span>{group.label}</span>
-                        <span
-                          className={`explore-chevron${expanded ? " open" : ""}`}
-                          aria-hidden="true"
-                        />
-                      </button>
-                      {expanded && (
-                        <ul className="explore-symbols" id={panelId}>
-                          {group.companies.map((company) => {
-                            const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
-                            const isActive = company.symbol === symbol;
-                            return (
-                              <li key={company.symbol}>
-                                <button
-                                  type="button"
-                                  className={`explore-symbol${isActive ? " active" : ""}`}
-                                  onClick={() => setSymbol(company.symbol)}
-                                >
-                                  <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                                  <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                                </button>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        </aside>
+        <CompanySidebar
+          companies={companies}
+          selectedSymbol={symbol}
+          onSelectSymbol={(next) => {
+            setSymbol(next);
+            if (!sidebarOpen) setSidebarOpen(true);
+          }}
+          collapsed={!sidebarOpen}
+          onCollapse={() => setSidebarOpen(false)}
+          onExpand={() => setSidebarOpen(true)}
+          title={t('explore.markets')}
+          searchPlaceholder={t('explore.searchPlaceholder')}
+          noResultsLabel={t('explore.noResults')}
+          hideLabel={t('explore.hideSidebar')}
+          assetPath={assetPath}
+          placeholderLogoPath="img/logo-placeholder.svg"
+          marketLabel={marketLabel}
+        />
 
         <div className="explore-main">
           <button
@@ -2121,21 +1965,4 @@ function RangeHistogram({
   );
 }
 
-function groupByMarket(list: Company[]): Record<string, Company[]> {
-  const map: Record<string, Company[]> = {};
-  for (const c of list) {
-    const key = (c.market || "OTHER").toUpperCase();
-    (map[key] ||= []).push(c);
-  }
-  for (const key of Object.keys(map)) {
-    map[key].sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }
-  const ordered: Record<string, Company[]> = {};
-  for (const pref of ["US", "CN", "EU", "JP", "SA", "IDX", "COM", "CRYPTO", "FX"]) {
-    if (map[pref]) ordered[pref] = map[pref];
-  }
-  for (const key of Object.keys(map).sort()) {
-    if (!(key in ordered)) ordered[key] = map[key];
-  }
-  return ordered;
-}
+

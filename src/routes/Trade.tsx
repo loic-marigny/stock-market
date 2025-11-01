@@ -5,9 +5,18 @@ import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 import { submitSpotOrder } from "../lib/trading";
+import CompanySidebar from "../components/CompanySidebar";
 import { useI18n } from "../i18n/I18nProvider";
 
 type EntryMode = "qty" | "amount";
+
+const assetPath = (path: string) => {
+  if (/^https?:/i.test(path)) return path;
+  const base = ((import.meta as any).env?.BASE_URL as string | undefined) ?? "/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const trimmed = path.replace(/^\/+/, "");
+  return `${normalizedBase}${trimmed}`;
+};
 
 export default function Trade(){
   const { t } = useI18n();
@@ -21,6 +30,7 @@ export default function Trade(){
   const [last, setLast] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState<string>("");
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
 
   const { positions, cash } = usePortfolioSnapshot(uid);
   const posQty = positions[symbol]?.qty ?? 0;
@@ -139,95 +149,135 @@ export default function Trade(){
   };
 
 
+  const placeholderLogoPath = "img/logo-placeholder.svg";
+  const selectedCompany = companies.find((company) => company.symbol === symbol) ?? null;
+
+  const handleSelectSymbol = (value: string) => {
+    setSymbol(value);
+    setSidebarOpen(true);
+  };
+
   return (
-    <div className="container">
-      <h2 className="signin-title" style={{marginTop:0}}>{t('trade.title')}</h2>
+    <main className="explore-page">
+      <div className={`explore-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
+        <CompanySidebar
+          companies={companies}
+          selectedSymbol={symbol}
+          onSelectSymbol={handleSelectSymbol}
+          collapsed={!sidebarOpen}
+          onCollapse={() => setSidebarOpen(false)}
+          onExpand={() => setSidebarOpen(true)}
+          title={t('explore.markets')}
+          searchPlaceholder={t('explore.searchPlaceholder')}
+          noResultsLabel={t('explore.noResults')}
+          hideLabel={t('explore.hideSidebar')}
+          assetPath={assetPath}
+          placeholderLogoPath={placeholderLogoPath}
+          marketLabel={marketLabel}
+        />
 
-      <div className="trade-grid">
-        <div className="field">
-          <label>{t('trade.field.symbol')}</label>
-          <select className="select" value={symbol} onChange={e=>setSymbol(e.target.value)}>
-            {Object.entries(groupByMarket(companies)).map(([mkt, arr])=> (
-              <optgroup key={mkt} label={marketLabel(mkt)}>
-                {arr.map(c=> (
-                  <option key={c.symbol} value={c.symbol}>{c.symbol} - {c.name || c.symbol}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          <div className="hint">{t('trade.field.inPortfolio')} <strong>{fmtQty(posQty)}</strong></div>
-        </div>
+        <div className="explore-main">
+          <button
+            type="button"
+            className={`explore-sidebar-toggle reopen${sidebarOpen ? '' : ' visible'}`}
+            onClick={() => setSidebarOpen(true)}
+            aria-label={t('explore.showSidebar')}
+            title={t('explore.showSidebar')}
+            aria-hidden={sidebarOpen}
+            tabIndex={sidebarOpen ? -1 : 0}
+          >
+            <span className="explore-toggle-icon" aria-hidden="true" />
+          </button>
 
-        <div className="field">
-          <label>{t('trade.field.lastPrice')}</label>
-          <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
-        </div>
+          <div className="explore-main-content">
+            <div className="trade-header">
+              <h2 className="signin-title" style={{ marginTop: 0 }}>{t('trade.title')}</h2>
+              {selectedCompany && (
+                <p className="hint" style={{ marginBottom: "1rem" }}>
+                  {selectedCompany.symbol} · {selectedCompany.name ?? selectedCompany.symbol}
+                </p>
+              )}
+            </div>
 
-        <div className="field" style={{gridColumn:"1 / -1"}}>
-          <div className="seg">
-            <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>{t('trade.mode.enterQuantity')}</button>
-            <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>{t('trade.mode.enterAmount')}</button>
+            <div className="trade-grid">
+              <div className="field">
+                <label>{t('trade.field.symbol')}</label>
+                <div className="price-tile">{symbol}</div>
+                <div className="hint">{t('trade.field.inPortfolio')} <strong>{fmtQty(posQty)}</strong></div>
+              </div>
+
+              <div className="field">
+                <label>{t('trade.field.lastPrice')}</label>
+                <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
+              </div>
+
+              <div className="field" style={{ gridColumn: "1 / -1" }}>
+                <div className="seg">
+                  <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>{t('trade.mode.enterQuantity')}</button>
+                  <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>{t('trade.mode.enterAmount')}</button>
+                </div>
+              </div>
+
+              {mode === "qty" ? (
+                <div className="field">
+                  <label>{t('trade.field.quantityLabel')}</label>
+                  <input
+                    className="input"
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={qty}
+                    onChange={(event) => setQty(Number(event.target.value))}
+                  />
+                  <div className="hint">
+                    {t('trade.field.estimatedCost')}: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong>
+                  </div>
+                </div>
+              ) : (
+                <div className="field">
+                  <label>{t('trade.field.amountLabel')}</label>
+                  <input
+                    className="input"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    value={amount}
+                    onChange={(event) => setAmount(Number(event.target.value))}
+                  />
+                  <div className="hint">
+                    {t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong>
+                  </div>
+                </div>
+              )}
+
+              <div className="field">
+                <label>{t('trade.field.creditsLabel')}</label>
+                <div className="price-tile">{cash.toFixed(2)}</div>
+              </div>
+            </div>
+
+            <div className="trade-actions">
+              <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
+                {t('trade.actions.buy')}
+              </button>
+              <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
+                {t('trade.actions.sell')}
+              </button>
+            </div>
+
+            <div className="hint">
+              {mode === "qty" ? t('trade.hint.quantity') : t('trade.hint.amount')}
+            </div>
+
+            {msg && <div className="trade-msg">{msg}</div>}
           </div>
         </div>
-
-        {mode === "qty" ? (
-          <div className="field">
-            <label>{t('trade.field.quantityLabel')}</label>
-            <input className="input" type="number" min={0} step="any"
-                   value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-            <div className="hint">{t('trade.field.estimatedCost')}: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong></div>
-          </div>
-        ) : (
-          <div className="field">
-            <label>{t('trade.field.amountLabel')}</label>
-            <input className="input" type="number" min={0} step="0.01"
-                   value={amount} onChange={e=>setAmount(Number(e.target.value))}/>
-            <div className="hint">{t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong></div>
-          </div>
-        )}
-
-        <div className="field">
-          <label>{t('trade.field.creditsLabel')}</label>
-          <div className="price-tile">{cash.toFixed(2)}</div>
-        </div>
       </div>
-
-      <div className="trade-actions">
-        <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
-          {t('trade.actions.buy')}
-        </button>
-        <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
-          {t('trade.actions.sell')}
-        </button>
-      </div>
-
-      <div className="hint">
-        {mode === "qty"
-          ? t('trade.hint.quantity')
-          : t('trade.hint.amount')}
-      </div>
-
-      {msg && <div className="trade-msg">{msg}</div>}
-    </div>
+    </main>
   );
 }
 
 function fmtQty(n:number){
   return n.toLocaleString(undefined,{maximumFractionDigits:6});
-}
-
-function groupByMarket(list: Company[]): Record<string, Company[]>{
-  const map: Record<string, Company[]> = {};
-  for(const c of list){
-    const key = (c.market || "OTHER").toUpperCase();
-    (map[key] ||= []).push(c);
-  }
-  for(const k of Object.keys(map)){
-    map[k].sort((a,b)=> (a.symbol).localeCompare(b.symbol));
-  }
-  const ordered: Record<string, Company[]> = {};
-  for(const pref of ["US","CN","EU","JP","SA","IDX","COM","CRYPTO","FX"]) if(map[pref]) ordered[pref]=map[pref];
-  for(const k of Object.keys(map).sort()) if(!(k in ordered)) ordered[k]=map[k];
-  return ordered;
 }
 
