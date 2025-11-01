@@ -1,4 +1,6 @@
 // src/lib/companies.ts
+import { supabase } from './supabaseClient';
+
 export type Company = {
   symbol: string;
   name?: string;
@@ -23,8 +25,22 @@ async function fetchJSON<T>(url: string): Promise<T> {
 }
 
 export async function fetchCompaniesIndex(): Promise<Company[]> {
-  const url = fromBase("companies/index.json");
-  return fetchJSON<Company[]>(url);
+  const { data, error } = await supabase
+    .from('stock_market_companies')
+    .select('symbol, name, sector, market_code, market, profile, logo, history')
+    .order('symbol');
+
+  if (error) throw error;
+
+  return (data ?? []).map(row => ({
+    symbol: row.symbol,
+    name: row.name ?? undefined,
+    sector: row.sector ?? undefined,
+    market: row.market_code ?? row.market ?? undefined,
+    profile: row.profile ?? 'companies/' + row.symbol + '/profile.json',
+    logo: row.logo ?? null,
+    history: row.history ?? 'history/' + row.symbol + '.json',
+  }));
 }
 
 export function marketLabel(mkt?: string): string {
