@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Company } from "../lib/companies";
 
 const MARKET_ICONS: Record<string, string> = {
@@ -38,6 +38,8 @@ export type CompanySidebarProps = {
   classNamePrefix?: string;
   marketIcons?: Record<string, string>;
   defaultMarketIcon?: string;
+  focusOnMount?: boolean;
+  onFocusHandled?: () => void;
 };
 
 const groupByMarket = (list: Company[]): Record<string, Company[]> => {
@@ -77,10 +79,14 @@ function CompanySidebarComponent(props: CompanySidebarProps) {
     classNamePrefix = "explore",
     marketIcons = MARKET_ICONS,
     defaultMarketIcon = DEFAULT_MARKET_ICON,
+    focusOnMount = false,
+    onFocusHandled,
   } = props;
 
   const [query, setQuery] = useState<string>("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const asideRef = useRef<HTMLElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   const trimmedQuery = query.trim();
   const searchMode = trimmedQuery.length > 0;
@@ -119,6 +125,27 @@ function CompanySidebarComponent(props: CompanySidebarProps) {
       return { ...prev, [owner.code]: true };
     });
   }, [grouped, selectedSymbol]);
+
+  useEffect(() => {
+    const node = asideRef.current;
+    if (!node) return;
+    if (collapsed) {
+      node.setAttribute("inert", "");
+    } else {
+      node.removeAttribute("inert");
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    if (!collapsed && focusOnMount) {
+      const frame = requestAnimationFrame(() => {
+        searchInputRef.current?.focus({ preventScroll: true });
+        onFocusHandled?.();
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, [collapsed, focusOnMount, onFocusHandled]);
 
   const filteredCompanies = useMemo(() => {
     if (!searchMode) return companies;
@@ -163,7 +190,11 @@ function CompanySidebarComponent(props: CompanySidebarProps) {
   );
 
   return (
-    <aside className={sidebarClass}>
+    <aside
+      ref={asideRef}
+      className={sidebarClass}
+      aria-hidden={collapsed}
+    >
       <button
         type="button"
         className={toggleClass}
@@ -179,10 +210,12 @@ function CompanySidebarComponent(props: CompanySidebarProps) {
         </div>
         <div className={searchClass}>
           <input
+            ref={searchInputRef}
             type="search"
             placeholder={searchPlaceholder}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
+            aria-label={searchPlaceholder}
           />
         </div>
         <div className={groupsClass}>

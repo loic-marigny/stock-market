@@ -884,6 +884,8 @@ export default function Explore() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [focusSidebarOnOpen, setFocusSidebarOnOpen] = useState(false);
+  const reopenButtonRef = useRef<HTMLButtonElement | null>(null);
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -1434,6 +1436,35 @@ export default function Explore() {
     };
   }, [headerLogo, selectedCompany?.logo]);
 
+  useEffect(() => {
+    if (!sidebarOpen) {
+      const frame = requestAnimationFrame(() => {
+        reopenButtonRef.current?.focus({ preventScroll: true });
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, [sidebarOpen]);
+
+  const openSidebar = useCallback(() => {
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
+
+  const closeSidebar = useCallback(() => {
+    setFocusSidebarOnOpen(false);
+    setSidebarOpen(false);
+  }, []);
+
+  const handleSelectSymbol = useCallback((next: string) => {
+    setSymbol(next);
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
 
   return (
     <main className="explore-page">
@@ -1441,13 +1472,10 @@ export default function Explore() {
         <CompanySidebar
           companies={companies}
           selectedSymbol={symbol}
-          onSelectSymbol={(next) => {
-            setSymbol(next);
-            if (!sidebarOpen) setSidebarOpen(true);
-          }}
+          onSelectSymbol={handleSelectSymbol}
           collapsed={!sidebarOpen}
-          onCollapse={() => setSidebarOpen(false)}
-          onExpand={() => setSidebarOpen(true)}
+          onCollapse={closeSidebar}
+          onExpand={openSidebar}
           title={t('explore.markets')}
           searchPlaceholder={t('explore.searchPlaceholder')}
           noResultsLabel={t('explore.noResults')}
@@ -1455,20 +1483,23 @@ export default function Explore() {
           assetPath={assetPath}
           placeholderLogoPath="img/logo-placeholder.svg"
           marketLabel={marketLabel}
+          focusOnMount={focusSidebarOnOpen}
+          onFocusHandled={() => setFocusSidebarOnOpen(false)}
         />
 
         <div className="explore-main">
-          <button
-            type="button"
-            className={`explore-sidebar-toggle reopen${sidebarOpen ? '' : ' visible'}`}
-            onClick={() => setSidebarOpen(true)}
-            aria-label={t('explore.showSidebar')}
-            title={t('explore.showSidebar')}
-            aria-hidden={sidebarOpen}
-            tabIndex={sidebarOpen ? -1 : 0}
-          >
-            <span className="explore-toggle-icon" aria-hidden="true" />
-          </button>
+          {!sidebarOpen && (
+            <button
+              type="button"
+              ref={reopenButtonRef}
+              className="explore-sidebar-toggle reopen"
+              onClick={openSidebar}
+              aria-label={t('explore.showSidebar')}
+              title={t('explore.showSidebar')}
+            >
+              <span className="explore-toggle-icon" aria-hidden="true" />
+            </button>
+          )}
           <div className="explore-main-content">
             <div className="explore-header">
               <div className="company-identity">

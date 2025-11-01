@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { auth, db } from "../firebase";
 import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import provider from "../lib/prices";
@@ -31,6 +31,8 @@ export default function Trade(){
   const [loading, setLoading] = useState<boolean>(false);
   const [msg, setMsg] = useState<string>("");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [focusSidebarOnOpen, setFocusSidebarOnOpen] = useState<boolean>(false);
+  const reopenButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const { positions, cash } = usePortfolioSnapshot(uid);
   const posQty = positions[symbol]?.qty ?? 0;
@@ -63,6 +65,28 @@ export default function Trade(){
       setLast(Number.isFinite(fetched) && fetched > 0 ? fetched : 0);
     })();
   }, [symbol]);
+
+  useEffect(() => {
+    if (!sidebarOpen) {
+      const frame = requestAnimationFrame(() => {
+        reopenButtonRef.current?.focus({ preventScroll: true });
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, [sidebarOpen]);
+
+  const openSidebar = useCallback(() => {
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
+
+  const closeSidebar = useCallback(() => {
+    setFocusSidebarOnOpen(false);
+    setSidebarOpen(false);
+  }, []);
 
   const round6 = (x:number) => Math.round(x * 1e6) / 1e6;
   const previewQty = mode === "qty"
@@ -152,10 +176,13 @@ export default function Trade(){
   const placeholderLogoPath = "img/logo-placeholder.svg";
   const selectedCompany = companies.find((company) => company.symbol === symbol) ?? null;
 
-  const handleSelectSymbol = (value: string) => {
+  const handleSelectSymbol = useCallback((value: string) => {
     setSymbol(value);
-    setSidebarOpen(true);
-  };
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
 
   return (
     <main className="explore-page">
@@ -165,8 +192,8 @@ export default function Trade(){
           selectedSymbol={symbol}
           onSelectSymbol={handleSelectSymbol}
           collapsed={!sidebarOpen}
-          onCollapse={() => setSidebarOpen(false)}
-          onExpand={() => setSidebarOpen(true)}
+          onCollapse={closeSidebar}
+          onExpand={openSidebar}
           title={t('explore.markets')}
           searchPlaceholder={t('explore.searchPlaceholder')}
           noResultsLabel={t('explore.noResults')}
@@ -174,20 +201,23 @@ export default function Trade(){
           assetPath={assetPath}
           placeholderLogoPath={placeholderLogoPath}
           marketLabel={marketLabel}
+          focusOnMount={focusSidebarOnOpen}
+          onFocusHandled={() => setFocusSidebarOnOpen(false)}
         />
 
         <div className="explore-main">
-          <button
-            type="button"
-            className={`explore-sidebar-toggle reopen${sidebarOpen ? '' : ' visible'}`}
-            onClick={() => setSidebarOpen(true)}
-            aria-label={t('explore.showSidebar')}
-            title={t('explore.showSidebar')}
-            aria-hidden={sidebarOpen}
-            tabIndex={sidebarOpen ? -1 : 0}
-          >
-            <span className="explore-toggle-icon" aria-hidden="true" />
-          </button>
+          {!sidebarOpen && (
+            <button
+              type="button"
+              ref={reopenButtonRef}
+              className="explore-sidebar-toggle reopen"
+              onClick={openSidebar}
+              aria-label={t('explore.showSidebar')}
+              title={t('explore.showSidebar')}
+            >
+              <span className="explore-toggle-icon" aria-hidden="true" />
+            </button>
+          )}
 
           <div className="explore-main-content">
             <div className="trade-header">

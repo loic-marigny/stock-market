@@ -12,37 +12,25 @@
 }
 
 .explore-layout {
+  --sidebar-width: 280px;
   flex: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, var(--sidebar-width)) minmax(0, 1fr);
   gap: 24px;
-  align-items: stretch;
   position: relative;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
-  transition: margin-left 0.25s ease;
+  transition: grid-template-columns 220ms ease, gap 220ms ease;
 }
 
 .explore-layout.sidebar-collapsed {
-  margin-left: -300px;
-}
-
-.explore-layout.sidebar-collapsed::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 300px;
-  width: 4px;
-  background: #1f2937;
-  border-radius: 0 8px 8px 0;
-  pointer-events: none;
-  z-index: 4;
+  grid-template-columns: 0 minmax(0, 1fr);
+  gap: 0;
 }
 
 .explore-sidebar {
-  width: 280px;
-  flex: 0 0 280px;
+  width: var(--sidebar-width);
+  max-width: var(--sidebar-width);
   background: #1f2937;
   pointer-events: auto;
   color: #f8fafc;
@@ -53,14 +41,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s ease, opacity 0.25s ease;
-  overflow: visible;
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
+.explore-layout.sidebar-collapsed .explore-sidebar,
 .explore-sidebar.hidden {
-  transform: translateX(-100%);
   opacity: 0;
-  visibility: hidden;
+  transform: translateX(calc(-1 * var(--sidebar-width)));
+  pointer-events: none;
 }
 
 .explore-sidebar-content {
@@ -157,21 +145,17 @@
 }
 
 .explore-sidebar-toggle.reopen {
+  position: fixed;
+  top: 50%;
   left: 0;
   right: auto;
-  transform: translate(-120%, -50%);
+  transform: translateY(-50%);
   border-radius: 0 18px 18px 0;
   background: #1f2937;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 6;
-}
-
-.explore-sidebar-toggle.reopen.visible {
-  transform: translate(0, -50%);
   opacity: 1;
   pointer-events: auto;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 6;
 }
 
 .explore-sidebar-toggle.reopen .explore-toggle-icon {
@@ -184,17 +168,20 @@
   }
 
   .explore-layout {
-    flex-direction: column;
+    --sidebar-width: min(320px, 88vw);
+    display: block;
     min-height: auto;
   }
 
   .explore-sidebar {
+    width: var(--sidebar-width);
     position: absolute;
     z-index: 20;
     height: 100%;
     border-radius: 0 18px 18px 0;
   }
 
+  .explore-layout.sidebar-collapsed .explore-sidebar,
   .explore-sidebar.hidden {
     transform: translateX(-110%);
   }
