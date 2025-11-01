@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { auth } from "./firebase";
-import { Link, NavLink, Route, Routes } from "react-router-dom";
+import { Link, NavLink, Route, Routes, Navigate } from "react-router-dom";
 import Explore from "./routes/Explore";
 import Portfolio from "./routes/Portfolio";
 import Trade from "./routes/Trade";
@@ -43,9 +43,10 @@ export default function App(){
 
       <main className="app-main">
         <Routes>
-          <Route path="/" element={<Explore/>} />
-          <Route path="/portfolio" element={<Portfolio/>} />
-          <Route path="/trade" element={<Trade/>} />
+          <Route path="/" element={<Explore />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/trade" element={<Trade />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

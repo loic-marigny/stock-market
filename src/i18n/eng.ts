@@ -1,4 +1,4 @@
-﻿const en = {
+const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -32,8 +32,11 @@
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',
   'portfolio.cards.totalValue': 'Total value',
+  'portfolio.currency.unit': 'USD',
   'portfolio.table.headers.symbol': 'Symbol',
   'portfolio.table.headers.qty': 'Qty',
+  'portfolio.table.headers.buyPrice': 'Buy price',
+  'portfolio.table.headers.buyDate': 'Buy date',
   'portfolio.table.headers.avgPrice': 'Average price',
   'portfolio.table.headers.last': 'Last',
   'portfolio.table.headers.value': 'Value',
@@ -69,10 +72,97 @@
   'explore.showSidebar': 'Show markets panel',
   'explore.showList': 'Markets',
   'explore.noResults': 'No results',
-  'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).'
+  'explore.metrics.title': 'Key indicators',
+  'explore.metrics.beta': 'Beta',
+  'explore.metrics.beta.help': 'Volatility relative to the market (1 = same volatility).',
+  'explore.metrics.auditRisk': 'Audit risk',
+  'explore.metrics.auditRisk.help': 'Audit risk score (0 = low, 10 = high).',
+  'explore.metrics.recommendationMean': 'Recommendation mean',
+  'explore.metrics.recommendationMean.help': 'Average analyst recommendation (1 = Strong buy, 5 = Sell).',
+  'explore.metrics.marketCap': 'Market cap',
+  'explore.metrics.marketCap.help': 'Latest reported market capitalization.',
+  'explore.metrics.fiftyTwoWeeksHigh': '52-week high',
+  'explore.metrics.fiftyTwoWeeksHigh.help': 'Highest closing price over the past 52 weeks.',
+  'explore.metrics.fiftyTwoWeeksLow': '52-week low',
+  'explore.metrics.fiftyTwoWeeksLow.help': 'Lowest closing price over the past 52 weeks.',
+  'explore.metrics.allTimeHigh': 'All-time high',
+  'explore.metrics.allTimeHigh.help': 'Record historical closing price.',
+  'explore.metrics.allTimeLow': 'All-time low',
+  'explore.metrics.allTimeLow.help': 'Lowest historical closing price.',
+  'explore.metrics.trailingPE': 'Trailing P/E',
+  'explore.metrics.trailingPE.help': 'Price-to-earnings ratio based on trailing twelve months.',
+  'explore.metrics.trailingEPS': 'Trailing EPS',
+  'explore.metrics.trailingEPS.help': 'Earnings per share over the trailing twelve months.',
+  'explore.metrics.totalRevenue': 'Total revenue',
+  'explore.metrics.totalRevenue.help': 'Trailing twelve-month revenue.',
+  'explore.metrics.totalDebt': 'Total debt',
+  'explore.metrics.totalDebt.help': 'Latest reported total debt.',
+  'explore.metrics.totalCash': 'Total cash',
+  'explore.metrics.totalCash.help': 'Latest reported cash and equivalents.',
+  'explore.metrics.freeCashflow': 'Free cash flow',
+  'explore.metrics.freeCashflow.help': 'Trailing twelve-month free cash flow.',
+  'explore.metrics.operatingCashflow': 'Operating cash flow',
+  'explore.metrics.operatingCashflow.help': 'Trailing twelve-month operating cash flow.',
+  'explore.metrics.displayName': 'Display name',
+  'explore.metrics.displayName.help': 'Preferred display name for the instrument.',
+  'explore.metrics.sectorDisplay': 'Sector name',
+  'explore.metrics.sectorDisplay.help': 'Reported sector description.',
+  'explore.metrics.fiftyTwoWeeksRange': '52-week range',
+  'explore.metrics.fiftyTwoWeeksRange.help': 'Current price positioned against the 52-week low and high.',
+  'explore.metrics.allTimeRange': 'All-time range',
+  'explore.metrics.allTimeRange.help': 'Current price versus historical low and high.',
+  'explore.metrics.currentPriceLabel': 'Current price:',
+  'explore.metrics.range.low': 'Low',
+  'explore.metrics.range.high': 'High',
+  'explore.metrics.range.current': 'Current',
+  'explore.metrics.industry': 'Industry',
+  'explore.metrics.industry.help': 'Reported industry classification.',
+  'explore.metrics.website': 'Website',
+  'explore.metrics.website.help': 'Official corporate website.',
+  'explore.metrics.irWebsite': 'Investor relations',
+  'explore.metrics.irWebsite.help': 'Investor relations portal.',
+  'explore.timeframe.label': 'Time range',
+  'explore.aboutTitle': 'Company overview',
+  'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).',
+
+  // Portfolio – table
+  "portfolio.table.headers.company": "Company",
+
+  // Portfolio – tooltips (help)
+  "portfolio.help.cash": "Amount of immediately available cash to place buy orders.",
+  "portfolio.help.positionValue": "Sum of current values (last price × quantity) of all positions.",
+  "portfolio.help.totalValue": "Cash plus the market value of your positions (total portfolio value).",
+  "portfolio.help.company": "Company name and ticker symbol.",
+  "portfolio.help.qty": "Number of shares/units held.",
+  "portfolio.help.avgPrice": "Average cost basis (ACB) per share/unit.",
+  "portfolio.help.buyPrice": "Purchase price of this specific lot.",
+  "portfolio.help.buyDate": "Execution date and time for the lot purchase.",
+  "portfolio.help.last": "Most recent known market price for the security.",
+  "portfolio.help.value": "Current line value (last price × quantity).",
+  "portfolio.help.pnl": "Unrealized profit or loss: (last price − ACB) × quantity. Percentage shown in parentheses.",
+
+  "portfolio.composition.title": "Portfolio composition",
+  "portfolio.composition.others": "Others",
+  "portfolio.composition.note": "Excludes cash",
+  "portfolio.composition.cash": "Cash",
+  "portfolio.composition.withCash.title": "Portfolio (with cash)",
+  "portfolio.composition.withCash.note": "Includes cash",
+  "portfolio.history.title": "Wealth history",
+  "portfolio.history.note": "Stocks + cash breakdown (mock)",
+  "portfolio.history.stocks": "Stocks",
+  "portfolio.history.cash": "Cash",
 } as const;
 
 export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
+
+
+
+
+
+
+
+
+
