@@ -119,6 +119,30 @@ type CompanyProfile = {
   sectorDisplay?: string;
 };
 
+const sanitizeCompanyString = (value: unknown): string | undefined =>
+  typeof value === "string" && value.trim() ? value.trim() : undefined;
+
+function mergeProfileWithCompany(profile: CompanyProfile | null, company: Company): CompanyProfile {
+  const base: CompanyProfile = {
+    symbol: company.symbol,
+    name: sanitizeCompanyString(company.name),
+    sector: sanitizeCompanyString(company.sector),
+    industryDisp: sanitizeCompanyString((company as any).industry ?? company.industry),
+    website: sanitizeCompanyString((company as any).website ?? company.website),
+    irWebsite: sanitizeCompanyString((company as any).irWebsite ?? company.irWebsite),
+  };
+
+  return {
+    ...(profile ?? {}),
+    symbol: base.symbol,
+    name: base.name ?? profile?.name,
+    sector: base.sector ?? profile?.sector,
+    industryDisp: base.industryDisp ?? profile?.industryDisp,
+    website: base.website ?? profile?.website,
+    irWebsite: base.irWebsite ?? profile?.irWebsite,
+  };
+}
+
 const DEFAULT_LOGO_STYLE: CSSProperties = {
   padding: 12,
   background: "linear-gradient(135deg, rgba(244,247,254,0.95), rgba(226,232,240,0.7))",
@@ -938,16 +962,27 @@ export default function Explore() {
 
   useEffect(() => {
     const company = selectedCompany;
-    if (!company?.profile) {
+    if (!company) {
       setProfile(null);
       return;
     }
+
+    const applyMerge = (incoming: CompanyProfile | null) => mergeProfileWithCompany(incoming, company);
+
+    if (!company.profile) {
+      setProfile(applyMerge(null));
+      return;
+    }
+
     const profileUrl = assetPath(company.profile);
     const cached = profileCacheRef.current.get(profileUrl);
     if (cached) {
-      setProfile(cached);
+      const merged = applyMerge(cached);
+      profileCacheRef.current.set(profileUrl, merged);
+      setProfile(merged);
       return;
     }
+
     let cancelled = false;
     (async () => {
       try {
@@ -955,17 +990,12 @@ export default function Explore() {
         if (!response.ok) throw new Error(`profile fetch failed: ${response.status}`);
         const raw = await response.json();
         const normalized = normalizeProfile(raw);
-        const enriched: CompanyProfile = {
-          ...normalized,
-          symbol: company.symbol,
-          name: company.name ?? normalized.name,
-          sector: company.sector ?? normalized.sector,
-        };
+        const enriched = applyMerge(normalized);
         profileCacheRef.current.set(profileUrl, enriched);
         if (!cancelled) setProfile(enriched);
       } catch (error) {
         console.warn("[profile] load failed", error);
-        if (!cancelled) setProfile(null);
+        if (!cancelled) setProfile(applyMerge(null));
       }
     })();
     return () => {
