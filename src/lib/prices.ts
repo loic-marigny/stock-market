@@ -1,4 +1,7 @@
 // src/lib/prices.ts
+import { supabasePrices } from './supabasePrices';
+export default supabasePrices;
+
 export type OHLC = { date: string; open: number; high: number; low: number; close: number };
 
 export interface PriceProvider {
@@ -157,4 +160,3 @@ export const jsonProvider: PriceProvider = {
   },
 };
 
-export default jsonProvider;

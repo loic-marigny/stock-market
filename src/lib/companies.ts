@@ -1,4 +1,6 @@
 // src/lib/companies.ts
+import { supabase } from './supabaseClient';
+
 export type Company = {
   symbol: string;
   name?: string;
@@ -7,24 +9,45 @@ export type Company = {
   profile: string; // path under public
   logo?: string | null; // path or null
   history: string; // path under public
+  industry?: string | null;
+  website?: string | null;
+  irWebsite?: string | null;
 };
 
-function fromBase(path: string): string {
-  const b = (import.meta as any).env?.BASE_URL || "/";
-  const base = String(b);
-  const p = path.startsWith("/") ? path.slice(1) : path;
-  return base.endsWith("/") ? `${base}${p}` : `${base}/${p}`;
-}
-
-async function fetchJSON<T>(url: string): Promise<T> {
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) throw new Error(`fetch ${url} failed: ${res.status}`);
-  return res.json();
-}
-
 export async function fetchCompaniesIndex(): Promise<Company[]> {
-  const url = fromBase("companies/index.json");
-  return fetchJSON<Company[]>(url);
+  const { data, error } = await supabase
+    .from('stock_market_companies')
+    .select('symbol, name, sector, market_code, market, profile, logo, history, industry, website, ir_website')
+    .order('symbol');
+
+  if (error) throw error;
+
+  const rows = (data ?? []) as Array<{
+    symbol: string;
+    name?: string | null;
+    sector?: string | null;
+    market_code?: string | null;
+    market?: string | null;
+    profile?: string | null;
+    logo?: string | null;
+    history?: string | null;
+    industry?: string | null;
+    website?: string | null;
+    ir_website?: string | null;
+  }>;
+
+  return rows.map((row) => ({
+    symbol: row.symbol,
+    name: row.name ?? undefined,
+    sector: row.sector ?? undefined,
+    market: row.market_code ?? row.market ?? undefined,
+    profile: row.profile ?? `companies/${row.symbol}/profile.json`,
+    logo: row.logo ?? null,
+    history: row.history ?? `history/${row.symbol}.json`,
+    industry: row.industry ?? null,
+    website: row.website ?? null,
+    irWebsite: row.ir_website ?? null,
+  }));
 }
 
 export function marketLabel(mkt?: string): string {

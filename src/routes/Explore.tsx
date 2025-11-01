@@ -23,29 +23,13 @@ import {
   PieChart,
   Pie,
 } from "recharts";
+import { auth } from "../firebase";
+import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
+import { submitSpotOrder } from "../lib/trading";
+import CompanySidebar from "../components/CompanySidebar";
 
 
 type TF = "1M" | "6M" | "YTD" | "1Y" | "MAX";
-
-type GroupedCompany = {
-  code: string;
-  label: string;
-  companies: Company[];
-};
-
-const MARKET_ICONS: Record<string, string> = {
-  US: 'img/companies/categories/us.png',
-  CN: 'img/companies/categories/cn.png',
-  EU: 'img/companies/categories/eu.png',
-  JP: 'img/companies/categories/jp.png',
-  SA: 'img/companies/categories/sa.png',
-  IDX: 'img/companies/categories/world.png',
-  COM: 'img/companies/categories/commodities.png',
-  CRYPTO: 'img/companies/categories/crypto.svg',
-  FX: 'img/companies/categories/forex.png',
-};
-
-const DEFAULT_MARKET_ICON = 'img/companies/categories/world.png';
 
 type GaugeVariant = "circular" | "linear";
 
@@ -118,6 +102,30 @@ type CompanyProfile = {
   displayName?: string;
   sectorDisplay?: string;
 };
+
+const sanitizeCompanyString = (value: unknown): string | undefined =>
+  typeof value === "string" && value.trim() ? value.trim() : undefined;
+
+function mergeProfileWithCompany(profile: CompanyProfile | null, company: Company): CompanyProfile {
+  const base: CompanyProfile = {
+    symbol: company.symbol,
+    name: sanitizeCompanyString(company.name),
+    sector: sanitizeCompanyString(company.sector),
+    industryDisp: sanitizeCompanyString((company as any).industry ?? company.industry),
+    website: sanitizeCompanyString((company as any).website ?? company.website),
+    irWebsite: sanitizeCompanyString((company as any).irWebsite ?? company.irWebsite),
+  };
+
+  return {
+    ...(profile ?? {}),
+    symbol: base.symbol,
+    name: base.name ?? profile?.name,
+    sector: base.sector ?? profile?.sector,
+    industryDisp: base.industryDisp ?? profile?.industryDisp,
+    website: base.website ?? profile?.website,
+    irWebsite: base.irWebsite ?? profile?.irWebsite,
+  };
+}
 
 const DEFAULT_LOGO_STYLE: CSSProperties = {
   padding: 12,
@@ -823,6 +831,51 @@ function GaugeNeedle({
 
 
 
+function QuickTrade({ symbol }: { symbol: string }){
+  const uid = auth.currentUser!.uid;
+  const { cash, positions } = usePortfolioSnapshot(uid);
+  const [qty, setQty] = useState(1);
+  const posQty = positions[symbol]?.qty ?? 0;
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const place = async (side:"buy"|"sell")=>{
+    setMsg(""); setLoading(true);
+    try{
+      const px = await provider.getLastPrice(symbol);
+      if(!Number.isFinite(px) || px<=0){ setMsg("Invalid price"); return; }
+      const q = Math.max(0, Number(qty)||0);
+      if(!q){ setMsg("Invalid quantity"); return; }
+      if(side==="sell" && posQty < q - 1e-9){ setMsg("Not enough position"); return; }
+      if(side==="buy" && cash + 1e-6 < q*px){ setMsg("Not enough cash"); return; }
+
+      await submitSpotOrder({
+        uid,
+        symbol,
+        side,
+        qty: q,
+        fillPrice: px,
+        extra: { source: "QuickTrade" },
+      });
+
+      setMsg(side==="buy" ? "Bought" : "Sold");
+    }catch(e:any){
+      setMsg(e?.message ?? String(e));
+    }finally{ setLoading(false); }
+  };
+
+  return (
+    <div className="quicktrade">
+      <input className="input" type="number" min={0} step="any"
+             value={qty} onChange={e=>setQty(Number(e.target.value))}/>
+      <button className="btn btn-accent" disabled={loading} onClick={()=>place("buy")}>Quick Buy</button>
+      <button className="btn btn-sell"   disabled={loading} onClick={()=>place("sell")}>Quick Sell</button>
+      <div className="hint">Cash: ${cash.toFixed(2)} · Pos: {posQty}</div>
+      {msg && <div className="trade-msg">{msg}</div>}
+    </div>
+  );
+}
+
 export default function Explore() {
   const { t } = useI18n();
   const [symbol, setSymbol] = useState<string>("AAPL");
@@ -830,11 +883,9 @@ export default function Explore() {
   const [data, setData] = useState<OHLC[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
-  const [expandedMarkets, setExpandedMarkets] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [query, setQuery] = useState("");
-  const trimmedQuery = query.trim();
-  const searchMode = trimmedQuery.length > 0;
+  const [focusSidebarOnOpen, setFocusSidebarOnOpen] = useState(false);
+  const reopenButtonRef = useRef<HTMLButtonElement | null>(null);
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -882,55 +933,6 @@ export default function Explore() {
       cancelled = true;
     };
   }, [symbol]);
-
-  const grouped = useMemo<GroupedCompany[]>(() => {
-    const ordered = groupByMarket(companies);
-    return Object.entries(ordered).map(([code, list]) => ({
-      code,
-      label: marketLabel(code),
-      companies: list,
-    }));
-  }, [companies]);
-
-  useEffect(() => {
-    if (searchMode) return;
-    setExpandedMarkets((prev) => {
-      const next = { ...prev };
-      grouped.forEach((group, index) => {
-        if (!(group.code in next)) {
-          const containsSelected = group.companies.some((company) => company.symbol === symbol);
-          next[group.code] = containsSelected || index === 0;
-        }
-      });
-      return next;
-    });
-  }, [grouped, symbol, searchMode]);
-
-  useEffect(() => {
-    if (searchMode) return;
-    const owner = grouped.find((group) =>
-      group.companies.some((company) => company.symbol === symbol)
-    );
-    if (!owner) return;
-    setExpandedMarkets((prev) => {
-      if (prev[owner.code]) return prev;
-      return { ...prev, [owner.code]: true };
-    });
-  }, [grouped, symbol, searchMode]);
-
-  const filteredCompanies = useMemo(() => {
-    if (!searchMode) return companies;
-    const q = trimmedQuery.toLowerCase();
-    return companies.filter(
-      (c) => c.symbol.toLowerCase().includes(q) || (c.name ?? "").toLowerCase().includes(q)
-    );
-  }, [companies, trimmedQuery, searchMode]);
-
-  const searchResults = useMemo(() => {
-    if (!searchMode) return [];
-    return [...filteredCompanies].sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }, [filteredCompanies, searchMode]);
-
   const selectedCompany = useMemo(
     () => companies.find((c) => c.symbol === symbol) ?? null,
     [companies, symbol]
@@ -938,16 +940,27 @@ export default function Explore() {
 
   useEffect(() => {
     const company = selectedCompany;
-    if (!company?.profile) {
+    if (!company) {
       setProfile(null);
       return;
     }
+
+    const applyMerge = (incoming: CompanyProfile | null) => mergeProfileWithCompany(incoming, company);
+
+    if (!company.profile) {
+      setProfile(applyMerge(null));
+      return;
+    }
+
     const profileUrl = assetPath(company.profile);
     const cached = profileCacheRef.current.get(profileUrl);
     if (cached) {
-      setProfile(cached);
+      const merged = applyMerge(cached);
+      profileCacheRef.current.set(profileUrl, merged);
+      setProfile(merged);
       return;
     }
+
     let cancelled = false;
     (async () => {
       try {
@@ -955,17 +968,12 @@ export default function Explore() {
         if (!response.ok) throw new Error(`profile fetch failed: ${response.status}`);
         const raw = await response.json();
         const normalized = normalizeProfile(raw);
-        const enriched: CompanyProfile = {
-          ...normalized,
-          symbol: company.symbol,
-          name: company.name ?? normalized.name,
-          sector: company.sector ?? normalized.sector,
-        };
+        const enriched = applyMerge(normalized);
         profileCacheRef.current.set(profileUrl, enriched);
         if (!cancelled) setProfile(enriched);
       } catch (error) {
         console.warn("[profile] load failed", error);
-        if (!cancelled) setProfile(null);
+        if (!cancelled) setProfile(applyMerge(null));
       }
     })();
     return () => {
@@ -1401,10 +1409,6 @@ export default function Explore() {
     return items;
   }, [profile, t]);
 
-  const toggleMarket = (code: string) => {
-    setExpandedMarkets((prev) => ({ ...prev, [code]: !prev[code] }));
-  };
-
   const placeholderLogo = assetPath("img/logo-placeholder.svg");
 
   const headerLogo = selectedCompany?.logo ? assetPath(selectedCompany.logo) : placeholderLogo;
@@ -1432,121 +1436,70 @@ export default function Explore() {
     };
   }, [headerLogo, selectedCompany?.logo]);
 
+  useEffect(() => {
+    if (!sidebarOpen) {
+      const frame = requestAnimationFrame(() => {
+        reopenButtonRef.current?.focus({ preventScroll: true });
+      });
+      return () => cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, [sidebarOpen]);
+
+  const openSidebar = useCallback(() => {
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
+
+  const closeSidebar = useCallback(() => {
+    setFocusSidebarOnOpen(false);
+    setSidebarOpen(false);
+  }, []);
+
+  const handleSelectSymbol = useCallback((next: string) => {
+    setSymbol(next);
+    if (!sidebarOpen) {
+      setSidebarOpen(true);
+      setFocusSidebarOnOpen(true);
+    }
+  }, [sidebarOpen]);
 
   return (
     <main className="explore-page">
       <div className={`explore-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
-        <aside className={`explore-sidebar${sidebarOpen ? "" : " hidden"}`}>
-          <button
-            type="button"
-            className="explore-sidebar-toggle"
-            onClick={() => setSidebarOpen(false)}
-            aria-label={t('explore.hideSidebar')}
-            title={t('explore.hideSidebar')}
-          >
-            <span className="explore-toggle-icon" aria-hidden="true" />
-          </button>
-          <div className="explore-sidebar-content">
-            <div className="explore-sidebar-header">
-              <h3>{t('explore.markets')}</h3>
-            </div>
-            <div className="explore-search">
-              <input
-                type="search"
-                placeholder={t('explore.searchPlaceholder')}
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-              />
-            </div>
-            <div className="explore-groups">
-              {searchMode ? (
-                searchResults.length === 0 ? (
-                  <p className="explore-no-results">{t('explore.noResults')}</p>
-                ) : (
-                  <ul className="explore-symbols search-results">
-                    {searchResults.map((company) => {
-                      const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
-                      const isActive = company.symbol === symbol;
-                      return (
-                        <li key={company.symbol}>
-                          <button
-                            type="button"
-                            className={`explore-symbol${isActive ? " active" : ""}`}
-                            onClick={() => {
-                              setSymbol(company.symbol);
-                              if (!sidebarOpen) setSidebarOpen(true);
-                            }}
-                          >
-                            <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                            <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )
-              ) : (
-                grouped.map((group) => {
-                  const expanded = !!expandedMarkets[group.code];
-                  const panelId = `market-${group.code}`;
-                  const iconSrc = assetPath(MARKET_ICONS[group.code] ?? DEFAULT_MARKET_ICON);
-                  if (!group.companies.length) return null;
-                  return (
-                    <div key={group.code} className="explore-group">
-                      <button
-                        type="button"
-                        className="explore-group-header"
-                        onClick={() => toggleMarket(group.code)}
-                        aria-expanded={expanded}
-                        aria-controls={panelId}
-                      >
-                        <img src={iconSrc} alt="" className="explore-market-icon" aria-hidden="true" />
-                        <span>{group.label}</span>
-                        <span
-                          className={`explore-chevron${expanded ? " open" : ""}`}
-                          aria-hidden="true"
-                        />
-                      </button>
-                      {expanded && (
-                        <ul className="explore-symbols" id={panelId}>
-                          {group.companies.map((company) => {
-                            const logoPath = company.logo ? assetPath(company.logo) : placeholderLogo;
-                            const isActive = company.symbol === symbol;
-                            return (
-                              <li key={company.symbol}>
-                                <button
-                                  type="button"
-                                  className={`explore-symbol${isActive ? " active" : ""}`}
-                                  onClick={() => setSymbol(company.symbol)}
-                                >
-                                  <img src={logoPath} alt={`${company.name || company.symbol} logo`} />
-                                  <span>{`${company.symbol} - ${company.name || company.symbol}`}</span>
-                                </button>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        </aside>
+        <CompanySidebar
+          companies={companies}
+          selectedSymbol={symbol}
+          onSelectSymbol={handleSelectSymbol}
+          collapsed={!sidebarOpen}
+          onCollapse={closeSidebar}
+          onExpand={openSidebar}
+          title={t('explore.markets')}
+          searchPlaceholder={t('explore.searchPlaceholder')}
+          noResultsLabel={t('explore.noResults')}
+          hideLabel={t('explore.hideSidebar')}
+          assetPath={assetPath}
+          placeholderLogoPath="img/logo-placeholder.svg"
+          marketLabel={marketLabel}
+          focusOnMount={focusSidebarOnOpen}
+          onFocusHandled={() => setFocusSidebarOnOpen(false)}
+        />
 
         <div className="explore-main">
-          <button
-            type="button"
-            className={`explore-sidebar-toggle reopen${sidebarOpen ? '' : ' visible'}`}
-            onClick={() => setSidebarOpen(true)}
-            aria-label={t('explore.showSidebar')}
-            title={t('explore.showSidebar')}
-            aria-hidden={sidebarOpen}
-            tabIndex={sidebarOpen ? -1 : 0}
-          >
-            <span className="explore-toggle-icon" aria-hidden="true" />
-          </button>
+          {!sidebarOpen && (
+            <button
+              type="button"
+              ref={reopenButtonRef}
+              className="explore-sidebar-toggle reopen"
+              onClick={openSidebar}
+              aria-label={t('explore.showSidebar')}
+              title={t('explore.showSidebar')}
+            >
+              <span className="explore-toggle-icon" aria-hidden="true" />
+            </button>
+          )}
           <div className="explore-main-content">
             <div className="explore-header">
               <div className="company-identity">
@@ -1578,6 +1531,8 @@ export default function Explore() {
                 </dl>
               )}
             </div>
+
+            <QuickTrade symbol={symbol} />
 
             <div className="chart-card">
               <div className="chart-overlay">
@@ -2040,25 +1995,5 @@ function RangeHistogram({
     </div>
   );
 }
-
-function groupByMarket(list: Company[]): Record<string, Company[]> {
-  const map: Record<string, Company[]> = {};
-  for (const c of list) {
-    const key = (c.market || "OTHER").toUpperCase();
-    (map[key] ||= []).push(c);
-  }
-  for (const key of Object.keys(map)) {
-    map[key].sort((a, b) => a.symbol.localeCompare(b.symbol));
-  }
-  const ordered: Record<string, Company[]> = {};
-  for (const pref of ["US", "CN", "EU", "JP", "SA", "IDX", "COM", "CRYPTO", "FX"]) {
-    if (map[pref]) ordered[pref] = map[pref];
-  }
-  for (const key of Object.keys(map).sort()) {
-    if (!(key in ordered)) ordered[key] = map[key];
-  }
-  return ordered;
-}
-
 
 
