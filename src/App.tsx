@@ -25,9 +25,10 @@ export default function App(){
   function TopbarCash(){
     const uid = auth.currentUser?.uid;
     const { cash } = usePortfolioSnapshot(uid || "");
+    const formatted = cash.toLocaleString(undefined, { maximumFractionDigits: 2 });
     return (
-      <div aria-label="Available cash" className="topbar-cash">
-        ${cash.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+      <div aria-label={t('nav.availableCash', { amount: formatted })} className="topbar-cash">
+        {t('nav.availableCash', { amount: formatted })}
       </div>
     );
   }
@@ -63,4 +64,5 @@ export default function App(){
     </div>
   );
 }
+
 

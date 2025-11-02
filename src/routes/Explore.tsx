@@ -831,23 +831,37 @@ function GaugeNeedle({
 
 
 
-function QuickTrade({ symbol }: { symbol: string }){
+function QuickTrade({ symbol }: { symbol: string }) {
   const uid = auth.currentUser!.uid;
+  const { t } = useI18n();
   const { cash, positions } = usePortfolioSnapshot(uid);
   const [qty, setQty] = useState(1);
   const posQty = positions[symbol]?.qty ?? 0;
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState<{ text: string; tone: "error" | "success" } | null>(null);
 
-  const place = async (side:"buy"|"sell")=>{
-    setMsg(""); setLoading(true);
-    try{
+  const place = async (side: "buy" | "sell") => {
+    setMsg(null);
+    setLoading(true);
+    try {
       const px = await provider.getLastPrice(symbol);
-      if(!Number.isFinite(px) || px<=0){ setMsg("Invalid price"); return; }
-      const q = Math.max(0, Number(qty)||0);
-      if(!q){ setMsg("Invalid quantity"); return; }
-      if(side==="sell" && posQty < q - 1e-9){ setMsg("Not enough position"); return; }
-      if(side==="buy" && cash + 1e-6 < q*px){ setMsg("Not enough cash"); return; }
+      if (!Number.isFinite(px) || px <= 0) {
+        setMsg({ text: t("quicktrade.error.invalidPrice"), tone: "error" });
+        return;
+      }
+      const q = Math.max(0, Number(qty) || 0);
+      if (!q) {
+        setMsg({ text: t("quicktrade.error.invalidQuantity"), tone: "error" });
+        return;
+      }
+      if (side === "sell" && posQty < q - 1e-9) {
+        setMsg({ text: t("quicktrade.error.insufficientPosition"), tone: "error" });
+        return;
+      }
+      if (side === "buy" && cash + 1e-6 < q * px) {
+        setMsg({ text: t("quicktrade.error.insufficientCash"), tone: "error" });
+        return;
+      }
 
       await submitSpotOrder({
         uid,
@@ -858,20 +872,51 @@ function QuickTrade({ symbol }: { symbol: string }){
         extra: { source: "QuickTrade" },
       });
 
-      setMsg(side==="buy" ? "Bought" : "Sold");
-    }catch(e:any){
-      setMsg(e?.message ?? String(e));
-    }finally{ setLoading(false); }
+      setMsg({
+        text: side === "buy" ? t("quicktrade.success.buy") : t("quicktrade.success.sell"),
+        tone: "success",
+      });
+    } catch (e: any) {
+      setMsg({ text: e?.message ?? String(e), tone: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const cashLabel = cash.toLocaleString(undefined, { maximumFractionDigits: 2 });
 
   return (
     <div className="quicktrade">
-      <input className="input" type="number" min={0} step="any"
-             value={qty} onChange={e=>setQty(Number(e.target.value))}/>
-      <button className="btn btn-accent" disabled={loading} onClick={()=>place("buy")}>Quick Buy</button>
-      <button className="btn btn-sell"   disabled={loading} onClick={()=>place("sell")}>Quick Sell</button>
-      <div className="hint">Cash: ${cash.toFixed(2)} · Pos: {posQty}</div>
-      {msg && <div className="trade-msg">{msg}</div>}
+      <div className="quicktrade-controls">
+        <span className="quicktrade-owned">{t("quicktrade.label.owned", { amount: posQty })}</span>
+        <input
+          className="quicktrade-input input"
+          type="number"
+          min={0}
+          step="any"
+          value={qty}
+          onChange={(e) => setQty(Number(e.target.value))}
+        />
+        <button className="btn btn-accent quicktrade-action" disabled={loading} onClick={() => place("buy")}>
+          {t("quicktrade.actions.buy")}
+        </button>
+        <button
+          className="btn btn-sell quicktrade-action"
+          disabled={loading || posQty <= 0}
+          onClick={() => place("sell")}
+        >
+          {t("quicktrade.actions.sell")}
+        </button>
+      </div>
+      {msg && (
+        <div
+          className={`quicktrade-msg ${msg.tone === "error" ? "is-error" : "is-success"}`}
+          role={msg.tone === "error" ? "alert" : "status"}
+        >
+          {msg.text}
+        </div>
+      )}
+      <div className="quicktrade-hint">{t("quicktrade.label.cash", { amount: cashLabel })}</div>
     </div>
   );
 }
@@ -1202,7 +1247,7 @@ export default function Explore() {
 
   const displayName = profile?.displayName ?? profile?.longName ?? selectedCompany?.name ?? symbol;
   const longNameSuffix =
-    profile?.longName && profile.longName !== displayName ? ` · ${profile.longName}` : "";
+    profile?.longName && profile.longName !== displayName ? profile.longName : undefined;
   const subtitleParts: string[] = [symbol];
   if (profile?.sectorDisplay) {
     subtitleParts.push(profile.sectorDisplay);
@@ -1502,20 +1547,30 @@ export default function Explore() {
           )}
           <div className="explore-main-content">
             <div className="explore-header">
-              <div className="company-identity">
-                <img
-                  src={headerLogo}
-                  alt={`${selectedCompany?.name ?? symbol} logo`}
-                  className="company-logo"
-                  style={logoStyle}
-                />
-                <div>
-                  <h1>
-                    {displayName}
-                    {longNameSuffix && <span className="company-alias">{longNameSuffix}</span>}
-                  </h1>
-                  <p>{subtitle}</p>
+              <div className="explore-header-top">
+                <div className="company-identity">
+                  <img
+                    src={headerLogo}
+                    alt={`${selectedCompany?.name ?? symbol} logo`}
+                    className="company-logo"
+                    style={logoStyle}
+                  />
+                  <div>
+                    <h1>
+                      {displayName}
+                      {longNameSuffix && (
+                        <span className="company-alias">
+                          <span aria-hidden="true" className="company-alias-separator">
+                            {"\u00b7"}
+                          </span>
+                          <span>{longNameSuffix}</span>
+                        </span>
+                      )}
+                    </h1>
+                    <p>{subtitle}</p>
+                  </div>
                 </div>
+                <QuickTrade symbol={symbol} />
               </div>
               {profile?.longBusinessSummary && (
                 <p className="company-summary">{profile.longBusinessSummary}</p>
@@ -1531,8 +1586,6 @@ export default function Explore() {
                 </dl>
               )}
             </div>
-
-            <QuickTrade symbol={symbol} />
 
             <div className="chart-card">
               <div className="chart-overlay">
@@ -1995,5 +2048,6 @@ function RangeHistogram({
     </div>
   );
 }
+
 
 

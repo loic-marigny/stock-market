@@ -787,5 +787,3 @@ input:focus {
 
 .topbar-cash{ padding:4px 10px; border-radius:12px; background:var(--card); font-weight:600; }
 
-.quicktrade{ display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
-.quicktrade .input{ width:120px; }

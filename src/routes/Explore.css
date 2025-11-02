@@ -136,8 +136,8 @@
 }
 
 .explore-sidebar-toggle .explore-toggle-icon {
-  width: 12px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: rotate(135deg);
@@ -393,6 +393,14 @@
   padding: 20px 24px;
 }
 
+.explore-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
 .company-identity {
   display: flex;
   align-items: flex-start;
@@ -423,9 +431,18 @@
 }
 
 .company-alias {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-muted);
+}
+
+.company-alias-separator {
+  display: inline-block;
+  font-size: 1.1em;
+  line-height: 1;
 }
 
 .company-identity p {
@@ -477,6 +494,84 @@
 
 .company-meta-item a:hover {
   text-decoration: underline;
+}
+
+.quicktrade {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.quicktrade-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.quicktrade-owned {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.quicktrade-input {
+  width: 88px;
+}
+
+.quicktrade-action {
+  min-width: 110px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+}
+
+.quicktrade-msg {
+  font-size: 0.8rem;
+  font-weight: 600;
+  align-self: flex-end;
+}
+
+.quicktrade-msg.is-error {
+  color: var(--error);
+}
+
+.quicktrade-msg.is-success {
+  color: var(--success);
+}
+
+.quicktrade-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  align-self: flex-end;
+}
+
+@media (max-width: 720px) {
+  .explore-header-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .quicktrade {
+    align-items: stretch;
+  }
+
+  .quicktrade-controls {
+    justify-content: flex-start;
+  }
+
+  .quicktrade-action {
+    min-width: 0;
+    flex: 1 1 140px;
+  }
+
+  .quicktrade-msg,
+  .quicktrade-hint {
+    align-self: flex-start;
+  }
 }
 
 /*===========================================
@@ -844,3 +939,4 @@
 .linear-gauge-scale.with-target span:nth-child(2) {
   color: var(--accent-600);
 }
+
