@@ -9,7 +9,7 @@ const fr: Translations = {
   'nav.totalValueLabel': 'Valeur totale',
   'nav.signOut': 'Se d\u00E9connecter',
   'nav.languageLabel': 'Langue',
-  'nav.availableCash': 'Liquidit\u00E9s disponibles : {{amount}}',
+  'nav.availableCash': 'Liquidit\u00E9s disponibles : ${{amount}}',
   'language.switch': 'Passer en {{language}}',
   'auth.subtitle': 'Entra\u00EEnez-vous \u00E0 investir avec des cr\u00E9dits virtuels',
   'auth.title.signIn': 'Se connecter',
@@ -173,3 +173,4 @@ const fr: Translations = {
 };
 
 export default fr;
+

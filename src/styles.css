@@ -785,5 +785,8 @@ input:focus {
   }
 }
 
-.topbar-cash{ padding:4px 10px; border-radius:12px; background:var(--card); font-weight:600; }
+.topbar-right{ margin-left:auto; display:flex; align-items:center; gap:1rem; }
+.topbar-metrics{ display:flex; align-items:center; gap:.5rem; color:var(--text-muted); font-size:.9rem; }
+.topbar-metric{ color:inherit; font-size:inherit; font-weight:600; }
+.topbar-separator{ color:inherit; font-size:1.1em; line-height:1; }
 

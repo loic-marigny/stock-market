@@ -883,8 +883,6 @@ function QuickTrade({ symbol }: { symbol: string }) {
     }
   };
 
-  const cashLabel = cash.toLocaleString(undefined, { maximumFractionDigits: 2 });
-
   return (
     <div className="quicktrade">
       <div className="quicktrade-controls">
@@ -916,7 +914,6 @@ function QuickTrade({ symbol }: { symbol: string }) {
           {msg.text}
         </div>
       )}
-      <div className="quicktrade-hint">{t("quicktrade.label.cash", { amount: cashLabel })}</div>
     </div>
   );
 }

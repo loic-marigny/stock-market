@@ -1,4 +1,4 @@
-ï»¿const en = {
+const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -7,7 +7,7 @@
   'nav.totalValueLabel': 'Total value',
   'nav.signOut': 'Sign out',
   'nav.languageLabel': 'Language',
-  'nav.availableCash': 'Available cash: {{amount}}',
+  'nav.availableCash': 'Available cash: ${{amount}}',
   'language.switch': 'Switch to {{language}}',
   'auth.subtitle': 'Practice investing with virtual credits',
   'auth.title.signIn': 'Sign in',
@@ -28,7 +28,7 @@
   'auth.errors.emailInUse': 'Email already in use.',
   'auth.errors.invalidCredential': 'Incorrect email or password.',
   'auth.errors.tooManyRequests': 'Too many attempts. Try again later.',
-  'auth.footer.note': 'Â© {{year}} Stock Market â€” all rights reserved',
+  'auth.footer.note': '© {{year}} Stock Market — all rights reserved',
   'portfolio.title': 'My portfolio',
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',
@@ -142,12 +142,12 @@
   'explore.aboutTitle': 'Company overview',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).',
 
-  // Portfolio â€“ table
+  // Portfolio – table
   "portfolio.table.headers.company": "Company",
 
-  // Portfolio â€“ tooltips (help)
+  // Portfolio – tooltips (help)
   "portfolio.help.cash": "Amount of immediately available cash to place buy orders.",
-  "portfolio.help.positionValue": "Sum of current values (last price Ã— quantity) of all positions.",
+  "portfolio.help.positionValue": "Sum of current values (last price × quantity) of all positions.",
   "portfolio.help.totalValue": "Cash plus the market value of your positions (total portfolio value).",
   "portfolio.help.company": "Company name and ticker symbol.",
   "portfolio.help.qty": "Number of shares/units held.",
@@ -155,8 +155,8 @@
   "portfolio.help.buyPrice": "Purchase price of this specific lot.",
   "portfolio.help.buyDate": "Execution date and time for the lot purchase.",
   "portfolio.help.last": "Most recent known market price for the security.",
-  "portfolio.help.value": "Current line value (last price Ã— quantity).",
-  "portfolio.help.pnl": "Unrealized profit or loss: (last price âˆ’ ACB) Ã— quantity. Percentage shown in parentheses.",
+  "portfolio.help.value": "Current line value (last price × quantity).",
+  "portfolio.help.pnl": "Unrealized profit or loss: (last price - ACB) × quantity. Percentage shown in parentheses.",
   "portfolio.composition.title": "Portfolio composition",
   "portfolio.composition.others": "Others",
   "portfolio.composition.note": "Excludes cash",
@@ -174,3 +174,4 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
+

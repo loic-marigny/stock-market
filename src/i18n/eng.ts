@@ -7,7 +7,7 @@ const en = {
   'nav.totalValueLabel': 'Total value',
   'nav.signOut': 'Sign out',
   'nav.languageLabel': 'Language',
-  'nav.availableCash': 'Available cash: {{amount}}',
+  'nav.availableCash': 'Available cash: ${{amount}}',
   'language.switch': 'Switch to {{language}}',
   'auth.subtitle': 'Practice investing with virtual credits',
   'auth.title.signIn': 'Sign in',
@@ -168,6 +168,7 @@ export type TranslationKey = keyof typeof en;
 export type Translations = Record<TranslationKey, string>;
 
 export default en;
+
 
 
 

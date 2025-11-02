@@ -27,9 +27,9 @@ export default function App(){
     const { cash } = usePortfolioSnapshot(uid || "");
     const formatted = cash.toLocaleString(undefined, { maximumFractionDigits: 2 });
     return (
-      <div aria-label={t('nav.availableCash', { amount: formatted })} className="topbar-cash">
+      <span aria-label={t('nav.availableCash', { amount: formatted })} className="topbar-metric">
         {t('nav.availableCash', { amount: formatted })}
-      </div>
+      </span>
     );
   }
 
@@ -46,10 +46,13 @@ export default function App(){
           <NavLink to="/portfolio" className={({isActive})=> isActive?"active":""}>{t('nav.portfolio')}</NavLink>
           <NavLink to="/trade" className={({isActive})=> isActive?"active":""}>{t('nav.trade')}</NavLink>
         </nav>
-        <div style={{marginLeft:"auto", display:"flex", alignItems:"center", gap:"1rem"}}>
-          <div style={{color:"var(--text-muted)", fontSize:"0.9rem"}}>{t('nav.totalValueLabel')}: {totalDisplay}</div>
+        <div className="topbar-right">
+          <div className="topbar-metrics">
+            <span className="topbar-metric">{t('nav.totalValueLabel')}: {totalDisplay}</span>
+            <span className="topbar-separator" aria-hidden="true">·</span>
+            <TopbarCash />
+          </div>
           <button className="btn" onClick={()=>signOut(auth)}>{t('nav.signOut')}</button>
-        <TopbarCash />
         </div>
       </header>
 

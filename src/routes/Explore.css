@@ -523,9 +523,10 @@
 }
 
 .quicktrade-action {
-  min-width: 110px;
+  width: 120px;
   padding: 8px 12px;
   font-size: 0.9rem;
+  text-align: center;
 }
 
 .quicktrade-msg {
@@ -540,12 +541,6 @@
 
 .quicktrade-msg.is-success {
   color: var(--success);
-}
-
-.quicktrade-hint {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  align-self: flex-end;
 }
 
 @media (max-width: 720px) {
@@ -564,12 +559,10 @@
   }
 
   .quicktrade-action {
-    min-width: 0;
-    flex: 1 1 140px;
+    width: 100%;
   }
 
-  .quicktrade-msg,
-  .quicktrade-hint {
+  .quicktrade-msg {
     align-self: flex-start;
   }
 }
