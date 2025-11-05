@@ -75,7 +75,7 @@
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 11.95,
+    "last": 11.89,
     "as_of": "2025-11-05T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -135,7 +135,7 @@
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 43.11,
+    "last": 43.27,
     "as_of": "2025-11-05T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -180,7 +180,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-11-05T03:04:42Z",
+    "generated_at": "2025-11-05T03:14:59Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
