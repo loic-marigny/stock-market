@@ -43,6 +43,7 @@ type Row = {
   symbol: string;
   qty: number;
   buyPrice: number;
+  buyValue: number;
   buyDate: Date;
   last: number;
   value: number;
@@ -573,6 +574,12 @@ export default function Portfolio() {
                 </th>
                 <th>
                   <HeaderWithInfo
+                    label={t('portfolio.table.headers.buyValue')}
+                    help={t('portfolio.help.buyValue') ?? "Montant investi : quantit? ? prix d'achat."}
+                  />
+                </th>
+                <th>
+                  <HeaderWithInfo
                     label={t('portfolio.table.headers.buyDate')}
                     help={t('portfolio.help.buyDate') ?? "Date et heure de l'ex�cution de l'achat."}
                   />
@@ -600,7 +607,7 @@ export default function Portfolio() {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <td colSpan={8} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
                     {loadingPrices ? t('portfolio.table.loading') : t('portfolio.table.empty')}
                   </td>
                 </tr>
@@ -629,6 +636,7 @@ export default function Portfolio() {
                     </td>
                     <td className="num">{r.qty.toLocaleString(undefined, { maximumFractionDigits: 6 })}</td>
                     <td className="num">{fmt(r.buyPrice)}</td>
+                    <td className="num">{fmt(r.buyValue)}</td>
                     <td style={{ whiteSpace: "nowrap", textAlign: "right", color: "var(--text-muted)" }}>
                       {buyDateFormatter.format(r.buyDate)}
                     </td>
@@ -710,6 +718,7 @@ function buildRows(lots: Lot[], prices: Record<string, number>): Row[] {
     .map((lot, index) => {
       const last = prices[lot.symbol] ?? 0;
       const value = lot.qty * last;
+      const buyValue = lot.qty * lot.price;
       const pnlAbs = (last - lot.price) * lot.qty;
       const pnlPct = lot.price ? (last / lot.price - 1) * 100 : 0;
       return {
@@ -717,6 +726,7 @@ function buildRows(lots: Lot[], prices: Record<string, number>): Row[] {
         symbol: lot.symbol,
         qty: lot.qty,
         buyPrice: lot.price,
+        buyValue,
         buyDate: lot.ts,
         last,
         value,
