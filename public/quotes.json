@@ -1,31 +1,31 @@
 {
   "600519.SS": {
-    "last": 1431.8,
+    "last": 1433.02,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601318.SS": {
-    "last": 58.92,
+    "last": 58.97,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 8.04,
+    "last": 8.05,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.12,
+    "last": 8.11,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.63,
+    "last": 5.64,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.67,
+    "last": 9.68,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -35,37 +35,37 @@
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 42.47,
+    "last": 42.53,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 21.16,
+    "last": 21.21,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.46,
+    "last": 28.51,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 79.67,
+    "last": 79.52,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 22.6,
+    "last": 22.66,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 15.97,
+    "last": 16.0,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.05,
+    "last": 29.09,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -75,72 +75,72 @@
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 11.71,
+    "last": 11.69,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 36.12,
+    "last": 35.81,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601939.SS": {
-    "last": 9.38,
+    "last": 9.39,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.65,
+    "last": 7.68,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 61.72,
+    "last": 61.73,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.96,
+    "last": 7.98,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 64.7,
+    "last": 65.02,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 22.82,
+    "last": 22.84,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.2,
+    "last": 27.28,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.42,
+    "last": 5.43,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 5.78,
+    "last": 5.8,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.86,
+    "last": 6.84,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 43.67,
+    "last": 43.78,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 123.58,
+    "last": 123.4,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -180,7 +180,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-11-07T05:24:08Z",
+    "generated_at": "2025-11-07T05:44:06Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
