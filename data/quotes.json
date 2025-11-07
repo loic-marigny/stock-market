@@ -1,86 +1,86 @@
 {
   "600519.SS": {
-    "last": 1433.02,
+    "last": 1432.24,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601318.SS": {
-    "last": 58.97,
+    "last": 59.02,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 8.05,
+    "last": 8.07,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.11,
+    "last": 8.1,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601988.SS": {
-    "last": 5.64,
+    "last": 5.65,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.68,
+    "last": 9.67,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600028.SS": {
-    "last": 5.61,
+    "last": 5.6,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 42.53,
+    "last": 42.65,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601166.SS": {
-    "last": 21.21,
+    "last": 21.24,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600900.SS": {
-    "last": 28.51,
+    "last": 28.52,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601888.SS": {
-    "last": 79.52,
+    "last": 79.65,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 22.66,
+    "last": 22.56,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.0,
+    "last": 15.98,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.09,
+    "last": 29.04,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.26,
+    "last": 23.36,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600000.SS": {
-    "last": 11.69,
+    "last": 11.7,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601601.SS": {
-    "last": 35.81,
+    "last": 35.68,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -90,57 +90,57 @@
     "interval": "akshare_daily"
   },
   "600019.SS": {
-    "last": 7.68,
+    "last": 7.67,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600276.SS": {
-    "last": 61.73,
+    "last": 61.56,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601766.SS": {
-    "last": 7.98,
+    "last": 7.97,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600309.SS": {
-    "last": 65.02,
+    "last": 65.2,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601633.SS": {
-    "last": 22.84,
+    "last": 22.73,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600887.SS": {
-    "last": 27.28,
+    "last": 27.27,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601668.SS": {
-    "last": 5.43,
+    "last": 5.42,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601658.SS": {
-    "last": 5.8,
+    "last": 5.81,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601728.SS": {
-    "last": 6.84,
+    "last": 6.86,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601628.SS": {
-    "last": 43.78,
+    "last": 43.71,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
   "688981.SS": {
-    "last": 123.4,
+    "last": 122.9,
     "as_of": "2025-11-07T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -180,7 +180,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-11-07T05:44:06Z",
+    "generated_at": "2025-11-07T05:59:39Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
