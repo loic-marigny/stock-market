@@ -1,21 +1,21 @@
 {
   "600519.SS": {
-    "last": 1458.05,
+    "last": 1460.18,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601318.SS": {
-    "last": 59.29,
+    "last": 59.22,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601398.SS": {
-    "last": 8.09,
+    "last": 8.12,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "601288.SS": {
-    "last": 8.09,
+    "last": 8.11,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -25,7 +25,7 @@
     "interval": "akshare_daily"
   },
   "601857.SS": {
-    "last": 9.86,
+    "last": 9.84,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -35,7 +35,7 @@
     "interval": "akshare_daily"
   },
   "600036.SS": {
-    "last": 42.75,
+    "last": 42.73,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -55,22 +55,22 @@
     "interval": "akshare_daily"
   },
   "601012.SS": {
-    "last": 22.82,
+    "last": 22.73,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600104.SS": {
-    "last": 16.12,
+    "last": 16.13,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600030.SS": {
-    "last": 29.38,
+    "last": 29.29,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
   "600585.SS": {
-    "last": 23.63,
+    "last": 23.6,
     "as_of": "2025-11-10T00:00:00Z",
     "interval": "akshare_daily"
   },
@@ -145,7 +145,7 @@
     "interval": "yahoo_1d"
   },
   "meta": {
-    "generated_at": "2025-11-10T05:44:41Z",
+    "generated_at": "2025-11-10T05:58:57Z",
     "source": "Finnhub(/quote) for US; Akshare for CN; Yahoo for EU/JP/SA/Crypto/FX/Commodities/Indices",
     "note": "Never writes nulls; preserves previous values if unavailable."
   }
