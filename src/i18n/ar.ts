@@ -167,7 +167,47 @@ const ar: Translations = {
   'portfolio.history.title': '?????? ???????',
   'portfolio.history.note': '????? ?????? ??????? (??????)',
   'portfolio.history.stocks': '?????',
-  'portfolio.history.cash': '??????'
+  'portfolio.history.cash': '??????',
+
+  // --- Conditional / scheduled orders (Trade tab) ---
+  'trade.schedule.title': 'Program orders',
+  'trade.schedule.description':
+    'Automatically place a buy or sell when the price reaches your threshold.',
+  'trade.schedule.field.side': 'Order side',
+  'trade.schedule.field.qty': 'Quantity to trade',
+  'trade.schedule.field.triggerPrice': 'Trigger price',
+  'trade.schedule.field.triggerType': 'Trigger condition',
+  'trade.schedule.side.buy': 'Buy',
+  'trade.schedule.side.sell': 'Sell',
+  'trade.schedule.triggerType.gte': 'Price at or above',
+  'trade.schedule.triggerType.lte': 'Price at or below',
+  'trade.schedule.submit': 'Schedule order',
+  'trade.schedule.success': 'Conditional order scheduled.',
+  'trade.schedule.validation.triggerPrice': 'Enter a trigger price greater than 0.',
+  'trade.schedule.validation.qty': 'Enter a valid quantity.',
+  'trade.schedule.validation.position':
+    'You do not hold enough units to cover this sell order.',
+  'trade.schedule.validation.cash':
+    'Not enough credits to cover this buy order if triggered.',
+  'trade.schedule.orders.title': 'Scheduled orders',
+  'trade.schedule.orders.headers.symbol': 'Symbol',
+  'trade.schedule.orders.headers.side': 'Side',
+  'trade.schedule.orders.headers.qty': 'Qty',
+  'trade.schedule.orders.headers.trigger': 'Trigger',
+  'trade.schedule.orders.headers.status': 'Status',
+  'trade.schedule.orders.headers.error': 'Last error',
+  'trade.schedule.orders.headers.actions': 'Actions',
+  'trade.schedule.orders.empty': 'No conditional orders yet.',
+  'trade.schedule.orders.cancel': 'Cancel',
+  'trade.schedule.status.pending': 'Waiting',
+  'trade.schedule.status.executing': 'Processing',
+  'trade.schedule.status.triggered': 'Triggered',
+  'trade.schedule.status.cancelled': 'Cancelled',
+  'trade.schedule.status.error': 'Error',
+
+  // Titre pour le tableau de positions réutilisé dans Trade
+  'trade.positions.title': 'Portfolio positions',
+
 };
 
 export default ar;

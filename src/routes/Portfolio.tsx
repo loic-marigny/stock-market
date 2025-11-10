@@ -1,7 +1,6 @@
 ﻿// src/routes/Portfolio.tsx
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "../firebase";
-import type { Order } from "../lib/portfolio";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 import { useI18n } from "../i18n/I18nProvider";
 import provider from "../lib/prices";
