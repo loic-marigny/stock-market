@@ -1,4 +1,4 @@
-const en = {
+ï»¿const en = {
   'app.loading': 'Loading...',
   'app.calculating': 'Calculating...',
   'nav.explore': 'Explore',
@@ -28,7 +28,7 @@ const en = {
   'auth.errors.emailInUse': 'Email already in use.',
   'auth.errors.invalidCredential': 'Incorrect email or password.',
   'auth.errors.tooManyRequests': 'Too many attempts. Try again later.',
-  'auth.footer.note': '© {{year}} Stock Market — all rights reserved',
+  'auth.footer.note': 'ï¿½ {{year}} Stock Market ï¿½ all rights reserved',
   'portfolio.title': 'My portfolio',
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',
@@ -60,13 +60,53 @@ const en = {
   'trade.actions.buy': 'Buy',
   'trade.actions.sell': 'Sell',
   'trade.hint.quantity': 'Execution: quantity x last price at the time of the click.',
-  'trade.hint.amount': 'Execution: calculated quantity = amount / last price.',
+    'trade.hint.amount': 'Execution: calculated quantity = amount / last price.',
   'trade.validation.invalidPrice': 'Price unavailable right now. Please try again later.',
   'trade.validation.invalidQuantity': 'Invalid quantity or amount.',
   'trade.validation.insufficientPosition': 'Not enough position to sell that quantity.',
   'trade.validation.insufficientCash': 'Insufficient credits for this purchase.',
   'trade.success.buy': 'Buy order executed.',
   'trade.success.sell': 'Sell order executed.',
+
+  // --- Conditional / scheduled orders (Trade tab) ---
+  'trade.schedule.title': 'Program orders',
+  'trade.schedule.description':
+    'Automatically place a buy or sell when the price reaches your threshold.',
+  'trade.schedule.field.side': 'Order side',
+  'trade.schedule.field.qty': 'Quantity to trade',
+  'trade.schedule.field.triggerPrice': 'Trigger price',
+  'trade.schedule.field.triggerType': 'Trigger condition',
+  'trade.schedule.side.buy': 'Buy',
+  'trade.schedule.side.sell': 'Sell',
+  'trade.schedule.triggerType.gte': 'Price at or above',
+  'trade.schedule.triggerType.lte': 'Price at or below',
+  'trade.schedule.submit': 'Schedule order',
+  'trade.schedule.success': 'Conditional order scheduled.',
+  'trade.schedule.validation.triggerPrice': 'Enter a trigger price greater than 0.',
+  'trade.schedule.validation.qty': 'Enter a valid quantity.',
+  'trade.schedule.validation.position':
+    'You do not hold enough units to cover this sell order.',
+  'trade.schedule.validation.cash':
+    'Not enough credits to cover this buy order if triggered.',
+  'trade.schedule.orders.title': 'Scheduled orders',
+  'trade.schedule.orders.headers.symbol': 'Symbol',
+  'trade.schedule.orders.headers.side': 'Side',
+  'trade.schedule.orders.headers.qty': 'Qty',
+  'trade.schedule.orders.headers.trigger': 'Trigger',
+  'trade.schedule.orders.headers.status': 'Status',
+  'trade.schedule.orders.headers.error': 'Last error',
+  'trade.schedule.orders.headers.actions': 'Actions',
+  'trade.schedule.orders.empty': 'No conditional orders yet.',
+  'trade.schedule.orders.cancel': 'Cancel',
+  'trade.schedule.status.pending': 'Waiting',
+  'trade.schedule.status.executing': 'Processing',
+  'trade.schedule.status.triggered': 'Triggered',
+  'trade.schedule.status.cancelled': 'Cancelled',
+  'trade.schedule.status.error': 'Error',
+
+  // Titre pour le tableau de positions rÃ©utilisÃ© dans Trade
+  'trade.positions.title': 'Portfolio positions',
+
   'quicktrade.actions.buy': 'Quick buy',
   'quicktrade.actions.sell': 'Quick sell',
   'quicktrade.label.owned': 'Owned: {{amount}}',
@@ -77,6 +117,7 @@ const en = {
   'quicktrade.error.insufficientCash': 'Insufficient credits for this purchase.',
   'quicktrade.success.buy': 'Buy order executed.',
   'quicktrade.success.sell': 'Sell order executed.',
+
   'explore.lastLabel': 'Last:',
   'explore.markets': 'Markets',
   'explore.hideSidebar': 'Hide list',
@@ -143,12 +184,12 @@ const en = {
   'explore.aboutTitle': 'Company overview',
   'explore.sourceHint': 'Source: static JSON files (Finnhub/Akshare/Yahoo via CI).',
 
-  // Portfolio – table
+  // Portfolio ï¿½ table
   "portfolio.table.headers.company": "Company",
 
-  // Portfolio – tooltips (help)
+  // Portfolio ï¿½ tooltips (help)
   "portfolio.help.cash": "Amount of immediately available cash to place buy orders.",
-  "portfolio.help.positionValue": "Sum of current values (last price × quantity) of all positions.",
+  "portfolio.help.positionValue": "Sum of current values (last price ï¿½ quantity) of all positions.",
   "portfolio.help.totalValue": "Cash plus the market value of your positions (total portfolio value).",
   "portfolio.help.company": "Company name and ticker symbol.",
   "portfolio.help.qty": "Number of shares/units held.",
@@ -157,8 +198,8 @@ const en = {
   "portfolio.help.buyValue": "Invested amount (quantity x buy price).",
   "portfolio.help.buyDate": "Execution date and time for the lot purchase.",
   "portfolio.help.last": "Most recent known market price for the security.",
-  "portfolio.help.value": "Current line value (last price × quantity).",
-  "portfolio.help.pnl": "Unrealized profit or loss: (last price - ACB) × quantity. Percentage shown in parentheses.",
+  "portfolio.help.value": "Current line value (last price ï¿½ quantity).",
+  "portfolio.help.pnl": "Unrealized profit or loss: (last price - ACB) ï¿½ quantity. Percentage shown in parentheses.",
   "portfolio.composition.title": "Portfolio composition",
   "portfolio.composition.others": "Others",
   "portfolio.composition.note": "Excludes cash",

@@ -2,9 +2,6 @@ name: Update history (daily)
 run-name: Update history (daily) #${{ github.run_number }}
 
 on:
-  schedule:
-    # After regular US market close (approx) Mon-Fri
-    - cron: "30 21 * * 1-5"
   workflow_dispatch:
 
 permissions:
