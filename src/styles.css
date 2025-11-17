@@ -797,11 +797,6 @@ input:focus {
   margin-bottom:12px;
 }
 
-.trade-title-hint{
-  margin:0;
-  font-size:0.95rem;
-}
-
 .table-card.trade-hero-card{
   padding:24px;
   border-radius:20px;
@@ -929,10 +924,94 @@ input:focus {
 
 .trade-grid--compact{
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items:end;
+  gap:12px;
+}
+.trade-field--fill{
+  min-width:0;
+}
+.trade-input-row{
+  display:flex;
+  gap:12px;
+  align-items:stretch;
+}
+.trade-input-primary{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:6px 0;
+  box-sizing:border-box;
+}
+.trade-input-primary label{
+  display:block;
+  margin:0;
+  font-size:0.9rem;
+  line-height:1.2;
+}
+.trade-input-primary .input{
+  flex:1;
+  height:41.5px;
+}
+.trade-input-row .trade-estimate{
+  display:flex;
+  flex-direction:column;
+  min-width:140px;
+  padding:8px 12px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  text-align:left;
+}
+.trade-input-row .trade-estimate span{
+  font-size:0.75rem;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  letter-spacing:0.05em;
+}
+.trade-input-row .trade-estimate strong{
+  font-size:1rem;
+  color:var(--primary-700);
+}
+.trade-mode-info{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:stretch;
+  padding:6px 0;
+  box-sizing:border-box;
+  justify-content:flex-start;
+}
+.trade-mode-seg{
+  display:flex;
+  flex:0 0 auto;
+  gap:6px;
+  align-items:center;
+  height:41.5px;
+}
+.trade-mode-seg button{
+  padding:8px 18px;
+  font-size:0.95rem;
+  min-width:110px;
+  height:41.5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.trade-mode-info .trade-mode-hint{
+  margin:0;
+  font-size:0.9rem;
+  line-height:1.2;
+}
+.trade-actions .trade-action{
+  flex:1;
 }
 
 .table-card.trade-hero-card .trade-actions{
   margin:4px 0 0;
+  display:flex;
+  gap:8px;
+  align-items:stretch;
 }
 
 .trade-mode-hint{
@@ -944,4 +1023,9 @@ input:focus {
   .table-card.trade-hero-card .trade-hero-top{ flex-direction:column; align-items:flex-start; }
   .table-card.trade-hero-card .trade-company-identity{ width:100%; flex-direction:row; justify-content:flex-start; }
   .trade-hero-stats{ justify-content:flex-start; }
+  .trade-grid--compact{ grid-template-columns: 1fr; }
+  .table-card.trade-hero-card .trade-actions{ flex-direction:column; }
+  .trade-input-row{ flex-direction:column; align-items:stretch; }
+  .trade-mode-info{ width:100%; }
+  .trade-input-row .trade-estimate{ width:100%; }
 }

@@ -284,14 +284,16 @@ export default function Trade(){
 
   const round6 = (x:number) => Math.round(x * 1e6) / 1e6;
   const previewQty = mode === "qty"
-    ? Math.max(0, qty || 0)
+    ? Math.max(0, Number.isFinite(qty) ? qty : 0)
     : (last ? round6((amount || 0) / last) : 0);
 
   const validate = (side:"buy"|"sell", px:number) => {
     if (!Number.isFinite(px) || px <= 0) {
       return t('trade.validation.invalidPrice');
     }
-    const q = mode === "qty" ? qty : round6(amount / px);
+    const q = mode === "qty"
+      ? (Number.isFinite(qty) ? qty : 0)
+      : round6(amount / px);
     if (!q || q <= 0) return t('trade.validation.invalidQuantity');
     if (side === "sell" && posQty < q - 1e-9) return t('trade.validation.insufficientPosition');
     if (side === "buy") {
@@ -311,7 +313,9 @@ export default function Trade(){
       const fillPrice = fetchedPrice;
 
       // quantité base calculée selon le mode
-      const qBase = mode === "qty" ? Number(qty) : round6(Number(amount) / fillPrice);
+      const qBase = mode === "qty"
+        ? (Number.isFinite(qty) ? Number(qty) : 0)
+        : round6(Number(amount) / fillPrice);
       if (qBase <= 0) { setMsg(t('trade.validation.invalidQuantity')); setLoading(false); return; }
 
       if (isFxSymbol(symbol)) {
@@ -558,9 +562,6 @@ export default function Trade(){
               <div className="portfolio-title-card trade-title-card">
                 <h1>{t('trade.title')}</h1>
               </div>
-              <p className="hint trade-title-hint">
-                {t('trade.field.symbol')} <strong>{symbol}</strong>
-              </p>
             </header>
 
             <section className="table-card trade-hero-card">
@@ -591,7 +592,9 @@ export default function Trade(){
                 <div className="trade-hero-stats">
                   <div className="trade-stat">
                     <span className="trade-stat-label">{t('trade.field.lastPrice')}</span>
-                    <strong className="trade-stat-value">{last ? last.toFixed(2) : "-"}</strong>
+                    <strong className="trade-stat-value">
+                      {last ? `$${last.toFixed(2)}` : "-"}
+                    </strong>
                   </div>
                   <div className="trade-stat">
                     <span className="trade-stat-label">{t('trade.field.inPortfolio')}</span>
@@ -599,79 +602,84 @@ export default function Trade(){
                   </div>
                   <div className="trade-stat">
                     <span className="trade-stat-label">{t('trade.field.creditsLabel')}</span>
-                    <strong className="trade-stat-value">{cash.toFixed(2)}</strong>
+                    <strong className="trade-stat-value">
+                      ${cash.toFixed(2)}
+                    </strong>
                   </div>
                 </div>
               </div>
 
               <div className="trade-form">
-                <div className="trade-mode-switch">
-                  <div className="seg">
-                    <button
-                      type="button"
-                      className={mode === "qty" ? "on" : ""}
-                      onClick={() => setMode("qty")}
-                    >
-                      {t('trade.mode.enterQuantity')}
-                    </button>
-                    <button
-                      type="button"
-                      className={mode === "amount" ? "on" : ""}
-                      onClick={() => setMode("amount")}
-                    >
-                      {t('trade.mode.enterAmount')}
-                    </button>
-                  </div>
-                  <p className="hint trade-mode-hint">
-                    {mode === "qty" ? t('trade.hint.quantity') : t('trade.hint.amount')}
-                  </p>
-                </div>
-
                 <div className="trade-grid trade-grid--compact">
-                  <div className="field">
-                    <label>{t('trade.field.symbol')}</label>
-                    <div className="price-tile">{symbol}</div>
+                  <div className="field trade-field--fill">
+                    <div className="trade-input-row">
+                      <div className="trade-input-primary">
+                        <label>{mode === "qty" ? t('trade.field.quantityLabel') : t('trade.field.amountLabel')}</label>
+                        {mode === "qty" ? (
+                          <input
+                            className="input"
+                            type="number"
+                            min={0}
+                            step="any"
+                            value={Number.isFinite(qty) ? qty : ""}
+                            onChange={(event) => {
+                              const { value } = event.target;
+                              setQty(value === "" ? NaN : Number(value));
+                            }}
+                          />
+                        ) : (
+                          <input
+                            className="input"
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={amount}
+                            onChange={(event) => setAmount(Number(event.target.value))}
+                          />
+                        )}
+                      </div>
+                      <div className="trade-mode-info">
+                        <p className="hint trade-mode-hint">
+                          {mode === "qty" ? t('trade.hint.quantity') : t('trade.hint.amount')}
+                        </p>
+                        <div className="seg trade-mode-seg">
+                          <button
+                            type="button"
+                            className={mode === "qty" ? "on" : ""}
+                            onClick={() => setMode("qty")}
+                          >
+                            {t('trade.mode.enterQuantity')}
+                          </button>
+                          <button
+                            type="button"
+                            className={mode === "amount" ? "on" : ""}
+                            onClick={() => setMode("amount")}
+                          >
+                            {t('trade.mode.enterAmount')}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="trade-estimate">
+                        <span>
+                          {mode === "qty"
+                            ? t('trade.field.estimatedCost')
+                            : t('trade.field.estimatedQuantity')}
+                        </span>
+                        <strong>
+                          {mode === "qty"
+                            ? (last ? `$${(qty * last).toFixed(2)}` : "-")
+                            : fmtQty(previewQty)}
+                        </strong>
+                      </div>
+                    </div>
                   </div>
-
-                  {mode === "qty" ? (
-                    <div className="field">
-                      <label>{t('trade.field.quantityLabel')}</label>
-                      <input
-                        className="input"
-                        type="number"
-                        min={0}
-                        step="any"
-                        value={qty}
-                        onChange={(event) => setQty(Number(event.target.value))}
-                      />
-                      <div className="hint">
-                        {t('trade.field.estimatedCost')}:{" "}
-                        <strong>{last ? (qty * last).toFixed(2) : "-"}</strong>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="field">
-                      <label>{t('trade.field.amountLabel')}</label>
-                      <input
-                        className="input"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        value={amount}
-                        onChange={(event) => setAmount(Number(event.target.value))}
-                      />
-                      <div className="hint">
-                        {t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 <div className="trade-actions">
-                  <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
+                  <button className="btn btn-accent trade-action" disabled={loading} onClick={() => place("buy")}>
                     {t('trade.actions.buy')}
                   </button>
-                  <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
+                  <button className="btn btn-sell trade-action" disabled={loading} onClick={() => place("sell")}>
                     {t('trade.actions.sell')}
                   </button>
                 </div>
@@ -688,14 +696,6 @@ export default function Trade(){
                 {t('trade.schedule.description')}
               </p>
               <form className="trade-grid" onSubmit={handleScheduleConditional}>
-                <div className="field">
-                  <label>{t('trade.field.symbol')}</label>
-                  <div className="price-tile">{symbol}</div>
-                  <div className="hint">
-                    {t('trade.field.inPortfolio')} <strong>{fmtQty(posQty)}</strong>
-                  </div>
-                </div>
-
                 <div className="field">
                   <label>{t('trade.schedule.field.side')}</label>
                   <select
