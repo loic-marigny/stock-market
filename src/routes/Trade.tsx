@@ -30,6 +30,7 @@ import {
   type ConditionalOrder,
   type TriggerType,
 } from "../lib/conditionalOrders";
+import "./Trade.css";
 
 type EntryMode = "qty" | "amount";
 
