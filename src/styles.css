@@ -790,3 +790,158 @@ input:focus {
 .topbar-metric{ color:inherit; font-size:inherit; font-weight:600; }
 .topbar-separator{ color:inherit; font-size:1.1em; line-height:1; }
 
+.trade-page-header{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.trade-title-hint{
+  margin:0;
+  font-size:0.95rem;
+}
+
+.table-card.trade-hero-card{
+  padding:24px;
+  border-radius:20px;
+  background: var(--surface, #fff);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.table-card.trade-hero-card .trade-hero-top{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.table-card.trade-hero-card .trade-company-identity{
+  display:flex;
+  align-items:flex-start;
+  flex-wrap:nowrap;
+  gap:16px;
+  flex:1 1 340px;
+  min-width:260px;
+}
+
+.table-card.trade-hero-card .trade-company-logo{
+  width:68px;
+  height:68px;
+  border-radius:16px;
+  object-fit:contain;
+  padding:12px;
+  background:transparent;
+  border:1px solid transparent;
+  box-shadow:0 4px 14px rgba(15,23,42,0.16);
+  transition:background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, padding 0.2s ease;
+}
+
+.table-card.trade-hero-card .trade-company-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+  flex:1;
+}
+
+.trade-company-info h1{
+  margin:0;
+  font-size:1.5rem;
+  font-weight:800;
+  color:var(--primary-700);
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:baseline;
+}
+
+.trade-company-alias{
+  display:inline-flex;
+  align-items:baseline;
+  gap:6px;
+  font-size:1rem;
+  font-weight:600;
+  color:var(--text-muted);
+}
+
+.trade-company-alias-separator{
+  display:inline-block;
+  font-size:1.1em;
+  line-height:1;
+}
+
+.trade-company-info p{
+  margin:4px 0 0;
+  color:var(--text-muted);
+  font-size:0.95rem;
+}
+
+.trade-hero-stats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  justify-content:flex-end;
+}
+
+.trade-stat{
+  min-width:140px;
+  padding:12px 16px;
+  border-radius:12px;
+  background:rgba(99,102,241,0.06);
+  border:1px solid rgba(99,102,241,0.2);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  text-align:left;
+}
+
+.trade-stat-label{
+  font-size:0.8rem;
+  color:var(--text-muted);
+}
+
+.trade-stat-value{
+  font-size:1.1rem;
+  color:var(--primary-700);
+}
+
+.trade-form{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.trade-mode-switch{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.table-card.trade-hero-card .trade-grid{
+  margin:0;
+}
+
+.trade-grid--compact{
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.table-card.trade-hero-card .trade-actions{
+  margin:4px 0 0;
+}
+
+.trade-mode-hint{
+  margin:0;
+}
+
+@media (max-width: 840px){
+  .trade-page-header{ align-items:flex-start; }
+  .table-card.trade-hero-card .trade-hero-top{ flex-direction:column; align-items:flex-start; }
+  .table-card.trade-hero-card .trade-company-identity{ width:100%; flex-direction:row; justify-content:flex-start; }
+  .trade-hero-stats{ justify-content:flex-start; }
+}

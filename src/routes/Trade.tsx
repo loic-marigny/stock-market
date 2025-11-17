@@ -1,4 +1,12 @@
-import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { auth, db } from "../firebase";
 import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore";
 import provider from "../lib/prices";
@@ -31,6 +39,101 @@ const assetPath = (path: string) => {
   const normalizedBase = base.endsWith("/") ? base : `${base}/`;
   const trimmed = path.replace(/^\/+/, "");
   return `${normalizedBase}${trimmed}`;
+};
+
+const DEFAULT_TRADE_LOGO_STYLE: CSSProperties = {
+  padding: 12,
+  background: "linear-gradient(135deg, rgba(244,247,254,0.95), rgba(226,232,240,0.7))",
+  border: "1px solid rgba(15,23,42,0.12)",
+  boxShadow: "0 4px 14px rgba(15,23,42,0.16)",
+};
+
+const analyzeLogoAppearance = async (src: string): Promise<CSSProperties> => {
+  const image = new Image();
+  image.crossOrigin = "anonymous";
+  image.decoding = "async";
+  const size = 64;
+
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("logo-load-failed"));
+    image.src = src;
+  });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) {
+    return DEFAULT_TRADE_LOGO_STYLE;
+  }
+  ctx.clearRect(0, 0, size, size);
+  ctx.drawImage(image, 0, 0, size, size);
+
+  let imageData: ImageData;
+  try {
+    imageData = ctx.getImageData(0, 0, size, size);
+  } catch {
+    return DEFAULT_TRADE_LOGO_STYLE;
+  }
+  const data = imageData.data;
+  let brightnessSum = 0;
+  let pixelCount = 0;
+  let edgePixels = 0;
+  let opaqueEdgePixels = 0;
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const idx = (y * size + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      const a = data[idx + 3];
+      if (a < 15) continue;
+      pixelCount += 1;
+      brightnessSum += 0.299 * r + 0.587 * g + 0.114 * b;
+      const isEdge = x < 2 || x >= size - 2 || y < 2 || y >= size - 2;
+      if (isEdge) {
+        edgePixels += 1;
+        if (a > 230) opaqueEdgePixels += 1;
+      }
+    }
+  }
+
+  const hasOpaqueFrame = edgePixels > 0 && opaqueEdgePixels / edgePixels > 0.85;
+  if (hasOpaqueFrame) {
+    return {
+      padding: 0,
+      background: "transparent",
+      border: "0",
+      boxShadow: "none",
+      objectFit: "cover",
+    };
+  }
+
+  const avgBrightness = pixelCount > 0 ? brightnessSum / pixelCount : 200;
+  if (avgBrightness < 140) {
+    return {
+      padding: 12,
+      background: "linear-gradient(135deg, rgba(248,250,252,0.96), rgba(226,232,240,0.72))",
+      border: "1px solid rgba(15,23,42,0.18)",
+      boxShadow: "0 4px 16px rgba(15,23,42,0.18)",
+    };
+  }
+  if (avgBrightness > 200) {
+    return {
+      padding: 12,
+      background: "linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.75))",
+      border: "1px solid rgba(15,23,42,0.32)",
+      boxShadow: "0 4px 18px rgba(15,23,42,0.3)",
+    };
+  }
+  return {
+    padding: 12,
+    background: "linear-gradient(135deg, rgba(240,244,255,0.95), rgba(226,232,240,0.75))",
+    border: "1px solid rgba(15,23,42,0.14)",
+    boxShadow: "0 4px 16px rgba(15,23,42,0.2)",
+  };
 };
 
 export default function Trade(){
@@ -264,8 +367,40 @@ export default function Trade(){
   };
 
 
-  const placeholderLogoPath = "img/logo-placeholder.svg";
+  const placeholderLogoPath = assetPath("img/logo-placeholder.svg");
   const selectedCompany = companies.find((company) => company.symbol === symbol) ?? null;
+  const companyLogo = selectedCompany?.logo ? assetPath(selectedCompany.logo) : placeholderLogoPath;
+  const [logoStyle, setLogoStyle] = useState<CSSProperties>(DEFAULT_TRADE_LOGO_STYLE);
+
+  useEffect(() => {
+    let cancelled = false;
+    analyzeLogoAppearance(companyLogo)
+      .then((style) => {
+        if (!cancelled) setLogoStyle(style);
+      })
+      .catch(() => {
+        if (!cancelled) setLogoStyle(DEFAULT_TRADE_LOGO_STYLE);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [companyLogo]);
+
+  const companyPrimaryName =
+    (selectedCompany as any)?.displayName ?? selectedCompany?.name ?? selectedCompany?.symbol ?? symbol;
+  const longNameSuffix =
+    selectedCompany?.name && selectedCompany.name !== companyPrimaryName
+      ? selectedCompany.name
+      : undefined;
+  const companySubtitleText = useMemo(() => {
+    const details: string[] = [];
+    if (selectedCompany?.sector) details.push(selectedCompany.sector);
+    if (selectedCompany?.market) details.push(marketLabel(selectedCompany.market));
+    const descriptor = details.join(" • ");
+    const ticker = selectedCompany?.symbol ?? symbol;
+    if (descriptor) return `${ticker} - ${descriptor}`;
+    return ticker;
+  }, [selectedCompany, symbol]);
 
   const handleSelectSymbol = useCallback((value: string) => {
     setSymbol(value);
@@ -419,86 +554,131 @@ export default function Trade(){
           )}
 
           <div className="explore-main-content">
-            <div className="trade-header">
-              <h2 className="signin-title" style={{ marginTop: 0 }}>{t('trade.title')}</h2>
-              {selectedCompany && (
-                <p className="hint" style={{ marginBottom: "1rem" }}>
-                  {selectedCompany.symbol} · {selectedCompany.name ?? selectedCompany.symbol}
-                </p>
-              )}
-            </div>
-
-            <div className="trade-grid">
-              <div className="field">
-                <label>{t('trade.field.symbol')}</label>
-                <div className="price-tile">{symbol}</div>
-                <div className="hint">{t('trade.field.inPortfolio')} <strong>{fmtQty(posQty)}</strong></div>
+            <header className="trade-page-header">
+              <div className="portfolio-title-card trade-title-card">
+                <h1>{t('trade.title')}</h1>
               </div>
+              <p className="hint trade-title-hint">
+                {t('trade.field.symbol')} <strong>{symbol}</strong>
+              </p>
+            </header>
 
-              <div className="field">
-                <label>{t('trade.field.lastPrice')}</label>
-                <div className="price-tile">{last ? last.toFixed(2) : "-"}</div>
-              </div>
-
-              <div className="field" style={{ gridColumn: "1 / -1" }}>
-                <div className="seg">
-                  <button type="button" className={mode === "qty" ? "on" : ""} onClick={() => setMode("qty")}>{t('trade.mode.enterQuantity')}</button>
-                  <button type="button" className={mode === "amount" ? "on" : ""} onClick={() => setMode("amount")}>{t('trade.mode.enterAmount')}</button>
-                </div>
-              </div>
-
-              {mode === "qty" ? (
-                <div className="field">
-                  <label>{t('trade.field.quantityLabel')}</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min={0}
-                    step="any"
-                    value={qty}
-                    onChange={(event) => setQty(Number(event.target.value))}
+            <section className="table-card trade-hero-card">
+              <div className="trade-hero-top">
+                <div className="trade-company-identity">
+                  <img
+                    src={companyLogo}
+                    alt={`${companyPrimaryName} logo`}
+                    className="trade-company-logo"
+                    style={logoStyle}
                   />
-                  <div className="hint">
-                    {t('trade.field.estimatedCost')}: <strong>{last ? (qty * last).toFixed(2) : "-"}</strong>
+                  <div className="trade-company-info">
+                    <h1>
+                      {companyPrimaryName}
+                      {longNameSuffix && (
+                        <span className="trade-company-alias">
+                          <span aria-hidden="true" className="trade-company-alias-separator">
+                            {"\u00b7"}
+                          </span>
+                          <span>{longNameSuffix}</span>
+                        </span>
+                      )}
+                    </h1>
+                    <p>{companySubtitleText}</p>
                   </div>
                 </div>
-              ) : (
-                <div className="field">
-                  <label>{t('trade.field.amountLabel')}</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={amount}
-                    onChange={(event) => setAmount(Number(event.target.value))}
-                  />
-                  <div className="hint">
-                    {t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong>
+
+                <div className="trade-hero-stats">
+                  <div className="trade-stat">
+                    <span className="trade-stat-label">{t('trade.field.lastPrice')}</span>
+                    <strong className="trade-stat-value">{last ? last.toFixed(2) : "-"}</strong>
+                  </div>
+                  <div className="trade-stat">
+                    <span className="trade-stat-label">{t('trade.field.inPortfolio')}</span>
+                    <strong className="trade-stat-value">{fmtQty(posQty)}</strong>
+                  </div>
+                  <div className="trade-stat">
+                    <span className="trade-stat-label">{t('trade.field.creditsLabel')}</span>
+                    <strong className="trade-stat-value">{cash.toFixed(2)}</strong>
                   </div>
                 </div>
-              )}
-
-              <div className="field">
-                <label>{t('trade.field.creditsLabel')}</label>
-                <div className="price-tile">{cash.toFixed(2)}</div>
               </div>
-            </div>
 
-            <div className="trade-actions">
-              <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
-                {t('trade.actions.buy')}
-              </button>
-              <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
-                {t('trade.actions.sell')}
-              </button>
-            </div>
+              <div className="trade-form">
+                <div className="trade-mode-switch">
+                  <div className="seg">
+                    <button
+                      type="button"
+                      className={mode === "qty" ? "on" : ""}
+                      onClick={() => setMode("qty")}
+                    >
+                      {t('trade.mode.enterQuantity')}
+                    </button>
+                    <button
+                      type="button"
+                      className={mode === "amount" ? "on" : ""}
+                      onClick={() => setMode("amount")}
+                    >
+                      {t('trade.mode.enterAmount')}
+                    </button>
+                  </div>
+                  <p className="hint trade-mode-hint">
+                    {mode === "qty" ? t('trade.hint.quantity') : t('trade.hint.amount')}
+                  </p>
+                </div>
 
-            <div className="hint">
-              {mode === "qty" ? t('trade.hint.quantity') : t('trade.hint.amount')}
-            </div>
+                <div className="trade-grid trade-grid--compact">
+                  <div className="field">
+                    <label>{t('trade.field.symbol')}</label>
+                    <div className="price-tile">{symbol}</div>
+                  </div>
 
-            {msg && <div className="trade-msg">{msg}</div>}
+                  {mode === "qty" ? (
+                    <div className="field">
+                      <label>{t('trade.field.quantityLabel')}</label>
+                      <input
+                        className="input"
+                        type="number"
+                        min={0}
+                        step="any"
+                        value={qty}
+                        onChange={(event) => setQty(Number(event.target.value))}
+                      />
+                      <div className="hint">
+                        {t('trade.field.estimatedCost')}:{" "}
+                        <strong>{last ? (qty * last).toFixed(2) : "-"}</strong>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="field">
+                      <label>{t('trade.field.amountLabel')}</label>
+                      <input
+                        className="input"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={amount}
+                        onChange={(event) => setAmount(Number(event.target.value))}
+                      />
+                      <div className="hint">
+                        {t('trade.field.estimatedQuantity')}: <strong>{fmtQty(previewQty)}</strong>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="trade-actions">
+                  <button className="btn btn-accent" disabled={loading} onClick={() => place("buy")}>
+                    {t('trade.actions.buy')}
+                  </button>
+                  <button className="btn btn-sell" disabled={loading} onClick={() => place("sell")}>
+                    {t('trade.actions.sell')}
+                  </button>
+                </div>
+              </div>
+
+              {msg && <div className="trade-msg">{msg}</div>}
+            </section>
 
             <div className="table-card" style={{ marginTop: "2rem" }}>
               <h3 className="insight-panel-title" style={{ marginTop: 0 }}>
