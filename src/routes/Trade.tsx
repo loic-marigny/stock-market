@@ -315,7 +315,7 @@ export default function Trade(){
       // quantité base calculée selon le mode
       const qBase = mode === "qty"
         ? (Number.isFinite(qty) ? Number(qty) : 0)
-        : round6(Number(amount) / fillPrice);
+        : round6((Number.isFinite(amount) ? Number(amount) : 0) / fillPrice);
       if (qBase <= 0) { setMsg(t('trade.validation.invalidQuantity')); setLoading(false); return; }
 
       if (isFxSymbol(symbol)) {
@@ -633,8 +633,11 @@ export default function Trade(){
                             type="number"
                             min={0}
                             step="0.01"
-                            value={amount}
-                            onChange={(event) => setAmount(Number(event.target.value))}
+                            value={Number.isFinite(amount) ? amount : ""}
+                            onChange={(event) => {
+                              const { value } = event.target;
+                              setAmount(value === "" ? NaN : Number(value));
+                            }}
                           />
                         )}
                       </div>
@@ -676,10 +679,18 @@ export default function Trade(){
                 </div>
 
                 <div className="trade-actions">
-                  <button className="btn btn-accent trade-action" disabled={loading} onClick={() => place("buy")}>
+                  <button
+                    className="btn btn-accent trade-action"
+                    disabled={loading || !Number.isFinite(previewQty) || previewQty <= 0}
+                    onClick={() => place("buy")}
+                  >
                     {t('trade.actions.buy')}
                   </button>
-                  <button className="btn btn-sell trade-action" disabled={loading} onClick={() => place("sell")}>
+                  <button
+                    className="btn btn-sell trade-action"
+                    disabled={loading || !Number.isFinite(previewQty) || previewQty <= 0}
+                    onClick={() => place("sell")}
+                  >
                     {t('trade.actions.sell')}
                   </button>
                 </div>

@@ -939,15 +939,16 @@ input:focus {
   flex:1;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:4px;
   padding:6px 0;
   box-sizing:border-box;
 }
 .trade-input-primary label{
   display:block;
-  margin:0;
-  font-size:0.9rem;
-  line-height:1.2;
+  margin:0 0 6px;
+  font-size:0.8rem;
+  line-height:1.15;
+  color:rgba(15,23,42,0.58);
 }
 .trade-input-primary .input{
   flex:1;
@@ -957,11 +958,40 @@ input:focus {
   display:flex;
   flex-direction:column;
   min-width:140px;
-  padding:8px 12px;
-  background:#f8fafc;
-  border:1px solid #e2e8f0;
-  border-radius:12px;
+  padding:10px 14px;
+  background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(99,102,241,0.12));
+  border:1px solid rgba(99,102,241,0.25);
+  border-radius:14px;
   text-align:left;
+  box-shadow:0 8px 20px rgba(99,102,241,0.15);
+  position:relative;
+  justify-content:space-between;
+}
+.trade-input-row .trade-estimate::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 50%);
+  opacity:0.8;
+  animation:pulseEstimate 3s ease-in-out infinite;
+  pointer-events:none;
+}
+.trade-input-row .trade-estimate span{
+  font-size:0.75rem;
+  text-transform:uppercase;
+  color:rgba(15,23,42,0.55);
+  letter-spacing:0.05em;
+}
+.trade-input-row .trade-estimate strong{
+  font-size:1.1rem;
+  color:#14b8a6 !important;
+  align-self:flex-start;
+}
+@keyframes pulseEstimate{
+  0%{opacity:0.4;}
+  50%{opacity:0.8;}
+  100%{opacity:0.4;}
 }
 .trade-input-row .trade-estimate span{
   font-size:0.75rem;
@@ -970,13 +1000,13 @@ input:focus {
   letter-spacing:0.05em;
 }
 .trade-input-row .trade-estimate strong{
-  font-size:1rem;
+  font-size:1.1rem;
   color:var(--primary-700);
 }
 .trade-mode-info{
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:4px;
   align-items:stretch;
   padding:6px 0;
   box-sizing:border-box;
@@ -985,23 +1015,32 @@ input:focus {
 .trade-mode-seg{
   display:flex;
   flex:0 0 auto;
-  gap:6px;
+  gap:0;
   align-items:center;
   height:41.5px;
+  width:100%;
+  border-radius:14px;
+  overflow:hidden;
 }
 .trade-mode-seg button{
   padding:8px 18px;
   font-size:0.95rem;
-  min-width:110px;
+  min-width:0;
+  flex:1;
   height:41.5px;
   display:flex;
   align-items:center;
   justify-content:center;
+  text-align:center;
+}
+.trade-mode-seg button + button{
+  border-left:1px solid rgba(15,23,42,0.15);
 }
 .trade-mode-info .trade-mode-hint{
-  margin:0;
-  font-size:0.9rem;
-  line-height:1.2;
+  margin:0 0 6px;
+  font-size:0.8rem;
+  line-height:1.15;
+  color:rgba(15,23,42,0.55);
 }
 .trade-actions .trade-action{
   flex:1;
