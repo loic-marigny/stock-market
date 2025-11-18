@@ -700,24 +700,39 @@ export default function Trade(){
               {msg && <div className="trade-msg">{msg}</div>}
             </section>
 
-            <div className="table-card" style={{ marginTop: "2rem" }}>
-              <h3 className="insight-panel-title" style={{ marginTop: 0 }}>
-                {t('trade.schedule.title')}
-              </h3>
-              <p className="hint" style={{ marginTop: 4 }}>
-                {t('trade.schedule.description')}
-              </p>
-              <form className="trade-grid" onSubmit={handleScheduleConditional}>
-                <div className="field">
+            <section className="trade-conditional-card">
+              <div className="trade-conditional-header">
+                <div>
+                  <h3>{t('trade.schedule.title')}</h3>
+                  <p>{t('trade.schedule.description')}</p>
+                </div>
+                <div className="trade-conditional-meta">
+                  <div className="meta-chip">
+                    <span>{t('trade.field.creditsLabel')}</span>
+                    <strong>${cash.toFixed(2)}</strong>
+                  </div>
+                  <div className="meta-chip">
+                    <span>{t('trade.field.lastPrice')}</span>
+                    <strong>{last ? `$${last.toFixed(2)}` : "-"}</strong>
+                  </div>
+                  <div className="meta-chip">
+                    <span>{t('trade.schedule.orders.title')}</span>
+                    <strong>{pendingConditionalOrders.length}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <form className="trade-conditional-form" onSubmit={handleScheduleConditional}>
+                <div className="field trade-select-field">
                   <label>{t('trade.schedule.field.side')}</label>
-                  <select
-                    className="input"
+                  <TradeSelect
                     value={conditionalSide}
-                    onChange={(event) => setConditionalSide(event.target.value as "buy" | "sell")}
-                  >
-                    <option value="buy">{t('trade.schedule.side.buy')}</option>
-                    <option value="sell">{t('trade.schedule.side.sell')}</option>
-                  </select>
+                    onChange={(next) => setConditionalSide(next as "buy" | "sell")}
+                    options={[
+                      { value: "buy", label: t('trade.schedule.side.buy') },
+                      { value: "sell", label: t('trade.schedule.side.sell') },
+                    ]}
+                  />
                 </div>
 
                 <div className="field">
@@ -747,24 +762,19 @@ export default function Trade(){
                   </div>
                 </div>
 
-                <div className="field">
+                <div className="field trade-select-field">
                   <label>{t('trade.schedule.field.triggerType')}</label>
-                  <select
-                    className="input"
+                  <TradeSelect
                     value={conditionalTriggerType}
-                    onChange={(event) => setConditionalTriggerType(event.target.value as TriggerType)}
-                  >
-                    <option value="gte">{t('trade.schedule.triggerType.gte')}</option>
-                    <option value="lte">{t('trade.schedule.triggerType.lte')}</option>
-                  </select>
+                    onChange={(next) => setConditionalTriggerType(next as TriggerType)}
+                    options={[
+                      { value: "gte", label: t('trade.schedule.triggerType.gte') },
+                      { value: "lte", label: t('trade.schedule.triggerType.lte') },
+                    ]}
+                  />
                 </div>
 
-                <div className="field">
-                  <label>{t('trade.field.creditsLabel')}</label>
-                  <div className="price-tile">{cash.toFixed(2)}</div>
-                </div>
-
-                <div className="trade-actions" style={{ gridColumn: "1 / -1" }}>
+                <div className="trade-actions">
                   <button type="submit" className="btn btn-accent" disabled={conditionalLoading}>
                     {t('trade.schedule.submit')}
                   </button>
@@ -772,13 +782,17 @@ export default function Trade(){
               </form>
 
               {conditionalMsg && <div className="trade-msg">{conditionalMsg}</div>}
-            </div>
+            </section>
 
-            <div className="table-card" style={{ marginTop: "1.5rem" }}>
-              <h3 className="insight-panel-title" style={{ marginTop: 0 }}>
-                {t('trade.schedule.orders.title')}
-              </h3>
-              <table className="table">
+            <section className="trade-conditional-orders">
+              <div className="trade-conditional-header">
+                <div>
+                  <h3>{t('trade.schedule.orders.title')}</h3>
+                  <p>{t('trade.schedule.orders.description') ?? t('trade.schedule.description')}</p>
+                </div>
+              </div>
+              <div className="trade-orders-table">
+                <table className="table">
                 <thead>
                   <tr>
                     <th>{t('trade.schedule.orders.headers.symbol')}</th>
@@ -835,25 +849,31 @@ export default function Trade(){
                   )}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </section>
 
-            <div style={{ marginTop: "1.5rem" }}>
-              <h3 className="insight-panel-title" style={{ marginTop: 0 }}>
-                {t('trade.positions.title')}
-              </h3>
-              <PositionsTable
-                rows={portfolioRows}
-                companies={companies}
-                loading={loadingPrices}
-                t={t}
-                assetPath={assetPath}
-                placeholderLogoPath={placeholderLogoPath}
-                locale={locale}
-                showActions
-                actionLabel={t('trade.actions.sell')}
-                onAction={handlePrefillSell}
-              />
-            </div>
+            <section className="trade-conditional-orders trade-positions-card">
+              <div className="trade-conditional-header">
+                <div>
+                  <h3>{t('trade.positions.title')}</h3>
+                  <p>{t('trade.positions.description') ?? t('trade.schedule.description')}</p>
+                </div>
+              </div>
+              <div className="trade-orders-table">
+                <PositionsTable
+                  rows={portfolioRows}
+                  companies={companies}
+                  loading={loadingPrices}
+                  t={t}
+                  assetPath={assetPath}
+                  placeholderLogoPath={placeholderLogoPath}
+                  locale={locale}
+                  showActions
+                  actionLabel={t('trade.actions.sell')}
+                  onAction={handlePrefillSell}
+                />
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -874,5 +894,66 @@ function shouldTrigger(order: ConditionalOrder, price: number) {
 
 function fmtQty(n:number){
   return n.toLocaleString(undefined,{maximumFractionDigits:6});
+}
+
+type TradeSelectOption<T extends string> = { value: T; label: string };
+
+function TradeSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (value: T) => void;
+  options: TradeSelectOption<T>[];
+}) {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const current = options.find((opt) => opt.value === value) ?? options[0];
+
+  useEffect(() => {
+    const handleClick = (event: MouseEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div className={`trade-select${open ? " open" : ""}`} ref={wrapperRef}>
+      <button
+        type="button"
+        className="trade-select-trigger"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{current?.label}</span>
+        <span className="trade-select-caret" aria-hidden="true" />
+      </button>
+      {open && (
+        <ul className="trade-select-menu" role="listbox">
+          {options.map((option) => (
+            <li key={option.value}>
+              <button
+                type="button"
+                className={option.value === value ? "active" : ""}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                role="option"
+                aria-selected={option.value === value}
+              >
+                {option.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
