@@ -319,10 +319,8 @@
 }
 
 .meta-chip span{
-  font-size:0.7rem;
-  text-transform:uppercase;
+  font-size:0.85rem;
   color:var(--text-muted);
-  letter-spacing:0.05em;
 }
 
 .meta-chip strong{
@@ -331,15 +329,44 @@
 }
 
 .trade-conditional-form{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+  display:flex;
+  flex-direction:column;
   gap:16px;
 }
 
+.trade-conditional-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+}
+
+.trade-conditional-row .field{
+  flex:1 1 240px;
+}
+
+.trade-field-full{
+  flex:1 1 100%;
+}
+
+.trade-field-shrink{
+  flex:0 0 220px;
+  max-width:260px;
+}
+
+.trade-conditional-row .trade-select-field{
+  flex:0 0 180px;
+}
+
 .trade-conditional-form .trade-actions{
-  grid-column:1 / -1;
-  margin:8px 0 0;
+  align-self:flex-end;
+  display:flex;
   justify-content:flex-end;
+  margin:8px 0 0;
+}
+.trade-conditional-row .trade-actions.inline{
+  flex:0 0 auto;
+  align-items:flex-end;
+  margin:0;
 }
 
 .trade-conditional-form .input{
@@ -384,7 +411,7 @@
   .trade-input-row{ flex-direction:column; align-items:stretch; }
   .trade-mode-info{ width:100%; }
   .trade-input-row .trade-estimate{ width:100%; }
-  .trade-conditional-form{ grid-template-columns:1fr; }
+  .trade-conditional-form{ flex-direction:column; }
   .trade-conditional-header{ flex-direction:column; }
 }
 
@@ -495,4 +522,11 @@
 
 .trade-select-menu button:hover{
   background:rgba(99,102,241,0.18);
+}
+
+.trade-conditional-row .trade-actions.inline{
+  flex:0 0 auto;
+  align-items:flex-end;
+  justify-content:flex-end;
+  margin-left:auto;
 }

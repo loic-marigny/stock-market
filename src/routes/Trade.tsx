@@ -155,6 +155,8 @@ export default function Trade(){
   const [conditionalTriggerType, setConditionalTriggerType] = useState<TriggerType>("gte");
   const [conditionalMsg, setConditionalMsg] = useState<string>("");
   const [conditionalLoading, setConditionalLoading] = useState<boolean>(false);
+  const [conditionalMode, setConditionalMode] = useState<EntryMode>("qty");
+  const [conditionalAmount, setConditionalAmount] = useState<number>(0);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const [focusSidebarOnOpen, setFocusSidebarOnOpen] = useState<boolean>(false);
   const reopenButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -287,6 +289,11 @@ export default function Trade(){
   const previewQty = mode === "qty"
     ? Math.max(0, Number.isFinite(qty) ? qty : 0)
     : (last ? round6((amount || 0) / last) : 0);
+  const scheduledQtyPreview = useMemo(() => {
+    if (conditionalMode === "qty") return Math.max(0, Number.isFinite(conditionalQty) ? conditionalQty : 0);
+    if (!Number.isFinite(conditionalTriggerPrice) || conditionalTriggerPrice <= 0) return 0;
+    return round6((Number.isFinite(conditionalAmount) ? conditionalAmount : 0) / conditionalTriggerPrice);
+  }, [conditionalMode, conditionalQty, conditionalAmount, conditionalTriggerPrice]);
 
   const validate = (side:"buy"|"sell", px:number) => {
     if (!Number.isFinite(px) || px <= 0) {
@@ -481,16 +488,16 @@ export default function Trade(){
       setConditionalMsg(t("trade.schedule.validation.triggerPrice"));
       return;
     }
-    if (!conditionalQty || conditionalQty <= 0) {
+    if (!scheduledQtyPreview || scheduledQtyPreview <= 0) {
       setConditionalMsg(t("trade.schedule.validation.qty"));
       return;
     }
-    if (conditionalSide === "sell" && conditionalQty > posQty + 1e-9) {
+    if (conditionalSide === "sell" && scheduledQtyPreview > posQty + 1e-9) {
       setConditionalMsg(t("trade.schedule.validation.position"));
       return;
     }
     if (conditionalSide === "buy") {
-      const needed = conditionalQty * conditionalTriggerPrice;
+      const needed = scheduledQtyPreview * conditionalTriggerPrice;
       if (cash + 1e-6 < needed) {
         setConditionalMsg(t("trade.schedule.validation.cash"));
         return;
@@ -503,11 +510,12 @@ export default function Trade(){
         uid,
         symbol,
         side: conditionalSide,
-        qty: conditionalQty,
+        qty: scheduledQtyPreview,
         triggerPrice: conditionalTriggerPrice,
         triggerType: conditionalTriggerType,
       });
       setConditionalMsg(t("trade.schedule.success"));
+      if (conditionalMode === "qty") setConditionalQty(0); else setConditionalAmount(0);
     } catch (error: any) {
       setConditionalMsg(error?.message ?? String(error));
     } finally {
@@ -592,14 +600,14 @@ export default function Trade(){
 
                 <div className="trade-hero-stats">
                   <div className="trade-stat">
+                    <span className="trade-stat-label">{t('trade.field.inPortfolio')}</span>
+                    <strong className="trade-stat-value">{fmtQty(posQty)}</strong>
+                  </div>
+                  <div className="trade-stat">
                     <span className="trade-stat-label">{t('trade.field.lastPrice')}</span>
                     <strong className="trade-stat-value">
                       {last ? `$${last.toFixed(2)}` : "-"}
                     </strong>
-                  </div>
-                  <div className="trade-stat">
-                    <span className="trade-stat-label">{t('trade.field.inPortfolio')}</span>
-                    <strong className="trade-stat-value">{fmtQty(posQty)}</strong>
                   </div>
                   <div className="trade-stat">
                     <span className="trade-stat-label">{t('trade.field.creditsLabel')}</span>
@@ -708,76 +716,139 @@ export default function Trade(){
                 </div>
                 <div className="trade-conditional-meta">
                   <div className="meta-chip">
-                    <span>{t('trade.field.creditsLabel')}</span>
-                    <strong>${cash.toFixed(2)}</strong>
+                    <span>{t('trade.schedule.orders.title')}</span>
+                    <strong>{pendingConditionalOrders.length}</strong>
                   </div>
                   <div className="meta-chip">
                     <span>{t('trade.field.lastPrice')}</span>
                     <strong>{last ? `$${last.toFixed(2)}` : "-"}</strong>
                   </div>
                   <div className="meta-chip">
-                    <span>{t('trade.schedule.orders.title')}</span>
-                    <strong>{pendingConditionalOrders.length}</strong>
+                    <span>{t('trade.field.creditsLabel')}</span>
+                    <strong>${cash.toFixed(2)}</strong>
                   </div>
                 </div>
               </div>
 
               <form className="trade-conditional-form" onSubmit={handleScheduleConditional}>
-                <div className="field trade-select-field">
-                  <label>{t('trade.schedule.field.side')}</label>
-                  <TradeSelect
-                    value={conditionalSide}
-                    onChange={(next) => setConditionalSide(next as "buy" | "sell")}
-                    options={[
-                      { value: "buy", label: t('trade.schedule.side.buy') },
-                      { value: "sell", label: t('trade.schedule.side.sell') },
-                    ]}
-                  />
-                </div>
-
-                <div className="field">
-                  <label>{t('trade.schedule.field.qty')}</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min={0}
-                    step="any"
-                    value={conditionalQty}
-                    onChange={(event) => setConditionalQty(Number(event.target.value))}
-                  />
-                </div>
-
-                <div className="field">
-                  <label>{t('trade.schedule.field.triggerPrice')}</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={conditionalTriggerPrice}
-                    onChange={(event) => setConditionalTriggerPrice(Number(event.target.value))}
-                  />
-                  <div className="hint">
-                    {t('trade.field.lastPrice')}: <strong>{last ? last.toFixed(2) : "-"}</strong>
+                <div className="trade-conditional-row">
+                  <div className="field trade-field--fill trade-field-full">
+                    <div className="trade-input-row">
+                      <div className="trade-input-primary">
+                        <label>
+                          {conditionalMode === "qty"
+                            ? t('trade.schedule.field.qty')
+                            : t('trade.schedule.field.amount')}
+                        </label>
+                        {conditionalMode === "qty" ? (
+                          <input
+                            className="input"
+                            type="number"
+                            min={0}
+                            step="any"
+                            value={Number.isFinite(conditionalQty) ? conditionalQty : ""}
+                            onChange={(event) => {
+                              const { value } = event.target;
+                              setConditionalQty(value === "" ? NaN : Number(value));
+                            }}
+                          />
+                        ) : (
+                          <input
+                            className="input"
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            value={Number.isFinite(conditionalAmount) ? conditionalAmount : ""}
+                            onChange={(event) => {
+                              const { value } = event.target;
+                              setConditionalAmount(value === "" ? NaN : Number(value));
+                            }}
+                          />
+                        )}
+                      </div>
+                      <div className="trade-mode-info">
+                        <p className="hint trade-mode-hint">
+                          {conditionalMode === "qty"
+                            ? t('trade.hint.quantity')
+                            : t('trade.hint.amount')}
+                        </p>
+                        <div className="seg trade-mode-seg">
+                          <button
+                            type="button"
+                            className={conditionalMode === "qty" ? "on" : ""}
+                            onClick={() => setConditionalMode("qty")}
+                          >
+                            {t('trade.mode.enterQuantity')}
+                          </button>
+                          <button
+                            type="button"
+                            className={conditionalMode === "amount" ? "on" : ""}
+                            onClick={() => setConditionalMode("amount")}
+                          >
+                            {t('trade.mode.enterAmount')}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="trade-estimate">
+                        <span>
+                          {conditionalMode === "qty"
+                            ? t('trade.field.estimatedCost')
+                            : t('trade.field.estimatedQuantity')}
+                        </span>
+                        <strong>
+                          {conditionalMode === "qty"
+                            ? (Number.isFinite(conditionalTriggerPrice) && conditionalTriggerPrice > 0
+                              ? `$${(scheduledQtyPreview * conditionalTriggerPrice).toFixed(2)}`
+                              : "-")
+                            : fmtQty(scheduledQtyPreview)}
+                        </strong>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="field trade-select-field">
-                  <label>{t('trade.schedule.field.triggerType')}</label>
-                  <TradeSelect
-                    value={conditionalTriggerType}
-                    onChange={(next) => setConditionalTriggerType(next as TriggerType)}
-                    options={[
-                      { value: "gte", label: t('trade.schedule.triggerType.gte') },
-                      { value: "lte", label: t('trade.schedule.triggerType.lte') },
-                    ]}
-                  />
-                </div>
+                <div className="trade-conditional-row">
+                  <div className="field trade-select-field">
+                    <label>{t('trade.schedule.field.side')}</label>
+                    <TradeSelect
+                      value={conditionalSide}
+                      onChange={(next) => setConditionalSide(next as "buy" | "sell")}
+                      options={[
+                        { value: "buy", label: t('trade.schedule.side.buy') },
+                        { value: "sell", label: t('trade.schedule.side.sell') },
+                      ]}
+                    />
+                  </div>
 
-                <div className="trade-actions">
-                  <button type="submit" className="btn btn-accent" disabled={conditionalLoading}>
-                    {t('trade.schedule.submit')}
-                  </button>
+                  <div className="field trade-select-field">
+                    <label>{t('trade.schedule.field.triggerType')}</label>
+                    <TradeSelect
+                      value={conditionalTriggerType}
+                      onChange={(next) => setConditionalTriggerType(next as TriggerType)}
+                      options={[
+                        { value: "gte", label: t('trade.schedule.triggerType.gte') },
+                        { value: "lte", label: t('trade.schedule.triggerType.lte') },
+                      ]}
+                    />
+                  </div>
+
+                  <div className="field trade-field-shrink">
+                    <label>{t('trade.schedule.field.triggerPrice')}</label>
+                    <input
+                      className="input"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={conditionalTriggerPrice}
+                      onChange={(event) => setConditionalTriggerPrice(Number(event.target.value))}
+                    />
+                  </div>
+
+                  <div className="trade-actions inline">
+                    <button type="submit" className="btn btn-accent" disabled={conditionalLoading}>
+                      {t('trade.schedule.submit')}
+                    </button>
+                  </div>
                 </div>
               </form>
 
@@ -788,7 +859,6 @@ export default function Trade(){
               <div className="trade-conditional-header">
                 <div>
                   <h3>{t('trade.schedule.orders.title')}</h3>
-                  <p>{t('trade.schedule.orders.description') ?? t('trade.schedule.description')}</p>
                 </div>
               </div>
               <div className="trade-orders-table">
@@ -856,7 +926,6 @@ export default function Trade(){
               <div className="trade-conditional-header">
                 <div>
                   <h3>{t('trade.positions.title')}</h3>
-                  <p>{t('trade.positions.description') ?? t('trade.schedule.description')}</p>
                 </div>
               </div>
               <div className="trade-orders-table">
