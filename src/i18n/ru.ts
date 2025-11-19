@@ -175,6 +175,7 @@ const ru: Translations = {
     'Automatically place a buy or sell when the price reaches your threshold.',
   'trade.schedule.field.side': 'Order side',
   'trade.schedule.field.qty': 'Quantity to trade',
+  'trade.schedule.field.amount': 'Amount to spend',
   'trade.schedule.field.triggerPrice': 'Trigger price',
   'trade.schedule.field.triggerType': 'Trigger condition',
   'trade.schedule.side.buy': 'Buy',
