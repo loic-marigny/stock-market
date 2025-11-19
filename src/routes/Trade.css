@@ -5,6 +5,19 @@
   margin-bottom:12px;
 }
 
+.trade-content{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  padding-bottom:24px;
+}
+
+.explore-main-content.trade-content{
+  flex:0 0 auto;
+  min-height:auto;
+  padding-bottom:24px;
+}
+
 .table-card.trade-hero-card{
   padding:24px;
   border-radius:20px;
@@ -395,10 +408,16 @@
 
 .trade-positions-card{
   margin-top:1.5rem;
+  margin-bottom:48px;
 }
 
 .trade-orders-table{
   overflow:auto;
+  border-radius:0;
+}
+
+.trade-orders-table .table-card{
+  border-radius:0;
 }
 
 @media (max-width: 840px){

@@ -566,7 +566,7 @@ export default function Trade(){
             </button>
           )}
 
-          <div className="explore-main-content">
+          <div className="explore-main-content trade-content">
             <header className="trade-page-header">
               <div className="portfolio-title-card trade-title-card">
                 <h1>{t('trade.title')}</h1>
