@@ -1543,6 +1543,7 @@ export default function Explore() {
             </button>
           )}
           <div className="explore-main-content">
+            <div className="explore-content-shell">
             <div className="explore-header">
               <div className="explore-header-top">
                 <div className="company-identity">
@@ -1769,6 +1770,7 @@ export default function Explore() {
               </section>
             )}
             <p className="hint">{t("explore.sourceHint")}</p>
+            </div>
           </div>
         </div>
       </div>

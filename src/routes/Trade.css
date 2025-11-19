@@ -8,14 +8,29 @@
 .trade-content{
   display:flex;
   flex-direction:column;
+  align-items:center;
   gap:24px;
   padding-bottom:24px;
+}
+
+.trade-content-shell{
+  width:100%;
+  max-width:1600px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  padding:0 16px;
+}
+
+.explore-layout.sidebar-collapsed .trade-content-shell{
+  padding-left:32px;
 }
 
 .explore-main-content.trade-content{
   flex:0 0 auto;
   min-height:auto;
-  padding-bottom:24px;
+  padding-bottom:120px;
 }
 
 .table-card.trade-hero-card{
