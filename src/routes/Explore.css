@@ -140,7 +140,7 @@
   height: 14px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: rotate(135deg);
+  transform: translateX(3px) rotate(135deg);
   transition: transform 0.2s ease;
 }
 
@@ -159,7 +159,7 @@
 }
 
 .explore-sidebar-toggle.reopen .explore-toggle-icon {
-  transform: rotate(-45deg);
+  transform: translateX(-3px) rotate(-45deg);
 }
 
 @media (max-width: 960px) {

@@ -754,8 +754,9 @@ input:focus {
 }
 
 .portfolio-title-card {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  width: 100%;
   padding: 18px 28px;
   border-radius: 18px;
   background: linear-gradient(90deg, #8b5cf6, #22c55e);
