@@ -16,6 +16,7 @@ This document inventories every file under the `scripts/` directory, highlights 
 | `scripts/load_companies_json_to_db*.py` | Push company JSON into a Postgres schema. | Legacy / manual |
 | `scripts/load_history_json_to_db.py` | Bulk-loads `public/history/*.json` into Postgres. | Legacy / manual |
 | `scripts/quotes.py` | Refreshes `data/quotes.json` and `public/quotes.json` using Finnhub plus regional fallbacks. | Active |
+| `scripts/sync_history_supabase.py` | Batched yfinance sync that upserts recent OHLC data directly to Supabase. | Active |
 | `scripts/update_company_profiles.py` | Enriches `public/companies/*/profile.json` via the Yahoo worker. | Active |
 | `scripts/migration/supabase_migration.py` | Copies a local Postgres table into Supabase. | Legacy |
 | `scripts/public/` | Placeholder for public-facing helper scripts (currently empty). | Unused |
@@ -36,6 +37,13 @@ Imports helper logic from `history.py` to detect symbols missing the required on
 Small Node/ESM script that uses `@supabase/supabase-js` and the `VITE_SUPABASE_*` env vars to fetch the first five rows from the `stock_market_companies` table. Useful for sanity checks during development; not referenced anywhere else.
 
 ## 2. Historical Data Pipelines
+
+### `sync_history_supabase.py` (active)
+The modern, optimized synchronization script designed for frequent CI runs (e.g., every 15 minutes).
+1. Fetches the list of active tickers directly from Supabase.
+2. Uses `yfinance` in **batched mode** to download the last 5 days of OHLC data for all tickers in a single request (avoiding rate limits caused by iteration).
+3. Upserts the data directly into the `stock_market_history` table in supabase.
+*Note: This script replaces the need for local JSON history files when using Supabase as the primary backend.*
 
 ### `history.py` (active)
 The main close-only refresher. It enforces at least `MIN_YEARS` (1) of daily closes per symbol, stores output under `public/history/{SYMBOL}.json`, and can fetch data via:
