@@ -92,7 +92,7 @@ def main():
         # 'auto_adjust=True' is default in new yfinance versions
         raw_data = yf.download(
             tickers, 
-            period="6mo", 
+            period="5d", 
             group_by='ticker', 
             threads=True, 
             timeout=30
