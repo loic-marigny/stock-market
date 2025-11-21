@@ -1,137 +1,74 @@
 import os
-import json
-import random
-import requests
 import pandas as pd
 import yfinance as yf
-from supabase import create_client, Client
+from supabase import create_client
 
 # ==========================================
 # CONFIGURATION & CONSTANTS
 # ==========================================
-# User-Agent to mimic a real browser for scraping
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-}
-
-# Supabase Credentials (from environment variables)
 SUPABASE_URL = os.environ.get("VITE_SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("VITE_SUPABASE_SERVICE_ROLE_KEY")
-TABLE_NAME = "stock_market_companies"
-BATCH_SIZE = 50
+# IMPORTANT: Must use SERVICE_ROLE key to bypass RLS (Row Level Security) for inserts
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+
+# Table names based on Supabase schema
+TABLE_COMPANIES = "stock_market_companies"
+TABLE_HISTORY = "stock_market_history"
+
+BATCH_SIZE = 1000 
 
 # ==========================================
-# PART 1: PROXY SCRAPING LOGIC
-# ==========================================
-
-def get_free_proxy_list():
-    """Scrapes free-proxy-list.net for HTTPS proxies."""
-    url = "https://free-proxy-list.net/"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        tables = pd.read_html(r.text)
-        df = tables[0]
-        df = df[df['Https'] == 'yes']  # Filter for HTTPS
-        return [f"http://{row['IP Address']}:{row['Port']}" for _, row in df.iterrows()]
-    except Exception:
-        return []
-
-def get_proxydb_list():
-    """Scrapes proxydb.net for HTTPS proxies."""
-    url = "https://proxydb.net/?anonlvl=4&country=&protocol=https&sort_column_id=uptime&sort_order_desc=true"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        tables = pd.read_html(r.text)
-        proxies = []
-        for _, row in tables[0].iterrows():
-            # Handle port parsing
-            port = str(row['Port']).split(' ')[-1] if ' ' in str(row['Port']) else str(row['Port'])
-            proxies.append(f"http://{str(row['IP'])}:{port}")
-        return proxies
-    except Exception:
-        return []
-
-def get_github_iplocate_list():
-    """Fetches raw proxy list from GitHub."""
-    url = "https://raw.githubusercontent.com/iplocate/free-proxy-list/main/protocols/https.txt"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        if r.status_code == 200:
-            return [f"http://{line.strip()}" for line in r.text.splitlines() if ":" in line]
-    except Exception:
-        pass
-    return []
-
-def find_working_proxy():
-    """
-    Aggregates proxies and tests them against Yahoo Finance 
-    to find a single working 'champion'.
-    """
-    print("\nGathering HTTPS proxies...")
-    
-    # Aggregate and remove duplicates using set()
-    raw_list = get_free_proxy_list() + get_proxydb_list() + get_github_iplocate_list()
-    proxies = list(set(raw_list))
-    
-    print(f"Found {len(proxies)} unique proxies. Testing for a champion...")
-
-    # Shuffle to randomize the search
-    random.shuffle(proxies)
-    # Add Direct Connection (None) as a fallback at the end
-    proxies.append(None)
-
-    test_ticker = "AAPL"
-    
-    # Limit attempts to save time (first 25)
-    for i, proxy_url in enumerate(proxies[:25]):
-        display = proxy_url if proxy_url else "DIRECT CONNECTION"
-        print(f"Attempt {i+1}: {display}... ", end="")
-        
-        try:
-            # Test a small request with a short timeout
-            ticker = yf.Ticker(test_ticker)
-            hist = ticker.history(period="1d", proxy=proxy_url, timeout=5)
-            
-            if not hist.empty:
-                print("SUCCESS!")
-                return proxy_url
-            else:
-                print("Empty response.")
-        except Exception:
-            print("Failed.")
-            
-    print("\n⚠️ No working proxy found. Defaulting to direct connection.")
-    return None
-
-# ==========================================
-# PART 2: SUPABASE & DATA PROCESSING
+# HELPER FUNCTIONS
 # ==========================================
 
 def get_supabase_client():
+    """Initializes and returns the Supabase client."""
     if not SUPABASE_URL or not SUPABASE_KEY:
-        print("Error: Missing SUPABASE_URL or SUPABASE_KEY.")
+        print("Error: Missing environment variables (SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY).")
         return None
     return create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def fetch_tickers(supabase):
-    """Retrieves existing tickers from the database."""
+    """Retrieves the list of existing tickers from the companies table."""
     print("Fetching tickers from Supabase...")
     try:
-        response = supabase.table(TABLE_NAME).select("symbol").execute()
-        return [item['symbol'] for item in response.data if item.get('symbol')]
+        response = supabase.table(TABLE_COMPANIES).select("symbol").execute()
+        # Extract symbols and remove duplicates
+        tickers = [item['symbol'] for item in response.data if item.get('symbol')]
+        return list(set(tickers))
     except Exception as e:
-        print(f"Supabase Error: {e}")
+        print(f"Supabase Fetch Error: {e}")
         return []
 
-def format_history_data(df_symbol):
-    """Formats a Pandas DataFrame into a JSON-serializable list of dicts."""
-    try:
-        df_clean = df_symbol[['Close']].dropna().reset_index()
-        df_clean.columns = ['date', 'close']
-        df_clean['date'] = df_clean['date'].dt.strftime('%Y-%m-%d')
-        return df_clean.to_dict('records')
-    except Exception:
-        return None
+def prepare_history_records(symbol, df):
+    """
+    Transforms the yfinance DataFrame into a list of dictionaries
+    matching the 'stock_market_history' table structure.
+    """
+    if df is None or df.empty:
+        return []
+
+    records = []
+    # Reset index to ensure 'Date' is available as a column
+    df = df.reset_index()
+    
+    for _, row in df.iterrows():
+        # Convert date to ISO string format (YYYY-MM-DD)
+        date_str = row['Date'].strftime('%Y-%m-%d')
+        
+        # Exact mapping to your Supabase table columns
+        record = {
+            "symbol": symbol,
+            "record_date": date_str,
+            "open_value": round(float(row['Open']), 2),
+            "high_value": round(float(row['High']), 2),
+            "low_value": round(float(row['Low']), 2),
+            "close_value": round(float(row['Close']), 2),
+            # Using 'Close' as the generic record_value
+            "record_value": round(float(row['Close']), 2) 
+        }
+        records.append(record)
+        
+    return records
 
 # ==========================================
 # MAIN EXECUTION
@@ -142,68 +79,72 @@ def main():
     supabase = get_supabase_client()
     if not supabase: return
 
+    # 2. Get Tickers
     tickers = fetch_tickers(supabase)
     if not tickers:
         print("No tickers found in database.")
         return
 
-    # 2. Proxy Selection
-    champion_proxy = find_working_proxy()
-    if champion_proxy:
-        print(f"\n Selected Proxy: {champion_proxy}")
+    print(f"Processing {len(tickers)} companies...")
 
-    # 3. Batch Download (yfinance)
-    print(f"\n Batch downloading data for {len(tickers)} companies...")
+    # 3. Batch Download Data (2 days history)
     try:
-        # Download 2 years of data for all tickers at once
+        # 'auto_adjust=True' is default in new yfinance versions
         raw_data = yf.download(
             tickers, 
-            period="2y", 
-            interval="1d", 
+            period="5d", 
             group_by='ticker', 
-            threads=True,
-            proxy=champion_proxy
+            threads=True, 
+            timeout=30
         )
     except Exception as e:
         print(f"Critical Download Error: {e}")
         return
 
-    # 4. Process and Buffer Updates
-    print(f"\n Processing data...")
-    updates_buffer = []
-    
+    all_records = []
+
+    # 4. Process Data
+    print("Formatting data...")
+    is_multi_ticker = len(tickers) > 1
+
     for symbol in tickers:
         try:
-            # Handle yfinance MultiIndex structure
-            if len(tickers) == 1:
-                df_sym = raw_data
-            else:
-                if symbol not in raw_data.columns.levels[0]: continue
+            if is_multi_ticker:
+                # If ticker failed to download, it won't be in columns
+                if symbol not in raw_data.columns.levels[0]:
+                    continue
                 df_sym = raw_data[symbol]
+            else:
+                df_sym = raw_data
 
-            history_json = format_history_data(df_sym)
+            # Drop rows with missing values (NaN)
+            df_sym = df_sym.dropna()
             
-            if history_json:
-                updates_buffer.append({
-                    "symbol": symbol,
-                    "history": history_json
-                })
-        except Exception:
+            # Create records for this specific symbol
+            symbol_records = prepare_history_records(symbol, df_sym)
+            all_records.extend(symbol_records)
+            
+        except Exception as e:
+            print(f"Error processing {symbol}: {e}")
             continue
 
     # 5. Batch Upsert to Supabase
-    total = len(updates_buffer)
-    print(f"Uploading {total} records to Supabase...")
-    
-    for i in range(0, total, BATCH_SIZE):
-        chunk = updates_buffer[i : i + BATCH_SIZE]
-        try:
-            supabase.table(TABLE_NAME).upsert(chunk).execute()
-            print(f"Batch {i}-{i+len(chunk)} uploaded.")
-        except Exception as e:
-            print(f"Batch Error {i}: {e}")
+    total_records = len(all_records)
+    print(f"\nUploading {total_records} history records to Supabase...")
 
-    print("\n SYNC COMPLETED SUCCESSFULLY!")
+    for i in range(0, total_records, BATCH_SIZE):
+        batch = all_records[i : i + BATCH_SIZE]
+        try:
+            # Perform UPSERT based on conflict on (symbol, record_date)
+            supabase.table(TABLE_HISTORY).upsert(
+                batch, 
+                on_conflict='symbol, record_date'
+            ).execute()
+            print(f"Batch {i}-{i+len(batch)} uploaded successfully.")
+        except Exception as e:
+            print(f"Batch Upload Error (Index {i}): {e}")
+
+    print("\nSYNC COMPLETED SUCCESSFULLY!")
 
 if __name__ == "__main__":
     main()
