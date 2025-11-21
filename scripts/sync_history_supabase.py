@@ -16,7 +16,7 @@ HEADERS = {
 
 # Supabase Credentials (from environment variables)
 SUPABASE_URL = os.environ.get("VITE_SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("VITE_SUPABASE_ANON_KEY")
+SUPABASE_KEY = os.environ.get("VITE_SUPABASE_SERVICE_ROLE_KEY")
 TABLE_NAME = "stock_market_companies"
 BATCH_SIZE = 50
 
