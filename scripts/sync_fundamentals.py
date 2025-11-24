@@ -47,6 +47,18 @@ def process_company(symbol):
         if not info or 'symbol' not in info:
             print(f"No info for {symbol}")
             return None
+        
+        #Records calcul
+        all_time_high = None
+        all_time_low = None
+        try:
+            hist = ticker.history(period="max", auto_adjust=True)
+            if not hist.empty:
+                all_time_high = round(hist['Close'].max(), 2)
+                all_time_low = round(hist['Close'].min(), 2)
+        except Exception as e:
+            print(f"Error calculating history for {symbol}: {e}")
+            # If it fails, leave None, and the filter below will remove it (we keep the old value in the database)
 
         # Mapping fields
         # Note: allTimeHigh/Low are not always in .info, 
@@ -58,10 +70,8 @@ def process_company(symbol):
             "market_cap": get_clean_value(info.get("marketCap")),
             "fifty_two_week_high": get_clean_value(info.get("fiftyTwoWeekHigh")),
             "fifty_two_week_low": get_clean_value(info.get("fiftyTwoWeekLow")),
-            # Yahoo info does not always provide AllTimeHigh, we leave None for now
-            # (would require downloading the entire history)
-            "all_time_high": None, 
-            "all_time_low": None,
+            "all_time_high": all_time_high, 
+            "all_time_low": all_time_low,
             "beta": get_clean_value(info.get("beta")),
             "recommendation_mean": get_clean_value(info.get("recommendationMean")),
             "trailing_pe": get_clean_value(info.get("trailingPE")),
