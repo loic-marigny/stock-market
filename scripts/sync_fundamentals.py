@@ -51,8 +51,9 @@ def process_company(symbol):
         # Mapping fields
         # Note: allTimeHigh/Low are not always in .info, 
         # we take fiftyTwoWeek if missing or leave null.
-        return {
-            "symbol": symbol,
+        # We build the complete object with potential None values
+        raw_data = {
+            "symbol": symbol, # Primary key (always required)
             "long_business_summary": get_clean_value(info.get("longBusinessSummary")),
             "market_cap": get_clean_value(info.get("marketCap")),
             "fifty_two_week_high": get_clean_value(info.get("fiftyTwoWeekHigh")),
@@ -72,6 +73,13 @@ def process_company(symbol):
             "operating_cashflow": get_clean_value(info.get("operatingCashflow")),
             "last_updated": datetime.utcnow().isoformat()
         }
+
+        # We keep key only if there are different from None
+        # EXCEPT 'symbol' which we always keep to identify the row
+        clean_data = {k: v for k, v in raw_data.items() if v is not None}
+        
+        return clean_data
+
     except Exception as e:
         print(f"Exception on {symbol}: {e}")
         return None
