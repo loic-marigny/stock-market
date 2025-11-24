@@ -8,7 +8,13 @@ import {
   type IChartApi,
 } from "lightweight-charts";
 import provider, { type OHLC } from "../lib/prices";
-import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
+import { 
+  fetchCompaniesIndex, 
+  fetchCompanyProfile,
+  type Company, 
+  type CompanyProfile,
+  marketLabel 
+} from "../lib/companies";
 import { useI18n } from "../i18n/I18nProvider";
 import "./Explore.css";
 import {
@@ -71,61 +77,6 @@ type MetricRow = {
   value: ReactNode;
 };
 
-type CompanyProfile = {
-  symbol: string;
-  name?: string;
-  sector?: string;
-  longName?: string;
-  longBusinessSummary?: string;
-  industryDisp?: string;
-  website?: string;
-  irWebsite?: string;
-  beta?: number;
-  recommendationMean?: number;
-  marketCap?: number;
-  marketCapRaw?: number;
-  fiftyTwoWeeksHigh?: number;
-  fiftyTwoWeeksHighDate?: string;
-  fiftyTwoWeeksLow?: number;
-  fiftyTwoWeeksLowDate?: string;
-  allTimeHigh?: number;
-  allTimeHighDate?: string;
-  allTimeLow?: number;
-  allTimeLowDate?: string;
-  trailingPE?: number;
-  trailingEPS?: number;
-  totalRevenue?: number;
-  totalDebt?: number;
-  totalCash?: number;
-  freeCashflow?: number;
-  operatingCashflow?: number;
-  displayName?: string;
-  sectorDisplay?: string;
-};
-
-const sanitizeCompanyString = (value: unknown): string | undefined =>
-  typeof value === "string" && value.trim() ? value.trim() : undefined;
-
-function mergeProfileWithCompany(profile: CompanyProfile | null, company: Company): CompanyProfile {
-  const base: CompanyProfile = {
-    symbol: company.symbol,
-    name: sanitizeCompanyString(company.name),
-    sector: sanitizeCompanyString(company.sector),
-    industryDisp: sanitizeCompanyString((company as any).industry ?? company.industry),
-    website: sanitizeCompanyString((company as any).website ?? company.website),
-    irWebsite: sanitizeCompanyString((company as any).irWebsite ?? company.irWebsite),
-  };
-
-  return {
-    ...(profile ?? {}),
-    symbol: base.symbol,
-    name: base.name ?? profile?.name,
-    sector: base.sector ?? profile?.sector,
-    industryDisp: base.industryDisp ?? profile?.industryDisp,
-    website: base.website ?? profile?.website,
-    irWebsite: base.irWebsite ?? profile?.irWebsite,
-  };
-}
 
 const DEFAULT_LOGO_STYLE: CSSProperties = {
   padding: 12,
@@ -177,79 +128,6 @@ const formatUSD = (value: number, maximumFractionDigits = 0) =>
   currencyFormatter(maximumFractionDigits).format(value);
 
 const formatCompactUSD = (value: number) => compactCurrencyFormatter.format(value);
-
-
-const toNumeric = (value: unknown): number | undefined => {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim()) {
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  if (value && typeof value === "object") {
-    const container = value as Record<string, unknown>;
-    if (typeof container.raw === "number" && Number.isFinite(container.raw)) return container.raw;
-    if (typeof container.fmt === "number" && Number.isFinite(container.fmt)) return container.fmt;
-    if (typeof container.fmt === "string") {
-      const parsed = Number(container.fmt.replace(/[^\d.-]/g, ""));
-      if (Number.isFinite(parsed)) return parsed;
-    }
-  }
-  return undefined;
-};
-
-const normalizeProfile = (raw: any): CompanyProfile => {
-  const sanitizeString = (value: unknown) =>
-    typeof value === "string" && value.trim() ? value.trim() : undefined;
-
-  const profile: CompanyProfile = {
-    symbol: sanitizeString(raw?.symbol) ?? "",
-    name: sanitizeString(raw?.name),
-    sector: sanitizeString(raw?.sector),
-    longName: sanitizeString(raw?.longName),
-    longBusinessSummary: sanitizeString(raw?.longBusinessSummary),
-    industryDisp: sanitizeString(raw?.industryDisp),
-    website: sanitizeString(raw?.website),
-    irWebsite: sanitizeString(raw?.irWebsite),
-  };
-
-  const beta = toNumeric(raw?.beta);
-  if (beta !== undefined) profile.beta = beta;
-
-  const recommendationMean = toNumeric(raw?.recommendationMean);
-  if (recommendationMean !== undefined) profile.recommendationMean = recommendationMean;
-
-  const assignNumeric = (key: keyof CompanyProfile, value: unknown) => {
-    const num = toNumeric(value);
-    if (num !== undefined) (profile as any)[key] = num;
-  };
-
-  const assignString = (key: keyof CompanyProfile, value: unknown) => {
-    const str = sanitizeString(value);
-    if (str) (profile as any)[key] = str;
-  };
-
-  assignNumeric("marketCap", raw?.marketCap ?? raw?.marketCapRaw);
-  assignNumeric("marketCapRaw", raw?.marketCapRaw ?? raw?.marketCap);
-  assignNumeric("fiftyTwoWeeksHigh", raw?.fiftyTwoWeeksHigh);
-  assignString("fiftyTwoWeeksHighDate", raw?.fiftyTwoWeeksHighDate);
-  assignNumeric("fiftyTwoWeeksLow", raw?.fiftyTwoWeeksLow);
-  assignString("fiftyTwoWeeksLowDate", raw?.fiftyTwoWeeksLowDate);
-  assignNumeric("allTimeHigh", raw?.allTimeHigh);
-  assignString("allTimeHighDate", raw?.allTimeHighDate);
-  assignNumeric("allTimeLow", raw?.allTimeLow);
-  assignString("allTimeLowDate", raw?.allTimeLowDate);
-  assignNumeric("trailingPE", raw?.trailingPE);
-  assignNumeric("trailingEPS", raw?.trailingEPS);
-  assignNumeric("totalRevenue", raw?.totalRevenue);
-  assignNumeric("totalDebt", raw?.totalDebt);
-  assignNumeric("totalCash", raw?.totalCash);
-  assignNumeric("freeCashflow", raw?.freeCashflow);
-  assignNumeric("operatingCashflow", raw?.operatingCashflow);
-  assignString("displayName", raw?.displayName);
-  assignString("sectorDisplay", raw?.sectorDisplay);
-
-  return profile;
-};
 
 const analyzeLogoAppearance = async (src: string): Promise<CSSProperties> => {
   const image = new Image();
@@ -931,7 +809,6 @@ export default function Explore() {
   const chartContainerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const profileCacheRef = useRef<Map<string, CompanyProfile>>(new Map());
   const suppressRangeUpdateRef = useRef<boolean>(false);
   const lastIndexRef = useRef(0);
   const firstIndexRef = useRef(0);
@@ -987,37 +864,27 @@ export default function Explore() {
       return;
     }
 
-    const applyMerge = (incoming: CompanyProfile | null) => mergeProfileWithCompany(incoming, company);
-
-    if (!company.profile) {
-      setProfile(applyMerge(null));
-      return;
-    }
-
-    const profileUrl = assetPath(company.profile);
-    const cached = profileCacheRef.current.get(profileUrl);
-    if (cached) {
-      const merged = applyMerge(cached);
-      profileCacheRef.current.set(profileUrl, merged);
-      setProfile(merged);
-      return;
-    }
-
     let cancelled = false;
+
     (async () => {
-      try {
-        const response = await fetch(profileUrl, { cache: "no-store" });
-        if (!response.ok) throw new Error(`profile fetch failed: ${response.status}`);
-        const raw = await response.json();
-        const normalized = normalizeProfile(raw);
-        const enriched = applyMerge(normalized);
-        profileCacheRef.current.set(profileUrl, enriched);
-        if (!cancelled) setProfile(enriched);
-      } catch (error) {
-        console.warn("[profile] load failed", error);
-        if (!cancelled) setProfile(applyMerge(null));
+      // Appel propre à notre nouveau service centralisé
+      const profileData = await fetchCompanyProfile(company.symbol);
+
+      if (!cancelled) {
+        if (profileData) {
+          setProfile(profileData);
+        } else {
+          // Fallback simple : on affiche ce qu'on a dans la liste
+          setProfile({
+            ...company,
+            displayName: company.name,
+            sectorDisplay: company.sector,
+            industryDisp: company.industry ?? undefined,
+          });
+        }
       }
     })();
+
     return () => {
       cancelled = true;
     };
@@ -1242,9 +1109,8 @@ export default function Explore() {
   const lastCloseLabel = data.length ? lastClose.toFixed(2) : "--";
   const lastPriceDate = data.at(-1)?.date;
 
-  const displayName = profile?.displayName ?? profile?.longName ?? selectedCompany?.name ?? symbol;
-  const longNameSuffix =
-    profile?.longName && profile.longName !== displayName ? profile.longName : undefined;
+  const displayName = profile?.displayName ?? selectedCompany?.name ?? symbol;
+  const longNameSuffix = undefined;
   const subtitleParts: string[] = [symbol];
   if (profile?.sectorDisplay) {
     subtitleParts.push(profile.sectorDisplay);
@@ -1262,14 +1128,14 @@ export default function Explore() {
   const ensureProtocol = (url: string) =>
     /^https?:/i.test(url) ? url : `https://${url}`;
 
-  const insights = useMemo(() => {
+const insights = useMemo(() => {
     if (!profile) return { gauges: [], ranges: [], metrics: [] };
     const gauges: InsightItem[] = [];
     const ranges: RangeItem[] = [];
     const metrics: MetricRow[] = [];
     type Key = Parameters<typeof t>[0];
 
-    if (profile.beta !== undefined) {
+    if (profile.beta !== undefined && profile.beta !== null) {
       const betaValue = profile.beta;
       const betaMin = Math.min(-1, Math.floor(betaValue - 1));
       const betaMax = Math.max(3, Math.ceil(betaValue + 1));
@@ -1288,7 +1154,7 @@ export default function Explore() {
       });
     }
 
-    if (profile.recommendationMean !== undefined) {
+    if (profile.recommendationMean !== undefined && profile.recommendationMean !== null) {
       gauges.push({
         key: "recommendation",
         label: t("explore.metrics.recommendationMean"),
@@ -1301,14 +1167,14 @@ export default function Explore() {
         },
       });
     }
-
+    
     const addNumberMetric = (
       key: string,
       labelKey: Key,
-      value: number | undefined,
+      value: number | undefined | null,
       formatter: (value: number) => ReactNode
     ) => {
-      if (value === undefined) return;
+      if (value == null) return;
       metrics.push({
         key,
         label: t(labelKey),
@@ -1316,8 +1182,12 @@ export default function Explore() {
       });
     };
 
-    const addCurrencyMetric = (key: string, labelKey: Key, value: number | undefined) => {
-      if (value === undefined) return;
+    const addCurrencyMetric = (
+      key: string, 
+      labelKey: Key, 
+      value: number | undefined | null
+    ) => {
+      if (value == null) return;
       metrics.push({
         key,
         label: t(labelKey),
@@ -1333,15 +1203,16 @@ export default function Explore() {
     const addRange = (
       key: string,
       labelKey: Key,
-      min: number | undefined,
-      max: number | undefined,
+      min: number | undefined | null,
+      max: number | undefined | null,
       helpKey?: Key,
       current?: number,
       minDate?: string,
       maxDate?: string,
       currentDate?: string
     ) => {
-      if (min === undefined || max === undefined) return;
+      if (min == null || max == null) return;
+      
       ranges.push({
         key,
         label: t(labelKey),
@@ -1357,7 +1228,7 @@ export default function Explore() {
         currentLabel: t("explore.metrics.range.current"),
       });
     };
-
+    
     addNumberMetric("trailingPE", "explore.metrics.trailingPE", profile.trailingPE, (value) =>
       formatNumberValue(value, 2)
     );
@@ -1365,7 +1236,8 @@ export default function Explore() {
       formatNumberValue(value, 2)
     );
 
-    addCurrencyMetric("marketCap", "explore.metrics.marketCap", profile.marketCap ?? profile.marketCapRaw);
+    addCurrencyMetric("marketCap", "explore.metrics.marketCap", profile.marketCap);
+    
     addCurrencyMetric("totalRevenue", "explore.metrics.totalRevenue", profile.totalRevenue);
     addCurrencyMetric("totalDebt", "explore.metrics.totalDebt", profile.totalDebt);
     addCurrencyMetric("totalCash", "explore.metrics.totalCash", profile.totalCash);
@@ -1379,8 +1251,8 @@ export default function Explore() {
       profile.fiftyTwoWeeksHigh,
       "explore.metrics.fiftyTwoWeeksRange.help",
       lastClose,
-      profile.fiftyTwoWeeksLowDate,
-      profile.fiftyTwoWeeksHighDate,
+      undefined,
+      undefined,
       lastPriceDate ?? undefined
     );
 
@@ -1391,8 +1263,8 @@ export default function Explore() {
       profile.allTimeHigh,
       "explore.metrics.allTimeRange.help",
       lastClose,
-      profile.allTimeLowDate,
-      profile.allTimeHighDate,
+      undefined,
+      undefined,
       lastPriceDate ?? undefined
     );
 
