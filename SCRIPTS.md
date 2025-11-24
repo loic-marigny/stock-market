@@ -16,6 +16,7 @@ This document inventories every file under the `scripts/` directory, highlights 
 | `scripts/load_companies_json_to_db*.py` | Push company JSON into a Postgres schema. | Legacy / manual |
 | `scripts/load_history_json_to_db.py` | Bulk-loads `public/history/*.json` into Postgres. | Legacy / manual |
 | `scripts/quotes.py` | Refreshes `data/quotes.json` and `public/quotes.json` using Finnhub plus regional fallbacks. | Active |
+| `scripts/sync_fundamentals.py` | Fetches financial metrics (PE, Market Cap, ATH) via yfinance & upserts to Supabase. | Active |
 | `scripts/sync_history_supabase.py` | Batched yfinance sync that upserts recent OHLC data directly to Supabase. | Active |
 | `scripts/update_company_profiles.py` | Enriches `public/companies/*/profile.json` via the Yahoo worker. | Active |
 | `scripts/migration/supabase_migration.py` | Copies a local Postgres table into Supabase. | Legacy |
@@ -67,6 +68,14 @@ Blueprint identical to `history.py` but writes the full OHLC payload to `public/
 Standalone yfinance routine that scans the `stock_market_history` table for rows missing OHLC data, fetches the missing range via yfinance, and writes the values back to Supabase. It batches rows manually and assumes credentials are hard-coded in the file. Treat it as a throwaway ETL prototype.
 
 ## 3. Company Metadata Enrichment
+
+### `sync_fundamentals.py` (active)
+Runs daily via GitHub Actions (`update_fundamentals.yml`) to populate the `company_fundamentals` table in Supabase.
+1. Iterates through all symbols one by one.
+2. Fetches detailed metrics via `yfinance.Ticker().info`.
+3. **Calculates fallbacks**: Computes All-Time High/Low from full history and estimates Market Cap (Price * Shares) if Yahoo returns null.
+4. Performs a **partial upsert**: It filters out `None` values to avoid overwriting existing data with nulls.
+5. Implements a **random sleep** (2-3s) between requests to avoid rate-limiting, as this script does not use proxies.
 
 ### `update_company_profiles.py` (active)
 Pulls metadata (`longBusinessSummary`, websites, risk metrics, etc.) from the Yahoo worker and patches `public/companies/{SYMBOL}/profile.json` while keeping existing keys. Requires `YAHOO_WORKER_URL` (and optionally `YAHOO_WORKER_TOKEN`) plus `data/tickers.json` as the symbol source.
