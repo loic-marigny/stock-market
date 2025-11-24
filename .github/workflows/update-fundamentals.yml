@@ -1,9 +1,9 @@
-name: Sync Fundamentals (Daily)
+name: Sync Fundamentals (Every 12 Hours)
 
 on:
-  # One time every day at 8h00 UTC
+  # Run at 00:00 and 12:00 UTC
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 */12 * * *'
   
   workflow_dispatch:
 
