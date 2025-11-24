@@ -48,14 +48,24 @@ def process_company(symbol):
             print(f"No info for {symbol}")
             return None
         
-        #Records calcul
+        #Records calculation
+        market_cap = get_clean_value(info.get("marketCap"))
         all_time_high = None
         all_time_low = None
+        current_price = None
+
         try:
             hist = ticker.history(period="max", auto_adjust=True)
             if not hist.empty:
                 all_time_high = round(hist['Close'].max(), 2)
                 all_time_low = round(hist['Close'].min(), 2)
+                current_price = hist['Close'].iloc[-1]
+
+                if market_cap is None:
+                    shares = info.get('sharesOutstanding')
+                    if shares and current_price:
+                        market_cap = int(current_price * shares)
+
         except Exception as e:
             print(f"Error calculating history for {symbol}: {e}")
             # If it fails, leave None, and the filter below will remove it (we keep the old value in the database)
@@ -67,7 +77,7 @@ def process_company(symbol):
         raw_data = {
             "symbol": symbol, # Primary key (always required)
             "long_business_summary": get_clean_value(info.get("longBusinessSummary")),
-            "market_cap": get_clean_value(info.get("marketCap")),
+            "market_cap": market_cap,
             "fifty_two_week_high": get_clean_value(info.get("fiftyTwoWeekHigh")),
             "fifty_two_week_low": get_clean_value(info.get("fiftyTwoWeekLow")),
             "all_time_high": all_time_high, 
