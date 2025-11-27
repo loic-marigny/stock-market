@@ -39,7 +39,7 @@ export default function App(){
   return (
     <div className="app-shell">
       <header className="topbar">
-        <Link to="/" className="brand-mini">Stock&nbsp;Market</Link>
+        <a href="https://loic-marigny.github.io/stock-market/" className="brand-mini">Stock&nbsp;Market</a>
         <LanguageSwitcher />
         <nav className="nav">
           <NavLink to="/" end className={({isActive})=> isActive?"active":""}>{t('nav.explore')}</NavLink>
