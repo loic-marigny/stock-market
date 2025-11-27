@@ -512,7 +512,7 @@ export default function Portfolio() {
               </h3>
               <div className="hint" style={{ margin: 0 }}>
                 {loadingWealthHistory
-                  ? (t('portfolio.history.loading') as string) || "Synchronisation en cours..."
+                  ? (t('app.loading') as string) || "Synchronisation en cours..."
                   : (t('portfolio.history.note') as string) || "R?partition actions + liquidit?s (historique)"}
               </div>
             </div>
