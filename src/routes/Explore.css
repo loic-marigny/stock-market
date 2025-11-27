@@ -63,11 +63,6 @@
   overflow: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(148,163,184,0.45) transparent;
-  direction: rtl;
-}
-
-.explore-sidebar-content > * {
-  direction: ltr;
 }
 
 .explore-sidebar-content::-webkit-scrollbar {
