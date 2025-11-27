@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useI18n } from './i18n/I18nProvider'
 import type { TranslationKey } from './i18n/eng'
+import { recordWealthSnapshot } from './lib/wealthHistory'
 
 type Mode = 'in' | 'up'
 
@@ -32,6 +33,9 @@ export default function SignIn(){
         email: email || '',
         initialCredits: 1_000_000,
         createdAt: serverTimestamp(),
+      })
+      recordWealthSnapshot(uid, { source: 'signup' }).catch((error) => {
+        console.error('Failed to seed wealth history', error)
       })
     }
   }

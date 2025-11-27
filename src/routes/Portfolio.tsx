@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { auth } from "../firebase";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
+import { useWealthHistory } from "../lib/useWealthHistory";
 import { useI18n } from "../i18n/I18nProvider";
 import provider from "../lib/prices";
 import PositionsTable from "../components/PositionsTable";
@@ -48,6 +49,7 @@ export default function Portfolio() {
   const { t, locale } = useI18n();
   const uid = auth.currentUser?.uid ?? null;
   const { orders, positions, prices, cash, marketValue, totalValue, loadingPrices } = usePortfolioSnapshot(uid);
+  const { history: wealthHistory, loading: loadingWealthHistory } = useWealthHistory(uid);
 
   // On suppose que usePortfolioSnapshot retournera bient?t cashByCcy.
   // En attendant, fallback: tout le cash est en USD.
@@ -204,7 +206,14 @@ export default function Portfolio() {
   }, [pieData, cashByCcy, t]);
   const pieTotal = useMemo(() => pieData.reduce((acc, slice) => acc + slice.value, 0), [pieData]);
   const pieWithCashTotal = useMemo(() => pieWithCashData.reduce((acc, slice) => acc + slice.value, 0), [pieWithCashData]);
-  type HistPoint = { label: string; stocks: number; cash: number };
+  type HistPoint = {
+    label: string;
+    stocks: number;
+    cash: number;
+    total?: number;
+    ts?: Date | null;
+    source?: string | null;
+  };
 
   const historyDateFormatter = useMemo(
     () => new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }),
@@ -215,28 +224,34 @@ export default function Portfolio() {
     [locale]
   );
 
-  /* mock donn?es historiques pour l'instant */
+  /* Historique du patrimoine (Firebase) */
   const historyData: HistPoint[] = useMemo(() => {
-    const now = new Date();
-    const points: HistPoint[] = [];
-    const baseStocks = 14000;
-    const baseCash = 3200;
+    const baseEntries = wealthHistory.length
+      ? wealthHistory
+      : [
+          {
+            cash: totalSafe(cash),
+            stocks: totalSafe(marketValue),
+            total: totalSafe(totalValue),
+            ts: new Date(),
+            source: "live",
+          },
+        ];
 
-    for (let step = 13; step >= 0; step--) {
-      const ts = new Date(now.getTime() - step * 12 * 60 * 60 * 1000); // deux relev?s par jour
-      const index = 13 - step;
-      const stocksTrend = baseStocks + index * 180 + Math.sin(index / 2) * 350;
-      const cashTrend = baseCash + index * 35 + Math.cos(index / 3) * 140;
+    return baseEntries.map((entry) => {
+      const ts = entry.ts ?? new Date();
       const dateLabel = historyDateFormatter.format(ts);
       const timeLabel = historyTimeFormatter.format(ts);
-      points.push({
+      return {
         label: `${dateLabel}\n${timeLabel}`,
-        stocks: Math.round(stocksTrend),
-        cash: Math.round(cashTrend),
-      });
-    }
-    return points;
-  }, [historyDateFormatter, historyTimeFormatter]);
+        stocks: totalSafe(entry.stocks),
+        cash: totalSafe(entry.cash),
+        total: totalSafe(entry.total ?? entry.cash + entry.stocks),
+        ts,
+        source: entry.source ?? null,
+      };
+    });
+  }, [wealthHistory, historyDateFormatter, historyTimeFormatter, cash, marketValue, totalValue]);
 
   function LegendTable({
     data,
@@ -488,7 +503,7 @@ export default function Portfolio() {
           </div>
         )}
 
-        {/* ===== Stacked Area Chart (mock) ===== */}
+        {/* ===== Stacked Area Chart ===== */}
         {historyData.length > 0 && (
           <div className="chart-card" style={{ marginTop: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
@@ -496,7 +511,9 @@ export default function Portfolio() {
                 {(t('portfolio.history.title') as string) || "Historique du patrimoine"}
               </h3>
               <div className="hint" style={{ margin: 0 }}>
-                {(t('portfolio.history.note') as string) || "R?partition actions + liquidit?s (mock)"}
+                {loadingWealthHistory
+                  ? (t('portfolio.history.loading') as string) || "Synchronisation en cours..."
+                  : (t('portfolio.history.note') as string) || "R?partition actions + liquidit?s (historique)"}
               </div>
             </div>
 

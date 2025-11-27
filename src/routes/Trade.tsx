@@ -13,6 +13,7 @@ import provider from "../lib/prices";
 import { fetchCompaniesIndex, type Company, marketLabel } from "../lib/companies";
 import { usePortfolioSnapshot } from "../lib/usePortfolioSnapshot";
 import { submitSpotOrder } from "../lib/trading";
+import { recordWealthSnapshot } from "../lib/wealthHistory";
 import CompanySidebar from "../components/CompanySidebar";
 import { useI18n } from "../i18n/I18nProvider";
 import PositionsTable from "../components/PositionsTable";
@@ -347,6 +348,10 @@ export default function Trade(){
           tx.set(quoteRef, { amount: quoteAmt });
 
           tx.set(ordRef, { symbol, side, qty: qBase, fillPrice, ts: serverTimestamp(), type: "FX", base, quote });
+        });
+
+        recordWealthSnapshot(uid, { source: "fx-trade" }).catch((error) => {
+          console.error("Failed to record wealth snapshot", error);
         });
 
         setMsg(side === "buy" ? t('trade.success.buy') : t('trade.success.sell'));

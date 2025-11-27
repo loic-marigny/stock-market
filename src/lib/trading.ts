@@ -7,6 +7,7 @@ import {
   type DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { recordWealthSnapshot } from "./wealthHistory";
 
 export type SpotSide = "buy" | "sell";
 
@@ -167,5 +168,10 @@ export async function submitSpotOrder(params: SpotOrderParams): Promise<void> {
       ts: serverTimestamp(),
       ...(extra ?? {}),
     });
+  });
+
+  const sourceLabel = typeof extra?.source === "string" ? extra.source : undefined;
+  recordWealthSnapshot(uid, { source: sourceLabel }).catch((error) => {
+    console.error("Failed to record wealth snapshot", error);
   });
 }
