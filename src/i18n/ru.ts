@@ -2,7 +2,7 @@ import type { Translations } from "./lang";
 import en from "./eng";
 
 const ru: Translations = {
-  ...en,
+  ...(en as Translations),
   "app.loading": "Загрузка...",
   "app.calculating": "Расчёт...",
   "nav.explore": "Обзор",

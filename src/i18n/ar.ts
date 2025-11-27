@@ -2,7 +2,7 @@ import type { Translations } from "./lang";
 import en from "./eng";
 
 const ar: Translations = {
-  ...en,
+  ...(en as Translations),
   "app.loading": "جارٍ التحميل...",
   "app.calculating": "يتم الحساب...",
   "nav.explore": "استكشاف",
@@ -162,6 +162,15 @@ const ar: Translations = {
   "explore.metrics.sectorDisplay": "القطاع",
   "explore.metrics.sectorDisplay.help":
     "الوصف القطاعي المعلن.",
+  "explore.metrics.performanceTitle": "أداء السعر",
+  "explore.metrics.performanceDesc":
+    "تطور السعر خلال 52 أسبوعًا وعلى التاريخ الكامل.",
+  "explore.metrics.riskTitle": "المخاطر وتقييم المحللين",
+  "explore.metrics.riskDesc":
+    "التذبذب مقارنة بالسوق ومتوسط آراء المحللين.",
+  "explore.metrics.fundamentalsTitle": "الأساسيات",
+  "explore.metrics.fundamentalsDesc":
+    "التقييم، الإيرادات، التدفقات النقدية وهيكل الدين.",
   "explore.metrics.fiftyTwoWeeksRange": "نطاق 52 أسبوعًا",
   "explore.metrics.fiftyTwoWeeksRange.help":
     "مكان السعر الحالي بين أدنى وأعلى سعر خلال 52 أسبوعًا.",
