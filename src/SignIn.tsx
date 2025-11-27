@@ -34,7 +34,7 @@ export default function SignIn(){
         initialCredits: 1_000_000,
         createdAt: serverTimestamp(),
       })
-      recordWealthSnapshot(uid, { source: 'signup' }).catch((error) => {
+      recordWealthSnapshot(uid, { source: 'signup', snapshotType: 'scheduled' }).catch((error) => {
         console.error('Failed to seed wealth history', error)
       })
     }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import type { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
 import { db } from "../firebase";
+import { ensureScheduledWealthSnapshot, type WealthSnapshotType } from "./wealthHistory";
 
 export interface WealthHistoryPoint {
   id: string;
@@ -10,6 +11,7 @@ export interface WealthHistoryPoint {
   total: number;
   ts: Date | null;
   source?: string | null;
+  snapshotType?: WealthSnapshotType | null;
 }
 
 const sanitizeNumber = (value: unknown): number => {
@@ -35,6 +37,7 @@ const docToPoint = (docSnap: QueryDocumentSnapshot): WealthHistoryPoint => {
     total: sanitizeNumber(data?.total),
     ts: tsToDate(data?.ts),
     source: typeof data?.source === "string" ? data.source : null,
+    snapshotType: typeof data?.snapshotType === "string" ? (data.snapshotType as WealthSnapshotType) : null,
   };
 };
 
@@ -44,6 +47,13 @@ export function useWealthHistory(uid: string | null | undefined): {
 } {
   const [history, setHistory] = useState<WealthHistoryPoint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!uid) return;
+    ensureScheduledWealthSnapshot(uid).catch((error) => {
+      console.error("Failed to ensure scheduled wealth snapshot", error);
+    });
+  }, [uid]);
 
   useEffect(() => {
     if (!uid) {

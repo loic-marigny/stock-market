@@ -7,7 +7,7 @@ import {
   type DocumentSnapshot,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { recordWealthSnapshot } from "./wealthHistory";
+import { ORDER_SNAPSHOT_RETENTION_MS, recordWealthSnapshot } from "./wealthHistory";
 
 export type SpotSide = "buy" | "sell";
 
@@ -170,8 +170,12 @@ export async function submitSpotOrder(params: SpotOrderParams): Promise<void> {
     });
   });
 
-  const sourceLabel = typeof extra?.source === "string" ? extra.source : undefined;
-  recordWealthSnapshot(uid, { source: sourceLabel }).catch((error) => {
+  const sourceLabel = typeof extra?.source === "string" ? extra.source : "trade";
+  recordWealthSnapshot(uid, {
+    source: sourceLabel,
+    snapshotType: "order",
+    retentionMs: ORDER_SNAPSHOT_RETENTION_MS,
+  }).catch((error) => {
     console.error("Failed to record wealth snapshot", error);
   });
 }
