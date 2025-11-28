@@ -17,6 +17,7 @@ import provider from "./prices";
 
 const DEFAULT_INITIAL_CASH = 1_000_000;
 const POSITION_EPSILON = 1e-9;
+const STATS_EPSILON = 1e-6;
 export const ORDER_SNAPSHOT_RETENTION_MS = 24 * 60 * 60 * 1000;
 export const SCHEDULED_SNAPSHOT_INTERVAL_MS = 12 * 60 * 60 * 1000;
 
@@ -92,6 +93,8 @@ export async function recordWealthSnapshot(
 
   const userRef = doc(db, "users", uid);
   const positionsRef = collection(db, "users", uid, "positions");
+  const ordersRef = collection(db, "users", uid, "orders");
+  const ordersQuery = query(ordersRef, orderBy("ts", "asc"));
   const historyCol = collection(db, "users", uid, "wealthHistory");
 
   const [userSnap, positionsSnap] = await Promise.all([
@@ -102,13 +105,17 @@ export async function recordWealthSnapshot(
   const userData = userSnap.exists()
     ? (userSnap.data() as Record<string, unknown>)
     : {};
-  const baseCash =
-    sanitizeNumber(userData?.cash) ??
-    sanitizeNumber(userData?.initialCredits) ??
-    DEFAULT_INITIAL_CASH;
+  const initialCredits =
+    sanitizeNumber(userData?.initialCredits) ?? DEFAULT_INITIAL_CASH;
+  const baseCash = sanitizeNumber(userData?.cash) ?? initialCredits;
   const cash = round6(baseCash);
 
-  const positionDocs = positionsSnap.docs ?? [];
+  const [positionsList, ordersSnap] = await Promise.all([
+    Promise.resolve(positionsSnap.docs ?? []),
+    getDocs(ordersQuery),
+  ]);
+
+  const positionDocs = positionsList;
   const values = await Promise.all(
     positionDocs.map(async (docSnap) => {
       const data = docSnap.data() as Record<string, unknown>;
@@ -144,6 +151,20 @@ export async function recordWealthSnapshot(
     ts: serverTimestamp(),
   });
 
+  const normalizedOrders = normalizeOrders(ordersSnap.docs ?? []);
+  const stats = computeUserStats(initialCredits, total, normalizedOrders);
+  const statsRef = doc(db, "users", uid, "user_stats", "summary");
+  await setDoc(
+    statsRef,
+    {
+      totalValue: total,
+      initialCredits,
+      updatedAt: serverTimestamp(),
+      ...stats,
+    },
+    { merge: true },
+  );
+
   if (options?.retentionMs) {
     cleanupWealthSnapshots(uid, snapshotType, options.retentionMs).catch((error) => {
       console.error("Failed to cleanup wealth snapshots", error);
@@ -178,4 +199,113 @@ export async function ensureScheduledWealthSnapshot(
       snapshotType: "scheduled",
     });
   }
+}
+
+type NormalizedOrder = {
+  symbol: string;
+  side: "buy" | "sell";
+  qty: number;
+  fillPrice: number;
+  ts: number;
+};
+
+function normalizeOrders(
+  docs: Array<{ data(): Record<string, unknown> }>,
+): NormalizedOrder[] {
+  return docs
+    .map((docSnap) => {
+      const data = docSnap.data();
+      const symbolRaw = typeof data?.symbol === "string" ? data.symbol.trim().toUpperCase() : "";
+      const sideRaw = data?.side === "sell" ? "sell" : data?.side === "buy" ? "buy" : undefined;
+      const qty = sanitizeNumber((data as any)?.qty);
+      const fillPrice = sanitizeNumber((data as any)?.fillPrice);
+      const tsValue = data?.ts;
+      let ts = Date.now();
+      if (typeof tsValue === "number" && Number.isFinite(tsValue)) {
+        ts = tsValue;
+      } else if (tsValue instanceof Timestamp) {
+        ts = tsValue.toMillis();
+      } else if (tsValue instanceof Date) {
+        ts = tsValue.getTime();
+      }
+      if (!symbolRaw || !sideRaw) return null;
+      if (typeof qty !== "number" || typeof fillPrice !== "number") return null;
+      if (qty <= STATS_EPSILON || fillPrice <= STATS_EPSILON) return null;
+      return { symbol: symbolRaw, side: sideRaw, qty, fillPrice, ts };
+    })
+    .filter((entry): entry is NormalizedOrder => Boolean(entry))
+    .sort((a, b) => a.ts - b.ts);
+}
+
+type UserStats = {
+  tradesCount: number;
+  pnl: number;
+  roi: number;
+  realizedPnl: number;
+  wins: number;
+  losses: number;
+  winRate: number;
+  closedTrades: number;
+};
+
+function computeUserStats(
+  initialCredits: number,
+  totalValue: number,
+  orders: NormalizedOrder[],
+): UserStats {
+  const tradesCount = orders.length;
+  const pnl = round6(totalValue - initialCredits);
+  const roi =
+    initialCredits > STATS_EPSILON ? round6((totalValue - initialCredits) / initialCredits) : 0;
+
+  const fifoBooks = new Map<string, Array<{ qty: number; price: number }>>();
+  let realizedPnl = 0;
+  let wins = 0;
+  let losses = 0;
+  let closedTrades = 0;
+
+  for (const order of orders) {
+    if (!fifoBooks.has(order.symbol)) {
+      fifoBooks.set(order.symbol, []);
+    }
+    const book = fifoBooks.get(order.symbol)!;
+    if (order.side === "buy") {
+      book.push({ qty: order.qty, price: order.fillPrice });
+      continue;
+    }
+    let remaining = order.qty;
+    let orderPnl = 0;
+    while (remaining > STATS_EPSILON && book.length) {
+      const lot = book[0];
+      const consume = Math.min(lot.qty, remaining);
+      orderPnl += (order.fillPrice - lot.price) * consume;
+      lot.qty -= consume;
+      remaining -= consume;
+      if (lot.qty <= STATS_EPSILON) {
+        book.shift();
+      }
+    }
+    if (remaining <= STATS_EPSILON) {
+      realizedPnl += orderPnl;
+      closedTrades += 1;
+      if (orderPnl > STATS_EPSILON) {
+        wins += 1;
+      } else if (orderPnl < -STATS_EPSILON) {
+        losses += 1;
+      }
+    }
+  }
+
+  const winRate = closedTrades > 0 ? wins / closedTrades : 0;
+
+  return {
+    tradesCount,
+    pnl,
+    roi,
+    realizedPnl: round6(realizedPnl),
+    wins,
+    losses,
+    winRate,
+    closedTrades,
+  };
 }

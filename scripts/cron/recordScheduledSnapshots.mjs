@@ -22,6 +22,7 @@ if (!SUPABASE_SERVICE_ROLE_KEY) {
 
 const DEFAULT_INITIAL_CASH = 1_000_000;
 const POSITION_EPSILON = 1e-9;
+const STATS_EPSILON = 1e-6;
 const SCHEDULED_INTERVAL_MS = 12 * 60 * 60 * 1000;
 const ORDER_RETENTION_MS = 24 * 60 * 60 * 1000;
 
@@ -107,10 +108,10 @@ async function shouldRecordScheduled(uid) {
 }
 
 async function computeSnapshot(uid, userData) {
+  const initialCredits =
+    sanitizeNumber(userData?.initialCredits, undefined) ?? DEFAULT_INITIAL_CASH;
   const baseCash =
-    sanitizeNumber(userData?.cash, undefined) ??
-    sanitizeNumber(userData?.initialCredits, undefined) ??
-    DEFAULT_INITIAL_CASH;
+    sanitizeNumber(userData?.cash, undefined) ?? initialCredits;
   const cash = round6(baseCash);
 
   const positionsSnap = await firestore
@@ -137,7 +138,7 @@ async function computeSnapshot(uid, userData) {
   const stocks = round6(values.reduce((acc, value) => acc + value, 0));
   const total = round6(cash + stocks);
 
-  return { cash, stocks, total };
+  return { cash, stocks, total, initialCredits };
 }
 
 async function recordSnapshot(uid, payload) {
@@ -148,6 +149,114 @@ async function recordSnapshot(uid, payload) {
     source: "gha-scheduled",
     ts: FieldValue.serverTimestamp(),
   });
+}
+
+async function fetchOrders(uid) {
+  const snap = await firestore
+    .collection("users")
+    .doc(uid)
+    .collection("orders")
+    .orderBy("ts", "asc")
+    .get();
+  return snap.docs
+    .map((docSnap) => {
+      const data = docSnap.data();
+      const symbol =
+        typeof data?.symbol === "string" ? data.symbol.trim().toUpperCase() : "";
+      const side = data?.side === "buy" || data?.side === "sell" ? data.side : null;
+      const qty = sanitizeNumber(data?.qty, undefined);
+      const fillPrice = sanitizeNumber(data?.fillPrice, undefined);
+      const tsValue = data?.ts;
+      let ts = Date.now();
+      if (typeof tsValue === "number" && Number.isFinite(tsValue)) {
+        ts = tsValue;
+      } else if (tsValue instanceof Timestamp) {
+        ts = tsValue.toMillis();
+      } else if (tsValue instanceof Date) {
+        ts = tsValue.getTime();
+      }
+      if (!symbol || !side) return null;
+      if (typeof qty !== "number" || typeof fillPrice !== "number") return null;
+      if (qty <= STATS_EPSILON || fillPrice <= STATS_EPSILON) return null;
+      return { symbol, side, qty, fillPrice, ts };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.ts - b.ts);
+}
+
+function computeUserStats(initialCredits, totalValue, orders) {
+  const tradesCount = orders.length;
+  const pnl = round6(totalValue - initialCredits);
+  const roi =
+    initialCredits > STATS_EPSILON
+      ? round6((totalValue - initialCredits) / initialCredits)
+      : 0;
+
+  const books = new Map();
+  let realizedPnl = 0;
+  let wins = 0;
+  let losses = 0;
+  let closedTrades = 0;
+
+  for (const order of orders) {
+    if (!books.has(order.symbol)) {
+      books.set(order.symbol, []);
+    }
+    const book = books.get(order.symbol);
+    if (order.side === "buy") {
+      book.push({ qty: order.qty, price: order.fillPrice });
+      continue;
+    }
+
+    let remaining = order.qty;
+    let orderPnl = 0;
+    while (remaining > STATS_EPSILON && book.length) {
+      const lot = book[0];
+      const consume = Math.min(lot.qty, remaining);
+      orderPnl += (order.fillPrice - lot.price) * consume;
+      lot.qty -= consume;
+      remaining -= consume;
+      if (lot.qty <= STATS_EPSILON) {
+        book.shift();
+      }
+    }
+
+    if (remaining <= STATS_EPSILON) {
+      realizedPnl += orderPnl;
+      closedTrades += 1;
+      if (orderPnl > STATS_EPSILON) {
+        wins += 1;
+      } else if (orderPnl < -STATS_EPSILON) {
+        losses += 1;
+      }
+    }
+  }
+
+  const winRate = closedTrades > 0 ? wins / closedTrades : 0;
+
+  return {
+    tradesCount,
+    pnl,
+    roi,
+    realizedPnl: round6(realizedPnl),
+    wins,
+    losses,
+    winRate,
+    closedTrades,
+  };
+}
+
+async function updateUserStats(uid, initialCredits, totalValue, stats) {
+  const docRef = firestore.collection("users").doc(uid).collection("user_stats").doc("summary");
+  await docRef.set(
+    {
+      ...stats,
+      totalValue,
+      initialCredits,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 async function main() {
@@ -163,7 +272,10 @@ async function main() {
         continue;
       }
       const payload = await computeSnapshot(uid, doc.data());
+      const orders = await fetchOrders(uid);
       await recordSnapshot(uid, payload);
+      const stats = computeUserStats(payload.initialCredits, payload.total, orders);
+      await updateUserStats(uid, payload.initialCredits, payload.total, stats);
       await cleanupOrderSnapshots(uid);
       console.log(`Recorded snapshot for ${uid}`);
     } catch (error) {
