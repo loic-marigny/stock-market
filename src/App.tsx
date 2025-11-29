@@ -11,6 +11,7 @@ import { usePortfolioSnapshot } from "./lib/usePortfolioSnapshot";
 import { useI18n } from "./i18n/I18nProvider";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import LoadingScreen from "./components/LoadingScreen";
+import InitialLoader from "./components/InitialLoader";
 
 const LOADING_FRAMES = ["", ".", "..", "..."];
 
@@ -55,7 +56,7 @@ export default function App(){
     );
   }
 
-  if(!ready) return <p style={{color:"#fff",textAlign:"center",marginTop:40}}>{t('app.loading')}</p>;
+  if(!ready) return <InitialLoader label={t('app.loading')} />;
   if(!user) return <SignIn/>;
 
   return (
