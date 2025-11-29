@@ -10,6 +10,7 @@ import SignIn from "./SignIn";
 import { usePortfolioSnapshot } from "./lib/usePortfolioSnapshot";
 import { useI18n } from "./i18n/I18nProvider";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import LoadingScreen from "./components/LoadingScreen";
 
 export default function App(){
   const { t } = useI18n();
@@ -21,6 +22,7 @@ export default function App(){
   const { totalValue, loadingInitial, loadingPrices } = usePortfolioSnapshot(uid);
   const currencyFmt = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }), []);
   const totalDisplay = loadingInitial || loadingPrices ? t('app.calculating') : currencyFmt.format(totalValue);
+  const showGlobalLoader = Boolean(user && (loadingInitial || loadingPrices));
 
   function TopbarCash(){
     const uid = auth.currentUser?.uid;
@@ -38,6 +40,7 @@ export default function App(){
 
   return (
     <div className="app-shell">
+      {showGlobalLoader && <LoadingScreen message={t('app.loading')} />}
       <header className="topbar">
         <a href="https://loic-marigny.github.io/stock-market/" className="brand-mini">xMarket</a>
         <LanguageSwitcher />
