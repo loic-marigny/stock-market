@@ -72,7 +72,7 @@ export default function SignIn(){
       <div className="signin-main">
         <form className="card signin-card" onSubmit={submit} aria-busy={loading}>
           <div className="brand">
-            <h1>Stock&nbsp;Market</h1>
+            <h1>xMarket</h1>
             <p>{t('auth.subtitle')}</p>
           </div>
 

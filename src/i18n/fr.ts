@@ -30,7 +30,7 @@ const fr: Translations = {
   'auth.errors.emailInUse': 'Adresse e-mail d\u00E9j\u00E0 utilis\u00E9e.',
   'auth.errors.invalidCredential': 'E-mail ou mot de passe incorrect.',
   'auth.errors.tooManyRequests': 'Trop de tentatives. R\u00E9essayez plus tard.',
-  'auth.footer.note': '\u00A9 {{year}} Stock Market - tous droits r\u00E9serv\u00E9s',
+  'auth.footer.note': '\u00A9 {{year}} xMarket - tous droits r\u00E9serv\u00E9s',
   'portfolio.title': 'Mon portefeuille',
   'portfolio.cards.cash': 'Liquidit\u00E9s (USD)',
   'portfolio.cards.positionValue': 'Valeur des positions',

@@ -198,7 +198,6 @@
   position: sticky;
   top: 0;
   background: #1f2937;
-  pointer-events: none;
   padding-bottom: 10px;
   z-index: 1;
 }

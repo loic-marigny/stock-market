@@ -28,7 +28,7 @@
   'auth.errors.emailInUse': 'Email already in use.',
   'auth.errors.invalidCredential': 'Incorrect email or password.',
   'auth.errors.tooManyRequests': 'Too many attempts. Try again later.',
-  'auth.footer.note': '� {{year}} Stock Market � all rights reserved',
+  'auth.footer.note': '� {{year}} xMarket � all rights reserved',
   'portfolio.title': 'My portfolio',
   'portfolio.cards.cash': 'Cash (USD)',
   'portfolio.cards.positionValue': 'Position value',

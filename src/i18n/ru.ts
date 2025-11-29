@@ -31,7 +31,7 @@ const ru: Translations = {
   "auth.errors.emailInUse": "Email уже используется.",
   "auth.errors.invalidCredential": "Неверный email или пароль.",
   "auth.errors.tooManyRequests": "Слишком много попыток. Попробуйте позже.",
-  "auth.footer.note": "© {{year}} Stock Market — все права защищены",
+  "auth.footer.note": "© {{year}} xMarket — все права защищены",
   "portfolio.title": "Мой портфель",
   "portfolio.cards.cash": "Наличность (USD)",
   "portfolio.cards.positionValue": "Стоимость позиций",
