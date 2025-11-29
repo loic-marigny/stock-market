@@ -12,6 +12,8 @@ import { useI18n } from "./i18n/I18nProvider";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import LoadingScreen from "./components/LoadingScreen";
 
+const LOADING_FRAMES = ["", ".", "..", "..."];
+
 export default function App(){
   const { t } = useI18n();
   const [user, setUser] = useState<User|null>(null);
@@ -21,16 +23,34 @@ export default function App(){
   const uid = user?.uid ?? null;
   const { totalValue, loadingInitial, loadingPrices } = usePortfolioSnapshot(uid);
   const currencyFmt = useMemo(() => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }), []);
-  const totalDisplay = loadingInitial || loadingPrices ? t('app.calculating') : currencyFmt.format(totalValue);
-  const showGlobalLoader = Boolean(user && (loadingInitial || loadingPrices));
+  const isGlobalLoading = loadingInitial || loadingPrices;
+  const [loadingFrame, setLoadingFrame] = useState(0);
+  useEffect(() => {
+    if (!isGlobalLoading) {
+      setLoadingFrame(0);
+      return;
+    }
+    const id = window.setInterval(() => {
+      setLoadingFrame((prev) => (prev + 1) % LOADING_FRAMES.length);
+    }, 500);
+    return () => window.clearInterval(id);
+  }, [isGlobalLoading]);
+  const animatedLabel = useMemo(() => {
+    if (!isGlobalLoading) return "";
+    const base = t('app.calculating').replace(/\.+$/, "").trimEnd();
+    const suffix = LOADING_FRAMES[loadingFrame];
+    return suffix ? `${base}${suffix}` : base;
+  }, [isGlobalLoading, loadingFrame, t]);
+  const totalDisplay = isGlobalLoading ? animatedLabel : currencyFmt.format(totalValue);
+  const showGlobalLoader = Boolean(user && isGlobalLoading);
 
   function TopbarCash(){
     const uid = auth.currentUser?.uid;
     const { cash } = usePortfolioSnapshot(uid || "");
     const formatted = cash.toLocaleString(undefined, { maximumFractionDigits: 2 });
     return (
-      <span aria-label={t('nav.availableCash', { amount: formatted })} className="topbar-metric">
-        {t('nav.availableCash', { amount: formatted })}
+      <span className="topbar-metric">
+        {isGlobalLoading ? animatedLabel : t('nav.availableCash', { amount: formatted })}
       </span>
     );
   }
@@ -51,7 +71,9 @@ export default function App(){
         </nav>
         <div className="topbar-right">
           <div className="topbar-metrics">
-            <span className="topbar-metric">{t('nav.totalValueLabel')}: {totalDisplay}</span>
+            <span className={`topbar-metric${isGlobalLoading ? " pulsating" : ""}`}>
+              {t('nav.totalValueLabel')}: {totalDisplay}
+            </span>
             <span className="topbar-separator" aria-hidden="true">·</span>
             <TopbarCash />
           </div>

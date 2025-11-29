@@ -788,7 +788,7 @@ input:focus {
 
 .topbar-right{ margin-left:auto; display:flex; align-items:center; gap:1rem; }
 .topbar-metrics{ display:flex; align-items:center; gap:.5rem; color:var(--text-muted); font-size:.9rem; }
-.topbar-metric{ color:inherit; font-size:inherit; font-weight:600; }
+.topbar-metric{ color:inherit; font-size:inherit; font-weight:600; white-space:pre; }
 .topbar-separator{ color:inherit; font-size:1.1em; line-height:1; }
 
 
